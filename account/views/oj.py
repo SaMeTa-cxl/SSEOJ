@@ -1,10 +1,10 @@
 from django.contrib import auth
 
-from utils.api.api import APIView, validate_serializer
+from utils.api.api import ApiView, validate_serializer
 from ..serializers import UserLoginSerializer
 
 
-class UserLoginAPI(APIView):
+class UserLoginApi(ApiView):
     @validate_serializer(UserLoginSerializer)
     def post(self, request):
         """
@@ -19,7 +19,7 @@ class UserLoginAPI(APIView):
             return self.success("登录成功")
 
 
-class UserLogoutAPI(APIView):
+class UserLogoutApi(ApiView):
     def get(self, request):
         """
         GET /api/logout

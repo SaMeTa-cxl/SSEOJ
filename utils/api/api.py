@@ -12,7 +12,7 @@ class ContentType(object):
     binary_response = "application/octet-stream"
 
 
-class APIView(View):
+class ApiView(View):
     @staticmethod
     def success(data=None):
         """
