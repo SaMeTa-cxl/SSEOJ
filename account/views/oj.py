@@ -54,31 +54,16 @@ class UserFollowing(APIView):
         pass
 
 
-class UserFollowers(APIView):
+class UserFollower(APIView):
     def get(self, request):
         pass
 
 
-class UserProfileChange(APIView):
+class UserInfoChange(APIView):
     def put(self, request):
         pass
 
 
 class UserAvatarChange(APIView):
     def put(self, request):
-        pass
-
-
-class UserPasswordChange(APIView):
-    def put(self, request):
-        pass
-
-
-class UserNameChange(APIView):
-    def put(self, request):
-        pass
-
-
-class UserFollower(APIView):
-    def get(self, request):
         pass

@@ -12,8 +12,5 @@ urlpatterns = [
     path("user/subscribe/", UserSubscribe.as_view(), name="user_subscribe"),
     path("user/{int: user_id}/following/", UserFollowing.as_view(), name="user_following"),
     path("user/{int: user_id}/follower/", UserFollower.as_view(), name="user_follower"),
-    path("user/profile_change/", UserProfileChange.as_view(), name="user_profile_change"),
-    path("user/name_change/", UserNameChange.as_view(), name="user_name_change"),
-    path("user/avatar_change/", UserAvatarChange.as_view(), name="user_avatar_change"),
-    path("user/password_change/", UserPasswordChange.as_view(), name="user_profile_change"),
+    path("user/info_change/", UserInfoChange.as_view(), name="user_info_change")
 ]

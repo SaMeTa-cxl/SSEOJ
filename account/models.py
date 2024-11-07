@@ -23,3 +23,15 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'user'
+
+
+class Following(models.Model):
+    # 关注者
+    follower = models.ForeignKey(User, on_delete=models.CASCADE)
+    # 被关注者
+    following = models.ForeignKey(User, on_delete=models.CASCADE)
+    # 关注时间
+    follow_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'following'
