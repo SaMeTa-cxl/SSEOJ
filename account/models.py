@@ -27,9 +27,9 @@ class User(AbstractUser):
 
 class Following(models.Model):
     # 关注者
-    follower = models.ForeignKey(User, on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
     # 被关注者
-    following = models.ForeignKey(User, on_delete=models.CASCADE)
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
     # 关注时间
     follow_time = models.DateTimeField(auto_now_add=True)
 
