@@ -1,10 +1,11 @@
 from django.contrib import auth
+from rest_framework.views import APIView
 
-from utils.api.api import ApiView, validate_serializer
 from ..serializers import UserLoginSerializer
+from utils.api import *
 
 
-class UserLoginApi(ApiView):
+class UserLoginApi(APIView):
     @validate_serializer(UserLoginSerializer)
     def post(self, request):
         """
@@ -13,16 +14,16 @@ class UserLoginApi(ApiView):
         data = request.data
         user = auth.authenticate(username=data['username'], password=data['password'])
         if not user:
-            return self.error("用户名或密码错误！")
+            return fail("用户名或密码错误！")
         else:
             auth.login(request, user)
-            return self.success("登录成功")
+            return success("登录成功")
 
 
-class UserLogoutApi(ApiView):
+class UserLogoutApi(APIView):
     def get(self, request):
         """
         GET /api/logout
         """
         auth.logout(request)
-        return self.success()
+        return Response()
