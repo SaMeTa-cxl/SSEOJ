@@ -29,41 +29,46 @@ class UserLogoutAPI(APIView):
         return Response()
 
 
-class UserSendEmail(APIView):
+class UserSendEmailAPI(APIView):
     def get(self, request):
         pass
 
 
-class UserRegister(APIView):
+class UserRegisterAPI(APIView):
     def post(self, request):
         pass
 
 
-class UserInfo(APIView):
-    def get(self, request):
+class UserInfoAPI(APIView):
+    def get(self, request, user_id):
         pass
 
 
-class UserSubscribe(APIView):
+class UserSubscribeAPI(APIView):
     def post(self, request):
         pass
 
 
-class UserFollowing(APIView):
-    def get(self, request):
+class UserFollowingAPI(APIView):
+    def get(self, request, user_id):
         pass
 
 
-class UserFollower(APIView):
-    def get(self, request):
+class UserFollowerAPI(APIView):
+    def get(self, request, user_id):
         pass
 
 
-class UserInfoChange(APIView):
+class UserInfoChangeAPI(APIView):
     def put(self, request):
         pass
 
 
-class UserAvatarChange(APIView):
+class UserAvatarChangeAPI(APIView):
     def put(self, request):
+        pass
+
+
+class UserProblemlistAPI(APIView):
+    def get(self, request, user_id):
         pass
