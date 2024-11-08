@@ -13,7 +13,6 @@ class UserLoginAPI(APIView):
         """
         data = request.data
         user = auth.authenticate(username=data['username'], password=data['password'])
-
         if not user:
             return fail("用户名或密码错误！")
         else:
