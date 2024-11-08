@@ -17,21 +17,11 @@ class User(AbstractUser):
     avatar = models.CharField(max_length=50, default='static/avatar.png/')
     # 用户类型：Normal/Admin
     user_type = models.CharField(max_length=20, default=UserType.NORMAL_USER)
+    # 我的关注
+    following = models.ManyToManyField('self', related_name='follower', symmetrical=False, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:
         db_table = 'user'
-
-
-class Following(models.Model):
-    # 关注者
-    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
-    # 被关注者
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
-    # 关注时间
-    follow_time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'following'
