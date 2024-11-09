@@ -29,8 +29,14 @@ class UserLoginTests(TestCase):
         self.assertEqual(response.data['msg'], "用户名或密码错误！")
         self.assertEqual(response.data['err'], "error")
 
-    def test_login_with_invalid_field(self):
+    def test_login_with_invalid_field1(self):
         data = {'email': 'abc@qq.com'}
         response = self.client.post(reverse('identity_login'), data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertDictEqual(response.data, {'err': 'invalid-password', 'msg': 'password: This field is required.'})
+
+    def test_login_with_invalid_field2(self):
+        data = {'password': '123456'}
+        response = self.client.post(reverse('identity_login'), data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertDictEqual(response.data, {'err': 'invalid-email', 'msg': 'email: This field is required.'})
