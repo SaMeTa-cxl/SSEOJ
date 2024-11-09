@@ -40,3 +40,8 @@ class UserLoginTests(TestCase):
         response = self.client.post(reverse('identity_login'), data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertDictEqual(response.data, {'err': 'invalid-email', 'msg': 'email: This field is required.'})
+
+    def test_logout_success(self):
+        response = self.client.get(reverse('identity_logout'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(response.data, {'err': None, 'data': '登出成功'})

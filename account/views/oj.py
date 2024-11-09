@@ -26,7 +26,8 @@ class UserLogoutAPI(APIView):
         GET /api/logout
         """
         auth.logout(request)
-        return Response()
+        # return Response({"message": "登出成功"}, status=status.HTTP_200_OK)
+        return success("登出成功")
 
 
 class UserSendEmailAPI(APIView):
