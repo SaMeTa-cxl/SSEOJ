@@ -109,3 +109,13 @@ class SolutionComment(models.Model):
     class Meta:
         db_table = 'solution_comment'
         ordering = ('create_time', )
+
+
+class StudyPlan(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='study_plan')
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='study_plan')
+    added_time = models.DateTimeField(auto_now_add=True)
+    problem_status = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'study_plan'

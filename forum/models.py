@@ -21,7 +21,7 @@ class Post(models.Model):
 
 
 class PostComment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models, related_name='comments')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     create_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create_post_comments')
     like_users = models.ManyToManyField(User, related_name='like_post_comments')
     create_time = models.DateTimeField(auto_now_add=True)
