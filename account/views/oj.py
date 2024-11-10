@@ -47,8 +47,6 @@ class UserRegisterAPI(APIView):
             return fail("所有字段均为必填项")
         if User.objects.filter(email=email).exists():
             return fail("该邮箱已注册")
-        if(User.objects.filter(username=username).exists()):
-            return fail("该用户名已存在")
         try:
             user = User.objects.create_user(username=username, email=email, password=password)
             user.full_clean()
