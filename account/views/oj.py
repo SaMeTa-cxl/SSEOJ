@@ -1,6 +1,8 @@
 from django.contrib import auth
+from marshmallow import ValidationError
 from rest_framework.views import APIView
 
+from ..models import User
 from ..serializers import UserLoginSerializer
 from utils.api import *
 
@@ -37,7 +39,25 @@ class UserSendEmailAPI(APIView):
 
 class UserRegisterAPI(APIView):
     def post(self, request):
-        pass
+        data = request.data
+        email = data.get('email')
+        username = data.get('username')
+        password = data.get('password')
+        if not email or not username or not password:
+            return fail("所有字段均为必填项")
+        if User.objects.filter(email=email).exists():
+            return fail("该邮箱已注册")
+        if(User.objects.filter(username=username).exists()):
+            return fail("该用户名已存在")
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.full_clean()
+            user.save()
+            return success("注册成功！")
+        except Exception as e:
+            return fail(e)
+
+
 
 
 class UserInfoAPI(APIView):

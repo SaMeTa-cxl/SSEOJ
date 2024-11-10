@@ -45,3 +45,21 @@ class UserLoginTests(TestCase):
         response = self.client.get(reverse('identity_logout'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(response.data, {'err': None, 'data': '登出成功'})
+
+    def test_register_success(self):
+        data = {'email': 'def@qq.com', 'username': 'user1', 'password': '123456'}
+        response = self.client.post(reverse('identity_register'), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(response.data, {'err': None, 'data': '注册成功！'})
+
+    def test_register_fail1(self):
+        data = {'email': 'def@qq.com', 'password': '123456'}
+        response = self.client.post(reverse('identity_register'), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(response.data, {'err': 'error', 'msg': '所有字段均为必填项'})
+
+    def test_register_fail2(self):
+        data = {'email': 'abc@qq.com', 'username': 'user1', 'password': '123456'}
+        response = self.client.post(reverse('identity_register'), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(response.data, {'err': 'error', 'msg': '该邮箱已注册'})
