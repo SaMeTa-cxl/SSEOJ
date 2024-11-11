@@ -11,7 +11,7 @@ urlpatterns = [
     path("problem/submit/", ProblemSubmitAPI.as_view(), name="problem_submit"),
     path("solution/create/", ProblemSolutionCreateAPI.as_view(), name="problem_solutions_create"),
     path("problemlist/", ProblemListAPI.as_view(), name="problem_list"),
-    path("problemlist/<int:problemlist_id>/", ProblemListDetaiAPI.as_view(), name="problem_list_detail"),
+    path("problemlist/<int:problemlist_id>/", ProblemListDetailAPI.as_view(), name="problem_list_detail"),
     path("problemlist/star/", ProblemListStarAPI.as_view(), name="problem_list_star"),
     path("problemset/", ProblemsetAPI.as_view(), name="problemset"),
 ]

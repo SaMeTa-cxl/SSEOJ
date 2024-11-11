@@ -1,9 +1,21 @@
 from rest_framework.views import APIView
 
+from problem.models import Problem
+from problem.serializers import ProblemSerializer
+from utils.api import success
+
 
 class ProblemDescriptionAPI(APIView):
-    def get(self, request, problem_id):
-        pass
+    @staticmethod
+    def get(request, problem_id):
+        problem = Problem.objects.get(id=problem_id)
+        serializer = ProblemSerializer(problem)
+        response_data = serializer.data
+        response_data['similar_problems'] = problem.get_similar_problems(request.user)
+        response_data['pass_status'] = problem.get_pass_status(request.user)
+        response_data['star_status'] = problem.get_star_status(request.user)
+        print(response_data)
+        return success(serializer.data)
 
 
 class ProblemSolutionsAPI(APIView):
@@ -26,7 +38,7 @@ class ProblemListAPI(APIView):
         pass
 
 
-class ProblemListDetaiAPI(APIView):
+class ProblemListDetailAPI(APIView):
     def get(self, request, problemlist_id):
         pass
 
