@@ -14,8 +14,7 @@ class ProblemDescriptionAPI(APIView):
         response_data['similar_problems'] = problem.get_similar_problems(request.user)
         response_data['pass_status'] = problem.get_pass_status(request.user)
         response_data['star_status'] = problem.get_star_status(request.user)
-        print(response_data)
-        return success(serializer.data)
+        return success(response_data)
 
 
 class ProblemSolutionsAPI(APIView):

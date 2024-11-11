@@ -60,9 +60,9 @@ class ProblemDescriptionTestCase(TestCase):
         """
         # 添加2个有类似tag的题目
         problem2 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 2"})
-        problem2.tags.add(self.tag1, self.tag2)
+        problem2.tags.add(self.tag1)
         problem3 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 3"})
-        problem3.tags.add(self.tag2)
+        problem3.tags.add(self.tag2, self.tag1)
         problem3.pass_users.add(self.user)
 
         self.login()
@@ -80,6 +80,12 @@ class ProblemDescriptionTestCase(TestCase):
         self.assertEqual(tags, [self.tag1.id, self.tag2.id])
 
         # 测试similar_problem
+        similar_problems = self.data['similar_problems']
+        self.assertEqual(len(similar_problems), 2)
+        self.assertEqual(similar_problems[0]['id'], problem3.id)
+        self.assertEqual(similar_problems[1]['id'], problem2.id)
+        self.assertEqual(similar_problems[0]['pass_status'], True)
+        self.assertEqual(similar_problems[1]['pass_status'], False)
 
     def test_pass_status(self):
         """
@@ -114,3 +120,4 @@ class ProblemDescriptionTestCase(TestCase):
 
         self.assertEqual(self.data['star_status'], None)
         self.assertEqual(self.data['pass_status'], None)
+        self.assertEqual(self.data['similar_problems'], None)
