@@ -39,10 +39,10 @@ class UserSendEmailAPI(APIView):
         if user_id == None:
             user = auth.authenticate(email=email)
             if not user:
-                return success({"verification_code": "888888"})
+                return success({"verification_code": "999999"})
             else:
                 user_id = user.id
-                return success({"verification_code": "999999", "user_id": user_id})
+                return success({"verification_code": "888888", "user_id": user_id})
 
         else:
             user = auth.authenticate(email=email, user_id=user_id)
