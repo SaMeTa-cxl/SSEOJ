@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.db.models import Count
 
 from account.models import User
 
@@ -18,6 +19,9 @@ class Tag(models.Model):
 
     class Meta:
         db_table = 'tag'
+
+    def __str__(self):
+        return self.name
 
 
 class Problem(models.Model):
@@ -49,13 +53,42 @@ class Problem(models.Model):
     attempt_cnt = models.IntegerField(default=0)
     source = models.TextField(null=True, blank=True)
     star_cnt = models.IntegerField(default=0)
-    star_users = models.ManyToManyField(User, related_name='problems')
+    star_users = models.ManyToManyField(User, related_name='star_problems')
+    pass_users = models.ManyToManyField(User, related_name='pass_problems')
     create_time = models.DateTimeField(auto_now_add=True)
     check_status = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'problem'
         ordering = ('create_time',)
+
+    def get_pass_status(self, user):
+        if user.is_authenticated:
+            return self.pass_users.contains(user)
+        else:
+            return None
+
+    def get_star_status(self, user):
+        if user.is_authenticated:
+            return self.star_users.contains(user)
+        else:
+            return None
+
+    def get_similar_problems(self, user):
+        similar_problems = (
+            Problem.objects
+            .exclude(id=self.id)
+            .filter(tags__in=self.tags.all())
+            .annotate(similarity=Count('tags'))
+            .order_by('-similarity')[:4]
+        )
+
+        similar_problems = list(similar_problems.values())
+        needed_fields = ['id', 'name', 'difficulty', 'pass_status', ]
+        for i, problem in enumerate(similar_problems):
+            problem['pass_status'] = user in Problem.objects.get(id=problem['id']).pass_users.all()
+            similar_problems[i] = {key: problem[key] for key in needed_fields}
+        return similar_problems
 
 
 class ProblemList(models.Model):
@@ -86,6 +119,7 @@ class Solution(models.Model):
     like_count = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
     create_time = models.DateTimeField(auto_now_add=True)
+    last_update_time = models.DateTimeField(null=True)
     tags = models.ManyToManyField(Tag)
     check_status = models.BooleanField(default=False)
     create_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create_solutions')
