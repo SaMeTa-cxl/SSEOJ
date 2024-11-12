@@ -144,7 +144,17 @@ class SolutionTestCase(TestCase):
         User.objects.all().delete()
         Solution.objects.all().delete()
 
+    def test_problem_get_fail(self):
+        self.client.login(email="123@qq.com", password="123456")
+        msg = self.client.get(reverse("problem_solutions", args=[100])).data['msg']
+        self.assertEqual(msg, '该题目不存在！')
+
+    def test_user_unauthorized(self):
+        msg = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['msg']
+        self.assertEqual(msg, '用户未登录')
+
     def test_success(self):
+        self.client.login(email="123@qq.com", password="123456")
         data = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['data']
         self.assertEqual(len(data), 2)
         self.assertEqual(self.solution1.id, data[0]['id'])

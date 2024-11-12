@@ -32,9 +32,12 @@ class ProblemSolutionsAPI(APIView):
         获取id为problem_id的题目的所有题解信息，其中详细内容被截断为最多200个字符
         返回为一个字典列表，每个字典为一个题解的信息
         """
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return fail('用户未登录')
-        problem = Problem.objects.get(id=problem_id)
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist:
+            return fail('该题目不存在！')
         solutions = problem.solutions.all()
         print(SolutionSerializer(solutions, many=True).data)
         return success(SolutionSerializer(solutions, many=True).data)
