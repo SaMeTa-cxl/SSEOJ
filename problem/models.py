@@ -20,6 +20,9 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tag'
 
+    def __str__(self):
+        return self.name
+
 
 class Problem(models.Model):
     name = models.CharField(max_length=20, unique=True)
@@ -118,6 +121,7 @@ class Solution(models.Model):
     like_count = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
     create_time = models.DateTimeField(auto_now_add=True)
+    last_update_time = models.DateTimeField(null=True)
     tags = models.ManyToManyField(Tag)
     check_status = models.BooleanField(default=False)
     create_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='create_solutions')

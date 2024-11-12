@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from account.models import User
-from problem.models import Problem, TagType, Tag
+from problem.models import Problem, TagType, Tag, Solution
 
 DEFAULT_PROBLEM_DATA = {
     'name': 'Test Problem 1',
@@ -77,7 +77,7 @@ class ProblemDescriptionTestCase(TestCase):
         self.assertEqual(sample['input'], ["1 2", "2 3"])
         # 测试tags无误
         tags = self.data['tags']
-        self.assertEqual(tags, [self.tag1.id, self.tag2.id])
+        self.assertEqual(tags, [self.tag1.name, self.tag2.name])
 
         # 测试similar_problem
         similar_problems = self.data['similar_problems']
@@ -121,3 +121,28 @@ class ProblemDescriptionTestCase(TestCase):
         self.assertEqual(self.data['star_status'], None)
         self.assertEqual(self.data['pass_status'], None)
         self.assertEqual(self.data['similar_problems'], None)
+
+
+class SolutionTestCase(TestCase):
+    def setUp(self):
+        self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
+        self.user = User.objects.create_user(username="test", email="123@qq.com", password="123456")
+        self.solution1 = Solution.objects.create(content="content1", problem=self.problem, create_user=self.user)
+        self.solution2 = Solution.objects.create(content="content2", problem=self.problem, create_user=self.user)
+
+    def tearDown(self):
+        Problem.objects.all().delete()
+        User.objects.all().delete()
+        Solution.objects.all().delete()
+
+    def test_success(self):
+        data = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['data']
+        self.assertEqual(len(data), 2)
+        self.assertEqual(self.solution1.id, data[0]['id'])
+        self.assertEqual(self.solution1.content, data[0]['content'])
+
+        # 测试题解信息截断
+        self.solution1.content = "content1" * 100
+        self.solution1.save()
+        data = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['data']
+        self.assertEqual(len(data[0]['content']), 200)
