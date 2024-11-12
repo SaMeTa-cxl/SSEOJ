@@ -44,8 +44,18 @@ class ProblemSolutionsAPI(APIView):
 
 
 class ProblemSolutionsDetailAPI(APIView):
-    def get(self, request, problem_id, solution_id):
-        pass
+    @staticmethod
+    def get(request, problem_id, solution_id):
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist:
+            return fail('该题目不存在！')
+        try:
+            solution = problem.solutions.get(id=solution_id)
+        except Solution.DoesNotExist:
+            return fail('该题解不存在')
+
+        return success(solution.content)
 
 
 class ProblemSubmissionsAPI(APIView):

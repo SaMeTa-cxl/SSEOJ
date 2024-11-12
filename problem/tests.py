@@ -165,3 +165,9 @@ class SolutionTestCase(TestCase):
         self.solution1.save()
         data = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['data']
         self.assertEqual(len(data[0]['content']), 200)
+
+    def test_full_content(self):
+        self.solution1.content = "content1" * 100
+        self.solution1.save()
+        data = self.client.get(reverse("problem_solutions_detail", args=[self.problem.id, self.solution1.id])).data['data']
+        self.assertEqual(len(data), 800)
