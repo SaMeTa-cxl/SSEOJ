@@ -122,6 +122,10 @@ class ProblemDescriptionTestCase(TestCase):
         self.assertEqual(self.data['pass_status'], None)
         self.assertEqual(self.data['similar_problems'], None)
 
+    def test_problem_get_fail(self):
+        data = self.client.get(reverse('problem_description', args=[100])).data
+        self.assertEqual(data['msg'], '该题目不存在！')
+
 
 class SolutionTestCase(TestCase):
     def setUp(self):

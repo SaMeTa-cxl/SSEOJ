@@ -2,13 +2,16 @@ from rest_framework.views import APIView
 
 from problem.models import Problem, Solution
 from problem.serializers import ProblemSerializer, SolutionSerializer
-from utils.api import success
+from utils.api import success, fail
 
 
 class ProblemDescriptionAPI(APIView):
     @staticmethod
     def get(request, problem_id):
-        problem = Problem.objects.get(id=problem_id)
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist:
+            return fail('该题目不存在！')
         serializer = ProblemSerializer(problem)
         response_data = serializer.data
         response_data['similar_problems'] = problem.get_similar_problems(request.user)
