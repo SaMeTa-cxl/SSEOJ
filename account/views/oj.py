@@ -34,7 +34,23 @@ class UserLogoutAPI(APIView):
 
 class UserSendEmailAPI(APIView):
     def get(self, request):
-        pass
+        email = request.GET.get('email')
+        user_id = request.GET.get('user_id', None)
+        if user_id == None:
+            user = auth.authenticate(email=email)
+            if not user:
+                return success({"verification_code": "888888"})
+            else:
+                user_id = user.id
+                return success({"verification_code": "999999", "user_id": user_id})
+
+        else:
+            user = auth.authenticate(email=email, user_id=user_id)
+            if not user:
+                return fail("用户状态异常！")
+            else:
+                return success({"verification_code": "777777", "user_id": user_id})
+
 
 
 class UserRegisterAPI(APIView):
