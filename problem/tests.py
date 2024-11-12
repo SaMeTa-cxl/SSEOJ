@@ -28,6 +28,9 @@ DEFAULT_PROBLEM_DATA = {
 
 
 class ProblemDescriptionTestCase(TestCase):
+    """
+    测试ProblemDescriptionAPI
+    """
     def setUp(self):
         # 准备好一个题目，设定它的tag
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
@@ -120,9 +123,11 @@ class ProblemDescriptionTestCase(TestCase):
 
         self.assertEqual(self.data['star_status'], None)
         self.assertEqual(self.data['pass_status'], None)
-        self.assertEqual(self.data['similar_problems'], None)
 
     def test_problem_get_fail(self):
+        """
+        测试访问不存在的题目
+        """
         data = self.client.get(reverse('problem_description', args=[100])).data
         self.assertEqual(data['msg'], '该题目不存在！')
 

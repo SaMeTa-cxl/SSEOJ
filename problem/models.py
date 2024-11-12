@@ -75,8 +75,6 @@ class Problem(models.Model):
             return None
 
     def get_similar_problems(self, user):
-        if not user.is_authenticated:
-            return None
         similar_problems = (
             Problem.objects
             .exclude(id=self.id)

@@ -8,6 +8,10 @@ from utils.api import success, fail
 class ProblemDescriptionAPI(APIView):
     @staticmethod
     def get(request, problem_id):
+        """
+        获取id为problem_id的题目的详细信息，包括题目的所有字段信息和请求用户的pass_status和star_status
+        注：当用户未登录时，pass_status、star_status均为None
+        """
         try:
             problem = Problem.objects.get(id=problem_id)
         except Problem.DoesNotExist:
@@ -24,6 +28,12 @@ class ProblemDescriptionAPI(APIView):
 class ProblemSolutionsAPI(APIView):
     @staticmethod
     def get(request, problem_id):
+        """
+        获取id为problem_id的题目的所有题解信息，其中详细内容被截断为最多200个字符
+        返回为一个字典列表，每个字典为一个题解的信息
+        """
+        if not request.user.is_authenticated():
+            return fail('用户未登录')
         problem = Problem.objects.get(id=problem_id)
         solutions = problem.solutions.all()
         print(SolutionSerializer(solutions, many=True).data)

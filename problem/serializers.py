@@ -28,4 +28,5 @@ class SolutionSerializer(serializers.ModelSerializer):
         exclude = ['like_users', 'check_status', 'problem', 'create_user']
 
     def get_content(self, obj):
+        # 截断题解信息，减少一次性传递的数据量
         return obj.content[:200]
