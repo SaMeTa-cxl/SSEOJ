@@ -80,7 +80,7 @@ class ProblemListAPI(APIView):
         # response_data为list,problem_list为字典
         for problem_list in response_data:
             problem_list['pass_count'] = 0
-            for problem in problem_lists[problem_list['id'] - 1].problems.all():
+            for problem in ProblemList.objects.get(id=problem_list['id']).problems.all():
                 if problem.get_pass_status(request.user):
                     problem_list['pass_count'] += 1
 
