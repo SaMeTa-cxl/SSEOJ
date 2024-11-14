@@ -63,3 +63,12 @@ class UserLoginTests(TestCase):
         response = self.client.post(reverse('identity_register'), data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(response.data, {'err': 'error', 'msg': '该邮箱已注册'})
+
+class UserSubscribeTests(TestCase):
+    def setUp(self):
+        user1 = User.objects.create_user(username='1', email='abc@qq.com', password='password')
+        user2 = User.objects.create_user(username='1', email='def@qq.com', password='password')
+
+    def test_subscribe_success(self):
+        self.client.login(email='abc@qq.com', password='password')
+
