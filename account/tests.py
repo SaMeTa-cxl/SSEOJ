@@ -71,7 +71,10 @@ class UserSubscribeTests(TestCase):
         self.client.login(email='abc@qq.com', password='password')
         following_user = User.objects.create_user(username='1', email='def@qq.com', password='password')
         in_data = {'user_id': following_user.id, 'relationship': 1}
-        data = self.client.post(reverse('user_subscribe'), data=in_data)
-        self.assertEqual(data.status_code, status.HTTP_200_OK)
+        response = self.client.post(reverse('user_subscribe'), data=in_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print(response.data)
+        self.assertEqual(response.data['data'], "关注成功")
+        self.assertEqual(response.data['err'], None)
         self.assertTrue(Following.objects.filter(follower=self.user, following=following_user).exists())
 
