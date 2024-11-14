@@ -134,7 +134,31 @@ class UserFollowingAPI(APIView):
 
 class UserFollowerAPI(APIView):
     def get(self, request, user_id):
-        pass
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            raise NotFound("User not found!")
+
+        following_records = Following.objects.filter(following=user)
+        res = []
+        for record in following_records:
+            following_user = record.following
+            is_mutual_following = Following.objects.get(follower=user, following=following_user).exists()
+            is_following_me = is_mutual_following
+            is_followed_by_me = True
+            # 后面这两个有点问题，目前写的只针对查看自己的粉丝列表
+
+            res.append(
+                {
+                    'user_id': following_user.id,
+                    'user_name': following_user.username,
+                    'profile': following_user.profile,
+                    'is_mutual_following': is_mutual_following,
+                    'is_following_me': is_following_me,
+                    'is_followed_by_me': is_followed_by_me
+                }
+            )
+        return success(res)
 
 
 class UserInfoChangeAPI(APIView):
