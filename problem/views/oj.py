@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, F
 from rest_framework.views import APIView
 
 from problem.models import Problem, Solution, ProblemList
@@ -107,7 +107,17 @@ class ProblemListDetailAPI(APIView):
 
 class ProblemListStarAPI(APIView):
     def post(self, request):
-        pass
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        problem_list = ProblemList.objects.get(id=request.data['problemlist_id'])
+        if problem_list.star_users.contains(request.user):
+            problem_list.star_users.remove(request.user)
+            problem_list.remove_star_count()
+            return success('取消收藏！')
+        else:
+            problem_list.star_users.add(request.user)
+            problem_list.add_star_count()
+            return success('收藏成功！')
 
 
 class ProblemSubmitAPI(APIView):

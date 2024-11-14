@@ -119,6 +119,14 @@ class ProblemList(models.Model):
     def get_star_status(self, user):
         return self.star_users.contains(user)
 
+    def add_star_count(self):
+        self.star_count = models.F('star_count') + 1
+        self.save(update_fields=['star_count'])
+
+    def remove_star_count(self):
+        self.star_count = models.F('star_count') - 1
+        self.save(update_fields=['star_count'])
+
     class Meta:
         db_table = 'problem_list'
 
