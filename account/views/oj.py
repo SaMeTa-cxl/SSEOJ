@@ -106,6 +106,8 @@ class UserSubscribeAPI(APIView):
 class UserFollowingAPI(APIView):
     def get(self, request, user_id):
         try:
+            myid = request.data.get('user_id')
+            myself = User.objects.get(user_id=myid)
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
             raise NotFound("User not found!")
@@ -115,9 +117,8 @@ class UserFollowingAPI(APIView):
         for record in following_records:
             following_user = record.following
             is_mutual_following = Following.objects.get(follower=following_user, following=user).exists()
-            is_following_me = is_mutual_following
-            is_followed_by_me = True
-            #后面这两个有点问题，目前写的只针对查看自己的关注列表
+            is_following_me = Following.objects.get(follower=following_user, following=myself).exists()
+            is_followed_by_me = Following.objects.get(follower=myself, following=following_user).exists()
 
             res.append(
                 {
@@ -135,6 +136,8 @@ class UserFollowingAPI(APIView):
 class UserFollowerAPI(APIView):
     def get(self, request, user_id):
         try:
+            myid = request.data.get('user_id')
+            myself = User.objects.get(user_id=myid)
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
             raise NotFound("User not found!")
@@ -144,9 +147,8 @@ class UserFollowerAPI(APIView):
         for record in following_records:
             following_user = record.following
             is_mutual_following = Following.objects.get(follower=user, following=following_user).exists()
-            is_following_me = is_mutual_following
-            is_followed_by_me = True
-            # 后面这两个有点问题，目前写的只针对查看自己的粉丝列表
+            is_following_me = Following.objects.get(follower=following_user, following=myself).exists()
+            is_followed_by_me = Following.objects.get(follower=myself, following=following_user).exists()
 
             res.append(
                 {
