@@ -83,11 +83,10 @@ class UserInfoAPI(APIView):
 class UserSubscribeAPI(APIView):
     def post(self, request):
         user_id = request.COOKIES.get('user_id')
-        following_user_id = request.data.get('user_id')
+        following_user_id = request.data.get('id')
         relationship = request.data.get('relationship')
-        print(relationship)
 
-        if relationship != 0 and relationship != 1:
+        if relationship not in ["0", "1"]:
             return fail("Invalid relationship status")
 
         try:
