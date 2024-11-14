@@ -66,10 +66,10 @@ class UserLoginTests(TestCase):
 
 class UserSubscribeTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='1', email='abc@qq.com', password='password')
+        self.user = User.objects.create_user(username='1', email='abc@qq.com', password='123')
     def test_subscribe_success(self):
-        self.client.login(email='abc@qq.com', password='password')
-        following_user = User.objects.create_user(username='1', email='def@qq.com', password='password')
+        self.client.login(email='abc@qq.com', password='123')
+        following_user = User.objects.create_user(username='1', email='def@qq.com', password='456')
         in_data = {'user_id': following_user.id, 'relationship': 1}
         response = self.client.post(reverse('user_subscribe'), data=in_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -85,13 +85,14 @@ class UserSubscribeAPI(APIView):
         user_id = request.COOKIES.get('user_id')
         following_user_id = request.data.get('user_id')
         relationship = request.data.get('relationship')
+        print(relationship)
 
-        if relationship not in [0, 1]:
+        if relationship != 0 and relationship != 1:
             return fail("Invalid relationship status")
 
         try:
-            user = User.objects.get(user_id=user_id)
-            following_user = User.objects.get(user_id=following_user_id)
+            user = User.objects.get(id=user_id)
+            following_user = User.objects.get(id=following_user_id)
         except User.DoesNotExist:
             raise NotFound("User or Following user does not exist")
 
@@ -107,8 +108,8 @@ class UserFollowingAPI(APIView):
     def get(self, request, user_id):
         try:
             myid = request.data.get('user_id')
-            myself = User.objects.get(user_id=myid)
-            user = User.objects.get(user_id=user_id)
+            myself = User.objects.get(id=myid)
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             raise NotFound("User not found!")
 
@@ -137,8 +138,8 @@ class UserFollowerAPI(APIView):
     def get(self, request, user_id):
         try:
             myid = request.data.get('user_id')
-            myself = User.objects.get(user_id=myid)
-            user = User.objects.get(user_id=user_id)
+            myself = User.objects.get(id=myid)
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             raise NotFound("User not found!")
 
