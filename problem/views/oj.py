@@ -76,6 +76,7 @@ class ProblemListAPI(APIView):
                 problem_list['pass_count'] = None
             return success(response_data)
 
+        problem_lists = problem_lists.exclude(create_user=request.user)
         # response_data为list,problem_list为字典
         for problem_list in response_data:
             problem_list['pass_count'] = 0
