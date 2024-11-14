@@ -90,8 +90,8 @@ class UserSubscribeAPI(APIView):
             return fail("Invalid relationship status")
 
         try:
-            user = User.objects.get(id=user_id)
-            following_user = User.objects.get(id=following_user_id)
+            user = User.objects.get(user_id=user_id)
+            following_user = User.objects.get(user_id=following_user_id)
         except User.DoesNotExist:
             raise NotFound("User or Following user does not exist")
 
@@ -106,7 +106,7 @@ class UserSubscribeAPI(APIView):
 class UserFollowingAPI(APIView):
     def get(self, request, user_id):
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
             raise NotFound("User not found!")
 
