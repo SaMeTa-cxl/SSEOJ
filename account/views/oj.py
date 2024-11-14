@@ -82,7 +82,7 @@ class UserInfoAPI(APIView):
 
 class UserSubscribeAPI(APIView):
     def post(self, request):
-        user_id = request.COOKIES.get('user_id')
+        user_id = request.COOKIES.get('user_id', None)
         following_user_id = request.data.get('id')
         relationship = request.data.get('relationship')
 
@@ -95,7 +95,7 @@ class UserSubscribeAPI(APIView):
         except User.DoesNotExist:
             raise NotFound("User or Following user does not exist")
 
-        if relationship == 1:
+        if relationship == "1":
             following_record, created = Following.objects.get_or_create(follower=user, following=following_user)
             return success("关注成功")
         else:

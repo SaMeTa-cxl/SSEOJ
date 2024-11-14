@@ -69,12 +69,11 @@ class UserSubscribeTests(TestCase):
         self.user = User.objects.create_user(username='1', email='abc@qq.com', password='123')
     def test_subscribe_success(self):
         self.client.login(email='abc@qq.com', password='123')
+        self.client.cookies['user_id'] = self.user.id
         following_user = User.objects.create_user(username='1', email='def@qq.com', password='456')
-        in_data = {'id': following_user.id, 'relationship': 1}
-        response = self.client.post(reverse('user_subscribe'), data=in_data)
-        print(response)
+        in_data = {'id': following_user.id, 'relationship': "1"}
+        response = self.client.post(reverse('user_subscribe'), in_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response.data)
         self.assertEqual(response.data['data'], "关注成功")
         self.assertEqual(response.data['err'], None)
         self.assertTrue(Following.objects.filter(follower=self.user, following=following_user).exists())
