@@ -100,14 +100,21 @@ class ProblemList(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     last_update_time = models.DateTimeField(null=True)
     summary = models.TextField(blank=True)
-    difficulty = models.IntegerField(default=1)
+    difficulty = models.IntegerField(default=0)
     problems = models.ManyToManyField(Problem, related_name='problem_lists')
 
-    def calculate_difficulty(self):
+    def add_problem(self, new_problem):
         """
-        计算题单整体难度，使用简单的计算平均数然后四舍五入的方法，返回一个1~4的整数作为难度
+        添加一个新题目，并且更新题目数和难度字段
         """
-        pass
+        self.problem_count += 1
+        avg_difficulty = 0
+        self.problems.add(new_problem)
+        for problem in self.problems.all():
+            avg_difficulty += problem.difficulty
+        avg_difficulty /= self.problem_count
+        self.difficulty = round(avg_difficulty)
+        self.save(update_fields=['problem_count', 'difficulty', ])
 
     class Meta:
         db_table = 'problem_list'

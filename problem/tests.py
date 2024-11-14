@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from account.models import User
-from problem.models import Problem, TagType, Tag, Solution
+from problem.models import Problem, TagType, Tag, Solution, ProblemList
 
 DEFAULT_PROBLEM_DATA = {
     'name': 'Test Problem 1',
@@ -31,6 +31,7 @@ class ProblemDescriptionTestCase(TestCase):
     """
     测试ProblemDescriptionAPI
     """
+
     def setUp(self):
         # 准备好一个题目，设定它的tag
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
@@ -145,17 +146,23 @@ class SolutionTestCase(TestCase):
         Solution.objects.all().delete()
 
     def test_problem_get_fail(self):
+        # 测试题目获取失败
         self.client.login(email="123@qq.com", password="123456")
         msg = self.client.get(reverse("problem_solutions", args=[100])).data['msg']
         self.assertEqual(msg, '该题目不存在！')
 
     def test_user_unauthorized(self):
+        # 测试用户未登录
         msg = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['msg']
         self.assertEqual(msg, '用户未登录')
 
     def test_success(self):
+        # 测试正常成功获取
         self.client.login(email="123@qq.com", password="123456")
         data = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['data']
+        needed_fields = ['id', 'username', 'avatar']
+        for field in needed_fields:
+            self.assertIsNotNone(data[0]['user_info'][field])
         self.assertEqual(len(data), 2)
         self.assertEqual(self.solution1.id, data[0]['id'])
         self.assertEqual(self.solution1.content, data[0]['content'])
@@ -167,7 +174,29 @@ class SolutionTestCase(TestCase):
         self.assertEqual(len(data[0]['content']), 200)
 
     def test_full_content(self):
+        # 测试完整的题解内容
         self.solution1.content = "content1" * 100
         self.solution1.save()
         data = self.client.get(reverse("problem_solutions_detail", args=[self.problem.id, self.solution1.id])).data['data']
         self.assertEqual(len(data), 800)
+
+
+class ProblemListTestCase(TestCase):
+    def setUp(self):
+        self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
+        self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
+        self.problem_list = ProblemList.objects.create(title='title', create_user=self.user)
+        self.problem_list.add_problem(self.problem)
+
+    def test_success(self):
+        request_data = {'keyword': '', 'page_num': 1, 'page_size': 10}
+        data = self.client.get(reverse("problem_list"), request_data).data['data']
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['title'], self.problem_list.title)
+        self.assertIsNone(data[0]['pass_count'])
+        self.assertEqual(self.problem_list.difficulty, 1)
+
+        self.client.login(email="123@qq.com", password="123")
+        self.problem.pass_users.add(self.user)
+        data = self.client.get(reverse("problem_list"), request_data).data['data']
+        self.assertEqual(data[0]['pass_count'], 1)

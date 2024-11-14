@@ -1,8 +1,9 @@
+from django.db.models import Q
 from rest_framework.views import APIView
 
-from problem.models import Problem, Solution
-from problem.serializers import ProblemSerializer, SolutionSerializer
-from utils.api import success, fail
+from problem.models import Problem, Solution, ProblemList
+from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer
+from utils.api import success, fail, paginate_data
 
 
 class ProblemDescriptionAPI(APIView):
@@ -65,7 +66,22 @@ class ProblemSubmissionsAPI(APIView):
 
 class ProblemListAPI(APIView):
     def get(self, request):
-        pass
+        keyword = request.GET.get('keyword', '')
+        problem_lists = ProblemList.objects.filter(Q(title__icontains=keyword) | Q(summary__icontains=keyword))
+        response_data = paginate_data(request, problem_lists, ProblemListSerializer)
+        if not request.user.is_authenticated:
+            for problem_list in response_data:
+                problem_list['pass_count'] = None
+            return success(response_data)
+
+        # response_data为list,problem_list为字典
+        for problem_list in response_data:
+            problem_list['pass_count'] = 0
+            for problem in problem_lists[problem_list['id'] - 1].problems.all():
+                if problem.get_pass_status(request.user):
+                    problem_list['pass_count'] += 1
+
+        return success(response_data)
 
 
 class ProblemListDetailAPI(APIView):
