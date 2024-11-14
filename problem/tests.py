@@ -189,6 +189,11 @@ class ProblemListTestCase(TestCase):
         self.problem_list = ProblemList.objects.create(title='title', create_user=another_user, is_public=True)
         self.problem_list.add_problem(self.problem)
 
+    def tearDown(self):
+        ProblemList.objects.all().delete()
+        Problem.objects.all().delete()
+        User.objects.all().delete()
+
     def test_success(self):
         request_data = {'keyword': '', 'page_num': 1, 'page_size': 10}
         data = self.client.get(reverse("problem_list"), request_data).data['data']
@@ -209,6 +214,11 @@ class ProblemListDetailTestCase(TestCase):
         self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
         self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
         self.problem_list.add_problem(self.problem)
+
+    def tearDown(self):
+        ProblemList.objects.all().delete()
+        Problem.objects.all().delete()
+        User.objects.all().delete()
 
     def test_user_unauthorized(self):
         msg = self.client.get(reverse("problem_list_detail", args=[self.problem_list.id])).data['msg']
@@ -232,15 +242,20 @@ class ProblemListStarTestCase(TestCase):
         self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
         self.problem_list.add_problem(self.problem)
 
+    def tearDown(self):
+        ProblemList.objects.all().delete()
+        Problem.objects.all().delete()
+        User.objects.all().delete()
+
     def test_success(self):
         self.client.login(email="123@qq.com", password="123")
-        data = self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem.id}).data['data']
+        data = self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem_list.id}).data['data']
         self.assertEqual(data, '收藏成功！')
         self.assertTrue(self.problem_list.star_users.contains(self.user))
         self.problem_list.refresh_from_db()
         self.assertEqual(self.problem_list.star_count, 1)
 
-        data = self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem.id}).data['data']
+        data = self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem_list.id}).data['data']
         self.assertEqual(data, '取消收藏！')
         self.assertFalse(self.problem_list.star_users.contains(self.user))
         self.problem_list.refresh_from_db()
