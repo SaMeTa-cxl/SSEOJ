@@ -117,13 +117,13 @@ class UserFollowingAPI(APIView):
             is_mutual_following = Following.objects.get(follower=following_user, following=user).exists()
             is_following_me = is_mutual_following
             is_followed_by_me = True
-            #后面这两个有点问题
+            #后面这两个有点问题，目前写的只针对查看自己的关注列表
 
             res.append(
                 {
                     'user_id': following_user.id,
                     'user_name': following_user.username,
-                    'profile': following_user.profile.url if hasattr(following_user, 'profile') else None,
+                    'profile': following_user.profile,
                     'is_mutual_following': is_mutual_following,
                     'is_following_me': is_following_me,
                     'is_followed_by_me': is_followed_by_me
