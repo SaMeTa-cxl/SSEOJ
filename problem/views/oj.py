@@ -1,8 +1,10 @@
+from django.db.models import Q
 from rest_framework.views import APIView
 
-from problem.models import Problem, Solution
-from problem.serializers import ProblemSerializer, SolutionSerializer
-from utils.api import success, fail
+from problem.models import Problem, Solution, ProblemList
+from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
+    ProblemListDetailSerializer
+from utils.api import success, fail, paginate_data
 
 
 class ProblemDescriptionAPI(APIView):
@@ -65,16 +67,46 @@ class ProblemSubmissionsAPI(APIView):
 
 class ProblemListAPI(APIView):
     def get(self, request):
-        pass
+        keyword = request.GET.get('keyword', '')
+        problem_lists = ProblemList.objects.filter((Q(title__icontains=keyword) | Q(summary__icontains=keyword))
+                                                   & Q(is_deleted=False) & Q(is_public=True))
+        response_data = paginate_data(request, problem_lists, ProblemListSerializer)
+        if not request.user.is_authenticated:
+            for problem_list in response_data:
+                problem_list['pass_count'] = None
+            return success(response_data)
+
+        problem_lists = problem_lists.exclude(create_user=request.user)
+        # response_data为list,problem_list为字典
+        for problem_list in response_data:
+            problem_list['pass_count'] = 0
+            for problem in problem_lists[problem_list['id'] - 1].problems.all():
+                if problem.get_pass_status(request.user):
+                    problem_list['pass_count'] += 1
+
+        return success(response_data)
 
 
 class ProblemListDetailAPI(APIView):
     def get(self, request, problemlist_id):
-        pass
+        if not request.user.is_authenticated:
+            return fail("用户未登录！")
+        try:
+            problem_list = ProblemList.objects.get(id=problemlist_id)
+        except ProblemList.DoesNotExist:
+            return fail("该题单不存在！")
+
+        response_data = ProblemListDetailSerializer(problem_list).data
+        response_data['star_status'] = problem_list.get_star_status(request.user)
+        problems = response_data['problems']
+        for problem in problems:
+            problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
+
+        return success(response_data)
 
 
 class ProblemListStarAPI(APIView):
-    def get(self, request):
+    def post(self, request):
         pass
 
 

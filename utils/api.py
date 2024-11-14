@@ -86,3 +86,28 @@ def validate_serializer(serializer):
         return handle
 
     return validate
+
+
+def paginate_data(request, query_set, object_serializer=None):
+    """
+    :param request: django的request
+    :param query_set: django model的query set或者其他list like objects
+    :param object_serializer: 用来序列化query set, 如果为None, 则直接对query set切片
+    :return:返回分页后的data
+    """
+    try:
+        page_num = int(request.GET.get("page_num", "0"))
+    except ValueError:
+        page_num = 10
+    if page_num < 0 or page_num > 250:
+        page_num = 10
+    try:
+        page_size = int(request.GET.get("page_size", "10"))
+    except ValueError:
+        page_size = 0
+    if page_size < 0:
+        page_size = 0
+    results = query_set[(page_num - 1) * page_size: page_size * page_num]
+    if object_serializer:
+        results = object_serializer(results, many=True).data
+    return results

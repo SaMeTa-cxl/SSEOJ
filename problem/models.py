@@ -97,21 +97,30 @@ class ProblemList(models.Model):
     star_users = models.ManyToManyField(User, related_name='star_problem_lists')
     star_count = models.IntegerField(default=0)
     problem_count = models.IntegerField(default=0)
-    create_time = models.DateTimeField(auto_now_add=True)
-    last_update_time = models.DateTimeField(null=True)
     summary = models.TextField(blank=True)
-    difficulty = models.IntegerField(default=1)
+    difficulty = models.IntegerField(default=0)
     problems = models.ManyToManyField(Problem, related_name='problem_lists')
+    is_deleted = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=False)
 
-    def calculate_difficulty(self):
+    def add_problem(self, new_problem):
         """
-        计算题单整体难度，使用简单的计算平均数然后四舍五入的方法，返回一个1~4的整数作为难度
+        添加一个新题目，并且更新题目数和难度字段
         """
-        pass
+        self.problem_count += 1
+        avg_difficulty = 0
+        self.problems.add(new_problem)
+        for problem in self.problems.all():
+            avg_difficulty += problem.difficulty
+        avg_difficulty /= self.problem_count
+        self.difficulty = round(avg_difficulty)
+        self.save(update_fields=['problem_count', 'difficulty', ])
+
+    def get_star_status(self, user):
+        return self.star_users.contains(user)
 
     class Meta:
         db_table = 'problem_list'
-        ordering = ('create_time', )
 
 
 class Solution(models.Model):
