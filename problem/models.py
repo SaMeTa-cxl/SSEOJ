@@ -116,6 +116,9 @@ class ProblemList(models.Model):
         self.difficulty = round(avg_difficulty)
         self.save(update_fields=['problem_count', 'difficulty', ])
 
+    def get_star_status(self, user):
+        return self.star_users.contains(user)
+
     class Meta:
         db_table = 'problem_list'
 

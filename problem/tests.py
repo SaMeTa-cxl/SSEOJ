@@ -200,3 +200,25 @@ class ProblemListTestCase(TestCase):
         self.problem.pass_users.add(self.user)
         data = self.client.get(reverse("problem_list"), request_data).data['data']
         self.assertEqual(data[0]['pass_count'], 1)
+
+
+class ProblemListDetailTestCase(TestCase):
+    def setUp(self):
+        self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
+        self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
+        self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
+        self.problem_list.add_problem(self.problem)
+
+    def test_user_unauthorized(self):
+        msg = self.client.get(reverse("problem_list_detail", args=[self.problem_list.id])).data['msg']
+        self.assertEqual(msg, "用户未登录！")
+
+    def test_problem_list_nonexistent(self):
+        self.client.login(email="123@qq.com", password="123")
+        msg = self.client.get(reverse("problem_list_detail", args=[100])).data['msg']
+        self.assertEqual(msg, "该题单不存在！")
+
+    def test_success(self):
+        self.client.login(email="123@qq.com", password="123")
+        data = self.client.get(reverse("problem_list_detail", args=[self.problem_list.id])).data['data']
+        print(data)

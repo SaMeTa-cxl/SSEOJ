@@ -2,7 +2,8 @@ from django.db.models import Q
 from rest_framework.views import APIView
 
 from problem.models import Problem, Solution, ProblemList
-from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer
+from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
+    ProblemListDetailSerializer
 from utils.api import success, fail, paginate_data
 
 
@@ -87,11 +88,24 @@ class ProblemListAPI(APIView):
 
 class ProblemListDetailAPI(APIView):
     def get(self, request, problemlist_id):
-        pass
+        if not request.user.is_authenticated:
+            return fail("用户未登录！")
+        try:
+            problem_list = ProblemList.objects.get(id=problemlist_id)
+        except ProblemList.DoesNotExist:
+            return fail("该题单不存在！")
+
+        response_data = ProblemListDetailSerializer(problem_list).data
+        response_data['star_status'] = problem_list.get_star_status(request.user)
+        problems = response_data['problems']
+        for problem in problems:
+            problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
+
+        return success(response_data)
 
 
 class ProblemListStarAPI(APIView):
-    def get(self, request):
+    def post(self, request):
         pass
 
 

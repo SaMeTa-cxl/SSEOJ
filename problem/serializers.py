@@ -24,6 +24,13 @@ class ProblemSerializer(serializers.ModelSerializer):
         model = Problem
         exclude = ['star_users', 'pass_users', 'check_status']
 
+    def __init__(self, *args, **kwargs):
+        needed_fields = kwargs.pop('needed_fields', None)
+        super(ProblemSerializer, self).__init__(*args, **kwargs)
+        if needed_fields:
+            for field in set(self.fields.keys()) - set(needed_fields):
+                self.fields.pop(field)
+
 
 class SolutionSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
@@ -46,3 +53,12 @@ class ProblemListSerializer(serializers.ModelSerializer):
         model = ProblemList
         fields = ['id', 'title', 'difficulty', 'problem_count', 'star_count', 'creator']
 
+
+class ProblemListDetailSerializer(serializers.ModelSerializer):
+    creator_info = UserSerializer(source='create_user', read_only=True, needed_fields=['id', 'username'])
+    problems = ProblemSerializer(many=True, read_only=True, needed_fields=['id', 'name', 'difficulty',
+                                                                           'tags', 'pass_count', 'attempt_count'])
+
+    class Meta:
+        model = ProblemList
+        fields = ['id', 'title', 'summary', 'creator_info', 'problems']
