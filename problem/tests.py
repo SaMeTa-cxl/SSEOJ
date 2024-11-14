@@ -185,7 +185,7 @@ class ProblemListTestCase(TestCase):
     def setUp(self):
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
         self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
-        self.problem_list = ProblemList.objects.create(title='title', create_user=self.user)
+        self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
         self.problem_list.add_problem(self.problem)
 
     def test_success(self):

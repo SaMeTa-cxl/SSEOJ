@@ -67,7 +67,8 @@ class ProblemSubmissionsAPI(APIView):
 class ProblemListAPI(APIView):
     def get(self, request):
         keyword = request.GET.get('keyword', '')
-        problem_lists = ProblemList.objects.filter(Q(title__icontains=keyword) | Q(summary__icontains=keyword))
+        problem_lists = ProblemList.objects.filter((Q(title__icontains=keyword) | Q(summary__icontains=keyword))
+                                                   & Q(is_deleted=False) & Q(is_public=True))
         response_data = paginate_data(request, problem_lists, ProblemListSerializer)
         if not request.user.is_authenticated:
             for problem_list in response_data:
