@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from .models import User
+from .models import User, Following
 
 
 class UserLoginTests(TestCase):
@@ -66,9 +66,12 @@ class UserLoginTests(TestCase):
 
 class UserSubscribeTests(TestCase):
     def setUp(self):
-        user1 = User.objects.create_user(username='1', email='abc@qq.com', password='password')
-        user2 = User.objects.create_user(username='1', email='def@qq.com', password='password')
-
+        self.user = User.objects.create_user(username='1', email='abc@qq.com', password='password')
     def test_subscribe_success(self):
         self.client.login(email='abc@qq.com', password='password')
+        following_user = User.objects.create_user(username='1', email='def@qq.com', password='password')
+        in_data = {'user_id': following_user.id, 'relationship': 1}
+        data = self.client.post(reverse('user_subscribe'), data=in_data)
+        self.assertEqual(data.status_code, status.HTTP_200_OK)
+        self.assertTrue(Following.objects.filter(follower=self.user, following=following_user).exists())
 
