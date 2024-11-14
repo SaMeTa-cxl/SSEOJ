@@ -223,3 +223,25 @@ class ProblemListDetailTestCase(TestCase):
         self.client.login(email="123@qq.com", password="123")
         data = self.client.get(reverse("problem_list_detail", args=[self.problem_list.id])).data['data']
         print(data)
+
+
+class ProblemListStarTestCase(TestCase):
+    def setUp(self):
+        self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
+        self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
+        self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
+        self.problem_list.add_problem(self.problem)
+
+    def test_success(self):
+        self.client.login(email="123@qq.com", password="123")
+        data = self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem.id}).data['data']
+        self.assertEqual(data, '收藏成功！')
+        self.assertTrue(self.problem_list.star_users.contains(self.user))
+        self.problem_list.refresh_from_db()
+        self.assertEqual(self.problem_list.star_count, 1)
+
+        data = self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem.id}).data['data']
+        self.assertEqual(data, '取消收藏！')
+        self.assertFalse(self.problem_list.star_users.contains(self.user))
+        self.problem_list.refresh_from_db()
+        self.assertEqual(self.problem_list.star_count, 0)
