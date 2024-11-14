@@ -97,11 +97,11 @@ class ProblemList(models.Model):
     star_users = models.ManyToManyField(User, related_name='star_problem_lists')
     star_count = models.IntegerField(default=0)
     problem_count = models.IntegerField(default=0)
-    create_time = models.DateTimeField(auto_now_add=True)
-    last_update_time = models.DateTimeField(null=True)
     summary = models.TextField(blank=True)
     difficulty = models.IntegerField(default=0)
     problems = models.ManyToManyField(Problem, related_name='problem_lists')
+    is_deleted = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=False)
 
     def add_problem(self, new_problem):
         """
@@ -118,7 +118,6 @@ class ProblemList(models.Model):
 
     class Meta:
         db_table = 'problem_list'
-        ordering = ('create_time', )
 
 
 class Solution(models.Model):
