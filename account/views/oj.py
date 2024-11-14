@@ -1,8 +1,9 @@
 from django.contrib import auth
 from marshmallow import ValidationError
 from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound
 
-from ..models import User
+from ..models import User, Following
 from ..serializers import UserLoginSerializer
 from utils.api import *
 
@@ -38,17 +39,17 @@ class UserSendEmailAPI(APIView):
         user_id = request.GET.get('user_id', None)
         if user_id == None:
             user = auth.authenticate(email=email)
-            if not user:
+            if not user:    #用户未注册，使用邮箱验证码注册新账号
                 return success({"verification_code": "999999"})
-            else:
+            else:   #用户已注册，使用邮箱验证码登录
                 user_id = user.id
                 return success({"verification_code": "888888", "user_id": user_id})
 
-        else:
+        else:   #用户已登录
             user = auth.authenticate(email=email, user_id=user_id)
-            if not user:
+            if not user:    #理论上不会出现
                 return fail("用户状态异常！")
-            else:
+            else:   #用户已登录，使用邮箱验证码修改密码等
                 return success({"verification_code": "777777", "user_id": user_id})
 
 
@@ -81,7 +82,25 @@ class UserInfoAPI(APIView):
 
 class UserSubscribeAPI(APIView):
     def post(self, request):
-        pass
+        user_id = request.COOKIES.get('user_id')
+        following_user_id = request.data.get('user_id')
+        relationship = request.data.get('relationship')
+
+        if relationship not in [0, 1]:
+            return fail("Invalid relationship status")
+
+        try:
+            user = User.objects.get(id=user_id)
+            following_user = User.objects.get(id=following_user_id)
+        except User.DoesNotExist:
+            raise NotFound("User or Following user does not exist")
+
+        if relationship == 1:
+            following_record, created = Following.objects.get_or_create(follower=user, following=following_user)
+            return success("关注成功")
+        else:
+            Following.objects.filter(follower=user, following=following_user).delete()
+            return success("取消关注成功")
 
 
 class UserFollowingAPI(APIView):
