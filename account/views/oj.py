@@ -82,7 +82,7 @@ class UserInfoAPI(APIView):
 
 class UserSubscribeAPI(APIView):
     def post(self, request):
-        # user_id = request.COOKIES.get('user_id', None)
+        if not request.user.is_authenticated: return
         user_id = request.user.id
         following_user_id = request.data.get('id')
         relationship = request.data.get('relationship')
