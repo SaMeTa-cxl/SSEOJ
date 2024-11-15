@@ -69,7 +69,7 @@ class UserSubscribeTests(TestCase):
         self.user = User.objects.create_user(username='1', email='abc@qq.com', password='123')
     def test_subscribe_success(self):
         self.client.login(email='abc@qq.com', password='123')
-        self.client.cookies['user_id'] = self.user.id
+        # self.client.cookies['user_id'] = self.user.id
         following_user = User.objects.create_user(username='1', email='def@qq.com', password='456')
         in_data = {'id': following_user.id, 'relationship': "1"}
         response = self.client.post(reverse('user_subscribe'), in_data)
