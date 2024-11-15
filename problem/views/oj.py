@@ -70,16 +70,18 @@ class ProblemListAPI(APIView):
         keyword = request.GET.get('keyword', '')
         problem_lists = ProblemList.objects.filter((Q(title__icontains=keyword) | Q(summary__icontains=keyword))
                                                    & Q(is_deleted=False) & Q(is_public=True))
-        response_data = paginate_data(request, problem_lists, ProblemListSerializer)
         if not request.user.is_authenticated:
+            response_data = paginate_data(request, problem_lists, ProblemListSerializer)
             for problem_list in response_data:
                 problem_list['pass_count'] = None
             return success(response_data)
 
         problem_lists = problem_lists.exclude(create_user=request.user)
+        response_data = paginate_data(request, problem_lists, ProblemListSerializer)
         # response_data为list,problem_list为字典
         for problem_list in response_data:
             problem_list['pass_count'] = 0
+            # problem_list['id']取自于数据库，可保证存在，不需要处理异常
             for problem in ProblemList.objects.get(id=problem_list['id']).problems.all():
                 if problem.get_pass_status(request.user):
                     problem_list['pass_count'] += 1
@@ -104,12 +106,49 @@ class ProblemListDetailAPI(APIView):
 
         return success(response_data)
 
+    def put(self, request, problemlist_id):
+        problem_ids = request.data['problem_ids']
+        is_add = request.data['is_add']
+        problems = Problem.objects.filter(id__in=problem_ids)
+        try:
+            problem_list = ProblemList.objects.get(id=problemlist_id)
+        except ProblemList.DoesNotExist:
+            return fail("该题单不存在！")
+        if not request.user.is_authenticated or problem_list.create_user != request.user:
+            return fail('用户无权限！')
+
+        if is_add:
+            if problem_list.problems.filter(id__in=problem_ids).exists():
+                return fail('添加的某道题目已经存在于题单之中！')
+            problem_list.add_problem(problems)
+            return success("添加成功")
+
+        if problem_list.problems.filter(id__in=problem_ids).count() == len(problem_ids):
+            problem_list.remove_problem(problems)
+            return success("删除成功")
+        else:
+            return fail('删除的某道题目不在题单之中')
+
+    def delete(self, request, problemlist_id):
+        try:
+            problem_list = ProblemList.objects.get(id=problemlist_id)
+        except ProblemList.DoesNotExist:
+            return fail('该题单不存在！')
+        if not request.user.is_authenticated or problem_list.create_user != request.user:
+            return fail('用户无权限！')
+
+        problem_list.is_deleted = True
+        problem_list.save()
+        return success("删除成功")
 
 class ProblemListStarAPI(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return fail('用户未登录！')
-        problem_list = ProblemList.objects.get(id=request.data['problemlist_id'])
+        try:
+            problem_list = ProblemList.objects.get(id=request.data['problemlist_id'])
+        except ProblemList.DoesNotExist:
+            return fail('不存在该题单！')
         if problem_list.star_users.contains(request.user):
             problem_list.star_users.remove(request.user)
             problem_list.remove_star_count()

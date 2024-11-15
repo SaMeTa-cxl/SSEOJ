@@ -187,7 +187,7 @@ class ProblemListTestCase(TestCase):
         self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
         another_user = User.objects.create_user(username="another", email='321@qq.com', password="123")
         self.problem_list = ProblemList.objects.create(title='title', create_user=another_user, is_public=True)
-        self.problem_list.add_problem(self.problem)
+        self.problem_list.add_problem(Problem.objects.filter(id=self.problem.id))
 
     def tearDown(self):
         ProblemList.objects.all().delete()
@@ -210,10 +210,8 @@ class ProblemListTestCase(TestCase):
 
 class ProblemListDetailTestCase(TestCase):
     def setUp(self):
-        self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
         self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
         self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
-        self.problem_list.add_problem(self.problem)
 
     def tearDown(self):
         ProblemList.objects.all().delete()
@@ -229,10 +227,44 @@ class ProblemListDetailTestCase(TestCase):
         msg = self.client.get(reverse("problem_list_detail", args=[100])).data['msg']
         self.assertEqual(msg, "该题单不存在！")
 
-    def test_success(self):
+    def test_get_success(self):
         self.client.login(email="123@qq.com", password="123")
         data = self.client.get(reverse("problem_list_detail", args=[self.problem_list.id])).data['data']
         print(data)
+
+    def test_put_success(self):
+        self.assertEqual(self.problem_list.problems.count(), 0)
+        self.assertEqual(self.problem_list.problem_count, 0)
+        self.assertEqual(self.problem_list.difficulty, 0)
+
+        self.client.login(email="123@qq.com", password="123")
+        p1 = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
+        p2 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 2", "difficulty": 4})
+        p3 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 3"})
+        data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
+                               data={'problem_ids': [p1.id, p2.id, p3.id], 'is_add': True},
+                               content_type="application/json").data['data']
+
+        self.assertEqual(data, "添加成功")
+        self.problem_list.refresh_from_db()
+        self.assertEqual(self.problem_list.difficulty, 2)
+        self.assertEqual(self.problem_list.problems.count(), 3)
+        self.assertEqual(self.problem_list.problem_count, 3)
+
+        data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
+                               data={'problem_ids': [p1.id, p3.id], 'is_add': False},
+                               content_type="application/json").data['data']
+
+        self.assertEqual(data, "删除成功")
+        self.problem_list.refresh_from_db()
+        self.assertEqual(self.problem_list.difficulty, 4)
+        self.assertEqual(self.problem_list.problems.count(), 1)
+        self.assertEqual(self.problem_list.problem_count, 1)
+
+    def test_delete_success(self):
+        self.client.login(email="123@qq.com", password="123")
+        data = self.client.delete(reverse("problem_list_detail", args=[self.problem_list.id])).data['data']
+        self.assertEqual(data, '删除成功')
 
 
 class ProblemListStarTestCase(TestCase):
