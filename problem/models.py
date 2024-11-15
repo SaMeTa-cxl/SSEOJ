@@ -103,13 +103,28 @@ class ProblemList(models.Model):
     is_deleted = models.BooleanField(default=False)
     is_public = models.BooleanField(default=False)
 
-    def add_problem(self, new_problem):
+    def add_problem(self, new_problems):
         """
-        添加一个新题目，并且更新题目数和难度字段
+        new_problems是一个QuerySet，添加new_problems中的所有题目，并且更新题目数和难度字段
+        注意：调用此函数前需保证new_problems与self.problems无交集！！！
         """
-        self.problem_count += 1
+        self.problem_count += len(new_problems)
         avg_difficulty = 0
-        self.problems.add(new_problem)
+        self.problems.add(*new_problems)
+        for problem in self.problems.all():
+            avg_difficulty += problem.difficulty
+        avg_difficulty /= self.problem_count
+        self.difficulty = round(avg_difficulty)
+        self.save(update_fields=['problem_count', 'difficulty', ])
+
+    def remove_problem(self, to_delete_problems):
+        """
+        to_delete_problems是一个QuerySet，删除to_delete_problems中的所有题目，并且更新题目数和难度字段
+        注意：调用此函数前需保证to_delete_problems是self.problems的子集！！！
+        """
+        self.problem_count -= len(to_delete_problems)
+        avg_difficulty = 0
+        self.problems.remove(*to_delete_problems)
         for problem in self.problems.all():
             avg_difficulty += problem.difficulty
         avg_difficulty /= self.problem_count
