@@ -31,7 +31,6 @@ class ProblemDescriptionTestCase(TestCase):
     """
     测试ProblemDescriptionAPI
     """
-
     def setUp(self):
         # 准备好一个题目，设定它的tag
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
@@ -182,6 +181,9 @@ class SolutionTestCase(TestCase):
 
 
 class ProblemListTestCase(TestCase):
+    """
+    测试请求题单列表的api
+    """
     def setUp(self):
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
         self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
@@ -209,6 +211,9 @@ class ProblemListTestCase(TestCase):
 
 
 class ProblemListDetailTestCase(TestCase):
+    """
+    测试获取题单详细信息，题单添加或删除题目，删除题单api
+    """
     def setUp(self):
         self.user = User.objects.create_user(username="username", email="123@qq.com", password="123")
         self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
@@ -242,29 +247,56 @@ class ProblemListDetailTestCase(TestCase):
         p2 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 2", "difficulty": 4})
         p3 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 3"})
         data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
-                               data={'problem_ids': [p1.id, p2.id, p3.id], 'is_add': True},
+                               data={'problem_ids': [p1.id, p2.id], 'is_add': True},
                                content_type="application/json").data['data']
-
+        # 测试部分添加题目存在于题单中的情况
+        data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
+                               data={'problem_ids': [p2.id, p3.id], 'is_add': True},
+                               content_type="application/json").data['data']
         self.assertEqual(data, "添加成功")
         self.problem_list.refresh_from_db()
         self.assertEqual(self.problem_list.difficulty, 2)
         self.assertEqual(self.problem_list.problems.count(), 3)
         self.assertEqual(self.problem_list.problem_count, 3)
-
+        # 测试全部添加题目都在题单中的情况
+        data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
+                               data={'problem_ids': [p2.id, p3.id], 'is_add': True},
+                               content_type="application/json").data['msg']
+        self.assertEqual(data, "添加的题目已经存在于题单之中！")
+        data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
+                               data={'problem_ids': [p1.id], 'is_add': False},
+                               content_type="application/json").data['data']
+        # 测试部分删除题目不存在于题单中的情况
         data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
                                data={'problem_ids': [p1.id, p3.id], 'is_add': False},
                                content_type="application/json").data['data']
-
         self.assertEqual(data, "删除成功")
         self.problem_list.refresh_from_db()
         self.assertEqual(self.problem_list.difficulty, 4)
         self.assertEqual(self.problem_list.problems.count(), 1)
         self.assertEqual(self.problem_list.problem_count, 1)
+        # 测试所有删除题目都不存在于提单中的情况
+        data = self.client.put(reverse("problem_list_detail", args=[self.problem_list.id]),
+                               data={'problem_ids': [p1.id, p3.id], 'is_add': False},
+                               content_type="application/json").data['msg']
+        self.assertEqual(data, "删除的题目不在题单之中")
 
     def test_delete_success(self):
         self.client.login(email="123@qq.com", password="123")
+        self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem_list.id})
+        # 软删除
         data = self.client.delete(reverse("problem_list_detail", args=[self.problem_list.id])).data['data']
         self.assertEqual(data, '删除成功')
+        self.problem_list.refresh_from_db()
+        self.assertTrue(self.problem_list.is_deleted)
+        self.assertTrue(ProblemList.objects.all().contains(self.problem_list))
+        # 收藏数为0时硬删除
+        self.client.post(reverse("problem_list_star"), data={"problemlist_id": self.problem_list.id})
+        self.assertFalse(ProblemList.objects.all().contains(self.problem_list))
+        # 在ProblemListStarAPI中被硬删除
+        self.problem_list = ProblemList.objects.create(title='title', create_user=self.user, is_public=True)
+        self.client.delete(reverse("problem_list_detail", args=[self.problem_list.id]))
+        self.assertFalse(ProblemList.objects.all().contains(self.problem_list))
 
 
 class ProblemListStarTestCase(TestCase):

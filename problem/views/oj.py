@@ -48,6 +48,9 @@ class ProblemSolutionsAPI(APIView):
 class ProblemSolutionsDetailAPI(APIView):
     @staticmethod
     def get(request, problem_id, solution_id):
+        """
+        返回题解的详细信息，完整的solution_content
+        """
         try:
             problem = Problem.objects.get(id=problem_id)
         except Problem.DoesNotExist:
@@ -67,6 +70,11 @@ class ProblemSubmissionsAPI(APIView):
 
 class ProblemListAPI(APIView):
     def get(self, request):
+        """
+        根据标题或简介中的关键字筛选未删除的、公开的、非请求用户自己的题单列表；如果用户未登录，则获取所有含有关键字的公开未删除题单，且题单的
+        每道题目中的pass_count字段为null；
+        如果关键字为空，则返回所有未删除的、公开的、非请求用户的题单；
+        """
         keyword = request.GET.get('keyword', '')
         problem_lists = ProblemList.objects.filter((Q(title__icontains=keyword) | Q(summary__icontains=keyword))
                                                    & Q(is_deleted=False) & Q(is_public=True))
@@ -91,6 +99,10 @@ class ProblemListAPI(APIView):
 
 class ProblemListDetailAPI(APIView):
     def get(self, request, problemlist_id):
+        """
+        获取id为problemlist_id的题单的详细信息。
+        用户未登录时或题单id不存在时，返回对应的错误信息
+        """
         if not request.user.is_authenticated:
             return fail("用户未登录！")
         try:
@@ -107,6 +119,12 @@ class ProblemListDetailAPI(APIView):
         return success(response_data)
 
     def put(self, request, problemlist_id):
+        """
+        向题单添加或删除题目，路径中有一个problemlist_id参数，另外需要传递problem_ids和is_add两个字段，
+        problem_ids表示需要操作的题目id列表，is_add表示操作为添加或删除
+        当用户未登录或题单创建者不是请求用户或题单不存在时返回相应的错误
+        当添加的题目已经存在题单或删除的题目不在题单之中，返回相应的错误
+        """
         problem_ids = request.data['problem_ids']
         is_add = request.data['is_add']
         problems = Problem.objects.filter(id__in=problem_ids)
@@ -118,18 +136,24 @@ class ProblemListDetailAPI(APIView):
             return fail('用户无权限！')
 
         if is_add:
-            if problem_list.problems.filter(id__in=problem_ids).exists():
-                return fail('添加的某道题目已经存在于题单之中！')
-            problem_list.add_problem(problems)
+            if problem_list.problems.filter(id__in=problem_ids).count() == len(problem_ids):
+                return fail('添加的题目已经存在于题单之中！')
+            problems_in_list = problem_list.problems.filter(id__in=problem_ids)
+            problem_list.add_problem(problems.difference(problems_in_list))
             return success("添加成功")
 
-        if problem_list.problems.filter(id__in=problem_ids).count() == len(problem_ids):
-            problem_list.remove_problem(problems)
+        if problem_list.problems.filter(id__in=problem_ids).count() != 0:
+            problems_in_list = problem_list.problems.filter(id__in=problem_ids)
+            problem_list.remove_problem(problems_in_list)
             return success("删除成功")
         else:
-            return fail('删除的某道题目不在题单之中')
+            return fail('删除的题目不在题单之中')
 
     def delete(self, request, problemlist_id):
+        """
+        删除一个题单，如果题单收藏数为0，直接删除记录，否则软删除，只是将is_deleted字段设为true，使其不会被get出来，当收藏数为0时再硬删除
+        当题单不存在或用户未登录或请求用户非创建者时返回相应的错误
+        """
         try:
             problem_list = ProblemList.objects.get(id=problemlist_id)
         except ProblemList.DoesNotExist:
@@ -137,12 +161,20 @@ class ProblemListDetailAPI(APIView):
         if not request.user.is_authenticated or problem_list.create_user != request.user:
             return fail('用户无权限！')
 
-        problem_list.is_deleted = True
-        problem_list.save()
+        if problem_list.star_users.exists():
+            problem_list.is_deleted = True
+            problem_list.save()
+        else:
+            problem_list.delete()
         return success("删除成功")
 
 class ProblemListStarAPI(APIView):
     def post(self, request):
+        """
+        收藏/取消收藏一个题单
+        用户未登录或题单不存在时返回相应错误
+        当被取消收藏的题单收藏数为0时
+        """
         if not request.user.is_authenticated:
             return fail('用户未登录！')
         try:
@@ -152,6 +184,8 @@ class ProblemListStarAPI(APIView):
         if problem_list.star_users.contains(request.user):
             problem_list.star_users.remove(request.user)
             problem_list.remove_star_count()
+            if not problem_list.star_users.exists() and problem_list.is_deleted:
+                problem_list.delete()
             return success('取消收藏！')
         else:
             problem_list.star_users.add(request.user)
