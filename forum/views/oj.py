@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 
 from forum.models import Post, PostComment
 from utils.api import *
+from account.models import User
 
 
 class PostInformationAPI(APIView):
@@ -46,12 +47,39 @@ class PostCommentInformation(APIView):
 
 class PostCommentNew(APIView):
     def post(self, request, post_id):
-        pass
+        comment_content = request.data.get('comment_content')
+        user_id = request.data.get('user_id')
+        reply_to_user_id = request.data.get('reply_to_user_id', None)
+        create_time = request.data.get('create_time', None)
+
+        if not post_id or not comment_content or not user_id:
+            return fail("评论出问题啦！")
+
+        post = Post.objects.get(id=post_id)
+        user = User.objects.get(id=user_id)
+        reply_to_user = None
+        if reply_to_user_id:
+            reply_to_user = User.objects.get(id=reply_to_user_id)
+
+        comment = PostComment.objects.create(
+            post=post,
+            create_user=user,
+            content=comment_content,
+            reply_to_user=reply_to_user,
+            create_time=create_time
+        )
+
+        post.comment_count += 1
+        post.save()
+
+        output_data = {"comment_id": comment.id}
+        return success(output_data)
 
 
 class PostNew(APIView):
     def post(self, request):
-        pass
+        post_id = request.POST.get("post_id")
+
 
 
 class PostGood(APIView):
