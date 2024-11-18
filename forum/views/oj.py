@@ -55,5 +55,5 @@ class PostNew(APIView):
 
 
 class PostGood(APIView):
-    def put(self, request, problem_id):
+    def put(self, request, post_id):
         pass
