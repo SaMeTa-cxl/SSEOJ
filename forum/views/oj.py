@@ -99,4 +99,24 @@ class PostNew(APIView):
 
 class PostGood(APIView):
     def put(self, request, post_id):
-        pass
+        user_id = request.data.get('user_id')
+        is_good = request.data.get('is_good')
+
+        try:
+            post = Post.objects.get(id=post_id)
+            user = User.objects.get(id=user_id)
+        except Post.DoesNotExist or User.DoesNotExist:
+            return Response({"error": "帖子不存在或用户登录过期！"}, status=404)
+
+        if is_good:
+            if user not in post.like_users.all():
+                post.like_users.add(user)
+                post.like_count += 1
+                post.save()
+                return success("点赞成功，感谢你的支持！")
+        else:
+            if user in post.like_users.all():
+                post.like_users.remove(user)
+                post.like_count -= 1
+                post.save()
+                return success("取消点赞!")
