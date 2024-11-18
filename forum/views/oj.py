@@ -79,6 +79,22 @@ class PostCommentNew(APIView):
 class PostNew(APIView):
     def post(self, request):
         post_id = request.POST.get("post_id")
+        user_id = request.data.get('user_id')
+        post_content = request.POST.get("post_content")
+        create_time = request.POST.get("create_time", None)
+        tags = request.POST.get("tags", None)
+
+        user = User.objects.get(id=user_id)
+
+        post = Post.objects.create(
+            title = "为什么API设计的请求参数中没有title这个字段",
+            content = post_content,
+            create_user = user,
+            create_time = create_time,
+        )
+
+        output_data = {"post_id": post.id}
+        return success(output_data)
 
 
 
