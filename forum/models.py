@@ -29,7 +29,7 @@ class PostComment(models.Model):
     content = models.TextField()
     check_status = models.BooleanField(default=False)
     like_count = models.IntegerField(default=0)
-    reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reply_to_users')
+    reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reply_to_users', null=True, blank=True)
 
     class Meta:
         db_table = 'post_comment'
