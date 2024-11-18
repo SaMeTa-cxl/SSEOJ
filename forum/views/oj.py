@@ -78,7 +78,6 @@ class PostCommentNew(APIView):
 
 class PostNew(APIView):
     def post(self, request):
-        post_id = request.POST.get("post_id")
         user_id = request.data.get('user_id')
         post_content = request.POST.get("post_content")
         create_time = request.POST.get("create_time", None)
