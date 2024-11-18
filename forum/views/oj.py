@@ -45,12 +45,12 @@ class PostCommentInformation(APIView):
 
 
 class PostCommentNew(APIView):
-    def post(self, request, problem_id):
+    def post(self, request, post_id):
         pass
 
 
 class PostNew(APIView):
-    def post(self, request, problem_id):
+    def post(self, request):
         pass
 
 
