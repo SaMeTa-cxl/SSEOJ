@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-
+from django.db.models import Q
 from forum.models import Post, PostComment
 from utils.api import *
 from account.models import User
@@ -35,8 +35,8 @@ class PostCommentInformationAPI(APIView):
             return fail("要找的帖子走丢啦！")
 
         self_id = request.user.id
-        count = PostComment.objects.filter(post_id=post_id).count()
-        comments = PostComment.objects.filter(post_id=post_id)
+        count = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)).count()
+        comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True))
         comments = paginate_data(request, comments)
         comment_array = []
         comment_data = {}
