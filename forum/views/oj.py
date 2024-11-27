@@ -4,6 +4,9 @@ from forum.models import Post, PostComment
 from utils.api import *
 from account.models import User
 
+class PostListAPI(APIView):
+    def get(self, request):
+        pass
 
 class PostInformationAPI(APIView):
     def get(self, request, post_id):
@@ -24,8 +27,9 @@ class PostInformationAPI(APIView):
         return success(post_data)
 
 
-class PostCommentInformation(APIView):
+class PostCommentInformationAPI(APIView):
     def get(self, request, comment_id):
+        pass
         try:
             comment = PostComment.objects.get(id=comment_id)
         except PostComment.DoesNotExist:
@@ -44,8 +48,7 @@ class PostCommentInformation(APIView):
 
         return success(comment_data)
 
-
-class PostCommentNew(APIView):
+class PostCommentNewAPI(APIView):
     def post(self, request, post_id):
         comment_content = request.data.get('comment_content')
         user_id = request.data.get('user_id')
@@ -76,7 +79,7 @@ class PostCommentNew(APIView):
         return success(output_data)
 
 
-class PostNew(APIView):
+class PostNewAPI(APIView):
     def post(self, request):
         user_id = request.data.get('user_id')
         post_content = request.POST.get("post_content")
@@ -96,8 +99,7 @@ class PostNew(APIView):
         return success(output_data)
 
 
-
-class PostGood(APIView):
+class PostGoodAPI(APIView):
     def put(self, request, post_id):
         user_id = request.data.get('user_id')
         is_good = request.data.get('is_good')
@@ -120,3 +122,7 @@ class PostGood(APIView):
                 post.like_count -= 1
                 post.save()
                 return success("取消点赞!")
+
+class PostDeleteAPI(APIView):
+    def delete(self, request):
+        pass
