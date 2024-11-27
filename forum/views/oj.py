@@ -38,7 +38,8 @@ class PostCommentInformationAPI(APIView):
         count = PostComment.objects.filter(post_id=post_id).count()
         comments = PostComment.objects.filter(post_id=post_id)
         comments = paginate_data(request, comments)
-        comment_data = []
+        comment_array = []
+        comment_data = {}
 
         for comment in comments:
             tmp = {}
@@ -51,7 +52,10 @@ class PostCommentInformationAPI(APIView):
             tmp['create_time'] = comment.create_time
             tmp['reply_to_id'] = comment.reply_to_user.id
             tmp['reply_to_name'] = comment.reply_to_user.username
-            comment_data.append(tmp)
+            comment_array.append(tmp)
+
+        comment_data["count"] = count
+        comment_data["comments"] = comment_array
 
         return success(comment_data)
 
