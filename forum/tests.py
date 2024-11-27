@@ -15,3 +15,4 @@ class ForumTests(TestCase):
         print(response.data)
         self.assertEqual(response.data['data'], "登录成功")
         self.assertEqual(response.data['err'], None)
+        pass
