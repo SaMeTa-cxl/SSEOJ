@@ -28,23 +28,30 @@ class PostInformationAPI(APIView):
 
 
 class PostCommentInformationAPI(APIView):
-    def get(self, request, comment_id):
-        pass
+    def get(self, request, post_id):
         try:
-            comment = PostComment.objects.get(id=comment_id)
-        except PostComment.DoesNotExist:
-            return fail("要找的评论走丢啦！")
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return fail("要找的帖子走丢啦！")
 
-        comment_data = {
-            "post_id": comment.post_id,
-            "post_comment_id": comment_id,
-            "user_id": comment.create_user.id,
-            "comment_content": comment.content,
-            "like_count": comment.like_count,
-            "create_time": comment.create_time,
-            "reply_to_username": comment.reply_to_user.username,
-            # "page": comment.page, #这个评论具体在哪一页应该是根据某个函数算出来的吧，前面评论的长度都会影响这条评论所在页数
-        }
+        self_id = request.user.id
+        count = PostComment.objects.filter(post_id=post_id).count()
+        comments = PostComment.objects.filter(post_id=post_id)
+        comments = paginate_data(request, comments)
+        comment_data = []
+
+        for comment in comments:
+            tmp = {}
+            tmp['user_id'] = comment.create_user.id
+            tmp['user_name'] = comment.create_user.username
+            tmp['avatar'] = comment.create_user.avatar
+            tmp['like_status'] = comment.like_users.filter(id=self_id).exists()
+            tmp['comment_content'] = comment.content
+            tmp['like_count'] = comment.like_count
+            tmp['create_time'] = comment.create_time
+            tmp['reply_to_id'] = comment.reply_to_user.id
+            tmp['reply_to_name'] = comment.reply_to_user.username
+            comment_data.append(tmp)
 
         return success(comment_data)
 
