@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from rest_framework.views import APIView
 from django.db.models import Q
 from forum.models import Post, PostComment
@@ -94,16 +96,16 @@ class PostNewAPI(APIView):
     def post(self, request):
         user_id = request.data.get('user_id')
         post_content = request.POST.get("post_content")
-        create_time = request.POST.get("create_time", None)
+        post_title = request.POST.get("post_title", None)
         tags = request.POST.get("tags", None)
 
         user = User.objects.get(id=user_id)
 
         post = Post.objects.create(
-            title = "为什么API设计的请求参数中没有title这个字段",
+            title = post_title,
             content = post_content,
             create_user = user,
-            create_time = create_time,
+            tags = tags
         )
 
         output_data = {"post_id": post.id}
