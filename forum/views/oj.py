@@ -45,6 +45,7 @@ class PostCommentInformationAPI(APIView):
 
         for comment in comments:
             tmp = {}
+            tmp['comment_id'] = comment.id
             tmp['user_id'] = comment.create_user.id
             tmp['user_name'] = comment.create_user.username
             tmp['avatar'] = comment.create_user.avatar
@@ -62,11 +63,13 @@ class PostCommentInformationAPI(APIView):
         return success(comment_data)
 
 class PostCommentNewAPI(APIView):
-    def post(self, request, post_id):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('未登录！')
+        post_id = request.data.get('post_id')
         comment_content = request.data.get('comment_content')
-        user_id = request.data.get('user_id')
+        user_id = request.user.id
         reply_to_user_id = request.data.get('reply_to_user_id', None)
-        create_time = request.data.get('create_time', None)
 
         if not post_id or not comment_content or not user_id:
             return fail("评论出问题啦！")
@@ -76,14 +79,18 @@ class PostCommentNewAPI(APIView):
         reply_to_user = None
         if reply_to_user_id:
             reply_to_user = User.objects.get(id=reply_to_user_id)
-
-        comment = PostComment.objects.create(
-            post=post,
-            create_user=user,
-            content=comment_content,
-            reply_to_user=reply_to_user,
-            create_time=create_time
-        )
+            comment = PostComment.objects.create(
+                post=post,
+                create_user=user,
+                content=comment_content,
+                reply_to_user=reply_to_user,
+            )
+        else:
+            comment = PostComment.objects.create(
+                post=post,
+                create_user=user,
+                content=comment_content,
+            )
 
         post.comment_count += 1
         post.save()
@@ -94,7 +101,9 @@ class PostCommentNewAPI(APIView):
 
 class PostNewAPI(APIView):
     def post(self, request):
-        user_id = request.data.get('user_id')
+        if not request.user.is_authenticated:
+            return fail("未登录！")
+        user_id = request.user.id
         post_content = request.POST.get("post_content")
         post_title = request.POST.get("post_title", None)
         tags = request.POST.get("tags", None)
@@ -114,7 +123,9 @@ class PostNewAPI(APIView):
 
 class PostGoodAPI(APIView):
     def put(self, request, post_id):
-        user_id = request.data.get('user_id')
+        if not request.user.is_authenticated:
+            return fail("未登录！")
+        user_id = request.user.id
         is_good = request.data.get('is_good')
 
         try:

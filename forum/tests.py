@@ -7,9 +7,10 @@ from .models import Post, PostComment
 class ForumTests(TestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(username='1', email='abc@qq.com', password='123456')
-        self.user2 = User.objects.create_user(username='2', email='cde@qq.com', password='123456')
+        self.user2 = User.objects.create_user(username='2', email='def@qq.com', password='123456')
 
         self.login_url = reverse('identity_login')
+        self.logout_url = reverse('identity_logout')
         self.post_new_url = reverse('post_new')
         self.post_list_url = reverse('post_list')
         self.post_comments_new_url = reverse('post_comment_new')
@@ -18,10 +19,10 @@ class ForumTests(TestCase):
         # reverse('post_information', kwargs={'post_id': 1})
         # reverse('post_comments', kwargs={'post_id': 1})
 
-    def test_postnew(self):
+
+    def post_new(self):
         data = {'email': 'abc@qq.com', 'password': '123456'}
         login_response = self.client.post(reverse('identity_login'), data)
-        # token = login_response.data.get('token')
 
         post_data = {
             'user_id': self.user1.id,
@@ -30,22 +31,56 @@ class ForumTests(TestCase):
             'tags': '技术, Django'
         }
 
-        # 设置 Authorization header
-        # self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-
         # 发送 POST 请求创建新帖子
-        response = self.client.post(self.post_new_url, post_data, format='json')
+        return self.client.post(self.post_new_url, post_data, format='json')
 
-        # 确保帖子创建成功，返回 200 状态码
+    def switch_user(self):
+        logout_response = self.client.get(reverse('identity_logout'))
+        self.assertEqual(logout_response.data['data'], "登出成功")
+        data = {'email': 'def@qq.com', 'password': '123456'}
+        return self.client.post(reverse('identity_login'), data)
+
+    def test_postnew(self):
+        response = self.post_new()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # 确保返回的数据中包含 post_id
         self.assertIn('post_id', response.data['data'])
-
-        # 确保数据库中创建了新帖子
         self.assertEqual(Post.objects.count(), 1)
         post = Post.objects.first()
         self.assertEqual(post.content, '这是一条新帖子内容')
         self.assertEqual(post.create_user, self.user1)
         self.assertEqual(post.title, 'Title')
-        print(post.content)
+
+    def test_post_comment_list(self):
+        post_new_response = self.post_new()
+        login_user2_response = self.switch_user()
+        self.assertEqual(login_user2_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(login_user2_response.data['data'], "登录成功")
+        self.assertEqual(login_user2_response.data['err'], None)
+
+        comment_data = {
+            'post_id': 1,
+            'user_id': self.user2.id,
+            'comment_content': '这是一条评论',
+        }
+        comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
+        self.assertEqual(comment_new_reponse.status_code, status.HTTP_200_OK)
+        self.assertIn('comment_id', comment_new_reponse.data['data'])
+        self.assertEqual(PostComment.objects.count(), 1)
+        comment = PostComment.objects.first()
+        self.assertEqual(comment.content, '这是一条评论')
+        self.assertEqual(comment.create_user, self.user2)
+
+    def test_post_good(self):
+        post_new_response = self.post_new()
+        login_user2_response = self.switch_user()
+
+        post_good_data = {
+            'post_id': 1,
+            'is_good': True,
+        }
+        post_good_response = self.client.put(reverse('post_good'), post_good_data)
+
+        self.assertEqual(post_good_response.status_code, status.HTTP_200_OK)
+        post = Post.objects.first()
+        self.assertEqual(post.like_count, 1)
+
