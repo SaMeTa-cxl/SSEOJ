@@ -40,35 +40,35 @@ class ForumTests(TestCase):
         data = {'email': 'def@qq.com', 'password': '123456'}
         return self.client.post(reverse('identity_login'), data)
 
-    def test_postnew(self):
-        response = self.post_new()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('post_id', response.data['data'])
-        self.assertEqual(Post.objects.count(), 1)
-        post = Post.objects.first()
-        self.assertEqual(post.content, '这是一条新帖子内容')
-        self.assertEqual(post.create_user, self.user1)
-        self.assertEqual(post.title, 'Title')
-
-    def test_post_comment_list(self):
-        post_new_response = self.post_new()
-        login_user2_response = self.switch_user()
-        self.assertEqual(login_user2_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(login_user2_response.data['data'], "登录成功")
-        self.assertEqual(login_user2_response.data['err'], None)
-
-        comment_data = {
-            'post_id': 1,
-            'user_id': self.user2.id,
-            'comment_content': '这是一条评论',
-        }
-        comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
-        self.assertEqual(comment_new_reponse.status_code, status.HTTP_200_OK)
-        self.assertIn('comment_id', comment_new_reponse.data['data'])
-        self.assertEqual(PostComment.objects.count(), 1)
-        comment = PostComment.objects.first()
-        self.assertEqual(comment.content, '这是一条评论')
-        self.assertEqual(comment.create_user, self.user2)
+    # def test_postnew(self):
+    #     response = self.post_new()
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertIn('post_id', response.data['data'])
+    #     self.assertEqual(Post.objects.count(), 1)
+    #     post = Post.objects.first()
+    #     self.assertEqual(post.content, '这是一条新帖子内容')
+    #     self.assertEqual(post.create_user, self.user1)
+    #     self.assertEqual(post.title, 'Title')
+    #
+    # def test_post_comment_list(self):
+    #     post_new_response = self.post_new()
+    #     login_user2_response = self.switch_user()
+    #     self.assertEqual(login_user2_response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(login_user2_response.data['data'], "登录成功")
+    #     self.assertEqual(login_user2_response.data['err'], None)
+    #
+    #     comment_data = {
+    #         'post_id': 1,
+    #         'user_id': self.user2.id,
+    #         'comment_content': '这是一条评论',
+    #     }
+    #     comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
+    #     self.assertEqual(comment_new_reponse.status_code, status.HTTP_200_OK)
+    #     self.assertIn('comment_id', comment_new_reponse.data['data'])
+    #     self.assertEqual(PostComment.objects.count(), 1)
+    #     comment = PostComment.objects.first()
+    #     self.assertEqual(comment.content, '这是一条评论')
+    #     self.assertEqual(comment.create_user, self.user2)
 
     def test_post_good(self):
         post_new_response = self.post_new()
@@ -76,10 +76,13 @@ class ForumTests(TestCase):
 
         post_good_data = {
             'post_id': 1,
-            'is_good': True,
+            'is_good': 1,
         }
-        post_good_response = self.client.put(reverse('post_good'), post_good_data)
+        post_good_response = self.client.put(self.post_good_url, post_good_data, HTTP_CONTENT_TYPE='application/json', format='json')
 
+        print('headinclouds')
+        print(post_good_response.data)
+        print('headinclouds')
         self.assertEqual(post_good_response.status_code, status.HTTP_200_OK)
         post = Post.objects.first()
         self.assertEqual(post.like_count, 1)

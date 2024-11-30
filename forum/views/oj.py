@@ -122,16 +122,21 @@ class PostNewAPI(APIView):
 
 
 class PostGoodAPI(APIView):
-    def put(self, request, post_id):
+    def put(self, request):
         if not request.user.is_authenticated:
+            print(1)
             return fail("未登录！")
         user_id = request.user.id
+        post_id = request.data.get('post_id')
         is_good = request.data.get('is_good')
+        print(post_id)
+        print(is_good)
 
         try:
             post = Post.objects.get(id=post_id)
             user = User.objects.get(id=user_id)
-        except Post.DoesNotExist or User.DoesNotExist:
+        except (Post.DoesNotExist, User.DoesNotExist):
+            print(2)
             return Response({"error": "帖子不存在或用户登录过期！"}, status=404)
 
         if is_good:
@@ -139,12 +144,14 @@ class PostGoodAPI(APIView):
                 post.like_users.add(user)
                 post.like_count += 1
                 post.save()
+                print(3)
                 return success("点赞成功，感谢你的支持！")
         else:
             if user in post.like_users.all():
                 post.like_users.remove(user)
                 post.like_count -= 1
                 post.save()
+                print(4)
                 return success("取消点赞!")
 
 class PostDeleteAPI(APIView):
