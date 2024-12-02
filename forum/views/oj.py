@@ -152,4 +152,19 @@ class PostGoodAPI(APIView):
 
 class PostDeleteAPI(APIView):
     def delete(self, request):
-        pass
+        if not request.user.is_authenticated:
+            return fail("未登录")
+        post_id = request.data.get('post_id')
+        if not post_id:
+            return fail("缺少post_id参数")
+
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return fail("帖子不存在！")
+
+        if(post.create_user == request.user):
+            return fail("无权限删除该帖子") #理论上不会出现，因为对于无权限的用户前端不会显示删除功能
+
+        post.delete()
+        return success("帖子成功删除！")
