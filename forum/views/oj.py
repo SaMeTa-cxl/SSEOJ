@@ -8,7 +8,28 @@ from account.models import User
 
 class PostListAPI(APIView):
     def get(self, request):
-        pass
+        self_id = request.user.id
+        count = Post.objects.all().count()
+        posts = Post.objects.all()
+        posts = paginate_data(request, posts)
+        post_array = []
+        post_data = {}
+
+        for post in posts:
+            tmp = {}
+            tmp['post_id'] = post.id
+            tmp['post_title'] = post.title
+            tmp['user_id'] = post.create_user.id
+            tmp['username'] = post.create_user.username
+            tmp['avatar'] = post.create_user.avatar
+            tmp['like_count'] = post.like_users.count()
+            tmp['comment_count'] = PostComment.objects.filter(post=post).count()
+            post_array.append(tmp)
+
+        post_data["count"] = count
+        post_data["posts"] = post_array
+
+        return success(post_data)
 
 class PostInformationAPI(APIView):
     def get(self, request, post_id):
