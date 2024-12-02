@@ -77,6 +77,7 @@ def validate_serializer(serializer):
         @functools.wraps(view_method)
         def handle(*args, **kwargs):
             request = args[1]
+            print(request.data)
             s = serializer(data=request.data)
             if s.is_valid():
                 return view_method(*args, **kwargs)

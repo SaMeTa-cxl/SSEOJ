@@ -1,10 +1,10 @@
 from django.db.models import Q, F
 from rest_framework.views import APIView
 
-from problem.models import Problem, Solution, ProblemList
+from problem.models import Problem, Solution, ProblemList, Tag
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
-    ProblemListDetailSerializer
-from utils.api import success, fail, paginate_data
+    ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer
+from utils.api import success, fail, paginate_data, validate_serializer
 
 
 class ProblemDescriptionAPI(APIView):
@@ -168,6 +168,7 @@ class ProblemListDetailAPI(APIView):
             problem_list.delete()
         return success("删除成功")
 
+
 class ProblemListStarAPI(APIView):
     def post(self, request):
         """
@@ -199,10 +200,30 @@ class ProblemSubmitAPI(APIView):
 
 
 class ProblemSolutionCreateAPI(APIView):
+    @validate_serializer(SolutionCreateSerializer)
     def post(self, request):
-        pass
+        if not request.user.is_authenticated:
+            return fail("用户未登录！")
+        try:
+            problem = Problem.objects.get(id=request.data['problem_id'])
+        except Problem.DoesNotExist:
+            return fail("不存在该题目！")
+        tags = Tag.objects.filter(id__in=request.data.get('tags', []))
+        solution = Solution.objects.create(content=request.data['content'], problem=problem,
+                                           create_user=request.user)
+        solution.tags.set(tags)
+        solution.last_update_time = solution.create_time
+        solution.save()
+        return success('创建成功')
+
+
+class TagAPI(APIView):
+    def get(self, request):
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
+        return success(serializer.data)
 
 
 class ProblemsetAPI(APIView):
-    def post(self, request):
+    def get(self, request):
         pass

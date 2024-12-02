@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from account.models import User
 from account.serializers import UserSerializer
-from problem.models import Problem, Solution, ProblemList
+from problem.models import Problem, Solution, ProblemList, Tag
 
 
 class ProblemSerializer(serializers.ModelSerializer):
@@ -50,3 +50,15 @@ class ProblemListDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProblemList
         fields = ['id', 'title', 'summary', 'creator_info', 'problems']
+
+
+class SolutionCreateSerializer(serializers.Serializer):
+    problem_id = serializers.IntegerField()
+    content = serializers.CharField()
+    tags = serializers.ListField(child=serializers.IntegerField(), allow_null=True, required=False)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
