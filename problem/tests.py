@@ -135,6 +135,9 @@ class ProblemDescriptionTestCase(TestCase):
 class SolutionTestCase(TestCase):
     def setUp(self):
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
+        tag_type = TagType.objects.create(name='tag_type')
+        self.tag = Tag.objects.create(name='tag', type=tag_type)
+        self.problem.tags.add(self.tag)
         self.user = User.objects.create_user(username="test", email="123@qq.com", password="123456")
         self.solution1 = Solution.objects.create(content="content1", problem=self.problem, create_user=self.user)
         self.solution2 = Solution.objects.create(content="content2", problem=self.problem, create_user=self.user)
@@ -143,6 +146,13 @@ class SolutionTestCase(TestCase):
         Problem.objects.all().delete()
         User.objects.all().delete()
         Solution.objects.all().delete()
+
+    def test_create_solution(self):
+        self.client.login(email="123@qq.com", password="123456")
+        self.client.post(reverse('problem_solutions_create'), data={'content': 'content3',
+                                                                    'problem_id': self.problem.id,
+                                                                    'tags': [self.tag.id]})
+        self.assertEqual(Solution.objects.count(), 3)
 
     def test_problem_get_fail(self):
         # 测试题目获取失败
