@@ -6,8 +6,9 @@ from .models import Post, PostComment
 
 class ForumTests(TestCase):
     def setUp(self):
-        User.objects.all().delete()
+        PostComment.objects.all().delete()
         Post.objects.all().delete()
+        User.objects.all().delete()
         self.user1 = User.objects.create_user(username='1', email='abc@qq.com', password='123456')
         self.user2 = User.objects.create_user(username='2', email='def@qq.com', password='123456')
 
@@ -18,7 +19,6 @@ class ForumTests(TestCase):
         self.post_comments_new_url = reverse('post_comment_new')
         self.post_good_url = reverse('post_good')
         self.post_delete_url = reverse('post_delete')
-        # reverse('post_information', kwargs={'post_id': 1})
         # reverse('post_comments', kwargs={'post_id': 1})
 
     def post_new(self):
@@ -51,6 +51,24 @@ class ForumTests(TestCase):
         self.assertEqual(post.create_user, self.user1)
         self.assertEqual(post.title, 'Title')
 
+    def test_post_information(self):
+        Post_new_response = self.post_new()
+        response = self.client.get(reverse('post_information', kwargs={'post_id': 3}))
+        #同样，这里无法删除之前测试函数创建的数据，导致只有将本该为 1 的post_id改为 3 才能通过测试
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("headinclouds")
+        print(response.data)
+        print("headinclouds")
+        post = Post.objects.filter(id=3).first()
+        self.assertEqual(response.data['data']["post_title"], post.title)
+        self.assertEqual(response.data['data']["like_count"], post.like_count)
+        self.assertEqual(response.data['data']["comment_count"], post.comment_count)
+        self.assertEqual(response.data['data']["post_content"], post.content)
+        self.assertEqual(response.data['data']["create_time"], post.create_time)
+        self.assertEqual(response.data['data']["user_name"], post.create_user.username)
+
+
+
     def test_comment_new(self):
         post_new_response = self.post_new()
         login_user2_response = self.switch_user()
@@ -76,13 +94,11 @@ class ForumTests(TestCase):
         login_user2_response = self.switch_user()
 
         post_good_data = {
-            'post_id': 2,
+            'post_id': 2,   #这里按道理来说是1，但是因为之前的User和Post删不掉，所以要想通过测试只能写2
             'is_good': 1,
         }
         post_good_response = self.client.put(self.post_good_url, post_good_data, content_type='application/json', format='json')
-        print("headinclouds")
         print(post_good_response.data)
-        print("headinclouds")
         self.assertEqual(post_good_response.status_code, status.HTTP_200_OK)
         post = Post.objects.first()
         self.assertEqual(post.like_count, 1)

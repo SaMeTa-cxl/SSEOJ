@@ -42,7 +42,7 @@ class PostInformationAPI(APIView):
             "post_title": post.title,
             "like_count": post.like_count,
             "comment_count": post.comment_count,
-            "post_content": post.post_content,
+            "post_content": post.content,
             "create_time": post.create_time,
             "user_name": post.create_user.username,
         }
