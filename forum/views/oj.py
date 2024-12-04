@@ -88,6 +88,7 @@ class PostCommentNewAPI(APIView):
         if not request.user.is_authenticated:
             return fail('未登录！')
         post_id = request.data.get('post_id')
+        comment_id = request.data.get('comment_id')
         comment_content = request.data.get('comment_content')
         user_id = request.user.id
         reply_to_user_id = request.data.get('reply_to_user_id', None)
@@ -97,21 +98,37 @@ class PostCommentNewAPI(APIView):
 
         post = Post.objects.get(id=post_id)
         user = User.objects.get(id=user_id)
-        reply_to_user = None
         if reply_to_user_id:
             reply_to_user = User.objects.get(id=reply_to_user_id)
-            comment = PostComment.objects.create(
-                post=post,
-                create_user=user,
-                content=comment_content,
-                reply_to_user=reply_to_user,
-            )
+            if not comment_id:
+                comment = PostComment.objects.create(
+                    post=post,
+                    create_user=user,
+                    content=comment_content,
+                    reply_to_user=reply_to_user,
+                )
+            else:
+                comment = PostComment.objects.create(
+                    id = post_id,
+                    post=post,
+                    create_user=user,
+                    content=comment_content,
+                    reply_to_user=reply_to_user,
+                )
         else:
-            comment = PostComment.objects.create(
-                post=post,
-                create_user=user,
-                content=comment_content,
-            )
+            if not comment_id:
+                comment = PostComment.objects.create(
+                    post=post,
+                    create_user=user,
+                    content=comment_content,
+                )
+            else:
+                comment = PostComment.objects.create(
+                    id=post_id,
+                    post=post,
+                    create_user=user,
+                    content=comment_content,
+                )
 
         post.comment_count += 1
         post.save()
@@ -124,6 +141,7 @@ class PostNewAPI(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return fail("未登录！")
+        post_id = request.POST.get("id")
         user_id = request.user.id
         post_content = request.POST.get("post_content")
         post_title = request.POST.get("post_title", None)
@@ -131,12 +149,21 @@ class PostNewAPI(APIView):
 
         user = User.objects.get(id=user_id)
 
-        post = Post.objects.create(
-            title = post_title,
-            content = post_content,
-            create_user = user,
-            tags = tags
-        )
+        if not post_id:
+            post = Post.objects.create(
+                title = post_title,
+                content = post_content,
+                create_user = user,
+                tags = tags
+            )
+        else:
+            post = Post.objects.create(
+                id=post_id,
+                title=post_title,
+                content=post_content,
+                create_user=user,
+                tags=tags
+            )
 
         output_data = {"post_id": post.id}
         return success(output_data)
