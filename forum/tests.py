@@ -41,131 +41,131 @@ class ForumTests(TestCase):
         data = {'email': 'def@qq.com', 'password': '123456'}
         return self.client.post(reverse('identity_login'), data)
 
-    # def test_post_new(self):
-    #     response = self.post_new()
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIn('post_id', response.data['data'])
-    #     self.assertEqual(Post.objects.count(), 1)
-    #     post = Post.objects.first()
-    #     self.assertEqual(post.content, '这是一条新帖子内容')
-    #     self.assertEqual(post.create_user, self.user1)
-    #     self.assertEqual(post.title, 'Title')
-    #
-    # def test_post_information(self):
-    #     Post_new_response = self.post_new()
-    #     response = self.client.get(reverse('post_information', kwargs={'post_id': 1}))
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     post = Post.objects.filter(id=1).first()
-    #     self.assertEqual(response.data['data']["post_title"], post.title)
-    #     self.assertEqual(response.data['data']["like_count"], post.like_count)
-    #     self.assertEqual(response.data['data']["comment_count"], post.comment_count)
-    #     self.assertEqual(response.data['data']["post_content"], post.content)
-    #     self.assertEqual(response.data['data']["create_time"], post.create_time)
-    #     self.assertEqual(response.data['data']["user_name"], post.create_user.username)
-    #
-    #
-    #
-    # def test_comment_new(self):
-    #     post_new_response = self.post_new()
-    #     login_user2_response = self.switch_user()
-    #     self.assertEqual(login_user2_response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(login_user2_response.data['data'], "登录成功")
-    #     self.assertEqual(login_user2_response.data['err'], None)
-    #
-    #     comment_data = {
-    #         'comment_id': 1,
-    #         'post_id': 1,
-    #         'user_id': self.user2.id,
-    #         'comment_content': '这是一条评论',
-    #     }
-    #     comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
-    #     self.assertEqual(comment_new_reponse.status_code, status.HTTP_200_OK)
-    #     self.assertIn('comment_id', comment_new_reponse.data['data'])
-    #     self.assertEqual(PostComment.objects.count(), 1)
-    #     comment = PostComment.objects.first()
-    #     self.assertEqual(comment.content, '这是一条评论')
-    #     self.assertEqual(comment.create_user, self.user2)
-    #
-    # def test_post_good(self):
-    #     post_new_response = self.post_new()
-    #     login_user2_response = self.switch_user()
-    #     post_good_data = {
-    #         'post_id': 1,
-    #         'is_good': 1,
-    #     }
-    #     post_good_response = self.client.put(self.post_good_url, post_good_data, content_type='application/json', format='json')
-    #     print(post_good_response.data)
-    #     self.assertEqual(post_good_response.status_code, status.HTTP_200_OK)
-    #     post = Post.objects.first()
-    #     self.assertEqual(post.like_count, 1)
-    #
-    # def test_delete_post(self):
-    #     post_new_response = self.post_new()
-    #     data = {'post_id': 1}
-    #     response = self.client.delete(reverse('post_delete'), data, content_type='application/json', format='json')
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(Post.objects.all().count(), 0)
-    #
-    # def test_comment_list(self):
-    #     post_new_response = self.post_new()
-    #     login_user2_response = self.switch_user()
-    #     for i in range(20):
-    #         comment_data = {
-    #             'comment_id': i+1,
-    #             'post_id': 1,
-    #             'user_id': self.user2.id,
-    #             'comment_content': f"Comment {i+1}",
-    #         }
-    #         # print(comment_data)
-    #         comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
-    #
-    #     self.assertEqual(PostComment.objects.all().count(), 20)
-    #     data = {
-    #         'page_num': 1,
-    #         'page_size': 10,
-    #     }
-    #     response = self.client.get(reverse('post_comments', kwargs={'post_id': 1}), data)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     return_data = response.data['data']
-    #     count = return_data['count']
-    #     comments = return_data['comments']
-    #     self.assertEqual(count, 20)
-    #     for comment in comments:
-    #         comment_id = comment['comment_id']
-    #         comment_indb = PostComment.objects.get(id=comment_id)
-    #         self.assertEqual(comment['comment_content'], comment_indb.content)
-    #         self.assertEqual(comment['user_id'], comment_indb.create_user.id)
-    #         self.assertEqual(comment['create_time'], comment_indb.create_time)
-    #         self.assertEqual(comment['like_count'], comment_indb.like_count)
-    #         if comment['reply_to_id']:
-    #             reply_user = User.objects.get(id=comment['reply_to_id'])
-    #             self.assertEqual(reply_user, comment_indb.reply_to_user)
-    #         else:
-    #             self.assertIsNone(comment_indb.reply_to_user)
-    #
-    #     data = {
-    #         'page_num': 4,
-    #         'page_size': 5,
-    #     }
-    #     response = self.client.get(reverse('post_comments', kwargs={'post_id': 1}), data)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     return_data = response.data['data']
-    #     count = return_data['count']
-    #     comments = return_data['comments']
-    #     self.assertEqual(count, 20)
-    #     for comment in comments:
-    #         comment_id = comment['comment_id']
-    #         comment_indb = PostComment.objects.get(id=comment_id)
-    #         self.assertEqual(comment['comment_content'], comment_indb.content)
-    #         self.assertEqual(comment['user_id'], comment_indb.create_user.id)
-    #         self.assertEqual(comment['create_time'], comment_indb.create_time)
-    #         self.assertEqual(comment['like_count'], comment_indb.like_count)
-    #         if comment['reply_to_id']:
-    #             reply_user = User.objects.get(id=comment['reply_to_id'])
-    #             self.assertEqual(reply_user, comment_indb.reply_to_user)
-    #         else:
-    #             self.assertIsNone(comment_indb.reply_to_user)
+    def test_post_new(self):
+        response = self.post_new()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('post_id', response.data['data'])
+        self.assertEqual(Post.objects.count(), 1)
+        post = Post.objects.first()
+        self.assertEqual(post.content, '这是一条新帖子内容')
+        self.assertEqual(post.create_user, self.user1)
+        self.assertEqual(post.title, 'Title')
+
+    def test_post_information(self):
+        Post_new_response = self.post_new()
+        response = self.client.get(reverse('post_information', kwargs={'post_id': 1}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        post = Post.objects.filter(id=1).first()
+        self.assertEqual(response.data['data']["post_title"], post.title)
+        self.assertEqual(response.data['data']["like_count"], post.like_count)
+        self.assertEqual(response.data['data']["comment_count"], post.comment_count)
+        self.assertEqual(response.data['data']["post_content"], post.content)
+        self.assertEqual(response.data['data']["create_time"], post.create_time)
+        self.assertEqual(response.data['data']["user_name"], post.create_user.username)
+
+
+
+    def test_comment_new(self):
+        post_new_response = self.post_new()
+        login_user2_response = self.switch_user()
+        self.assertEqual(login_user2_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(login_user2_response.data['data'], "登录成功")
+        self.assertEqual(login_user2_response.data['err'], None)
+
+        comment_data = {
+            'comment_id': 1,
+            'post_id': 1,
+            'user_id': self.user2.id,
+            'comment_content': '这是一条评论',
+        }
+        comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
+        self.assertEqual(comment_new_reponse.status_code, status.HTTP_200_OK)
+        self.assertIn('comment_id', comment_new_reponse.data['data'])
+        self.assertEqual(PostComment.objects.count(), 1)
+        comment = PostComment.objects.first()
+        self.assertEqual(comment.content, '这是一条评论')
+        self.assertEqual(comment.create_user, self.user2)
+
+    def test_post_good(self):
+        post_new_response = self.post_new()
+        login_user2_response = self.switch_user()
+        post_good_data = {
+            'post_id': 1,
+            'is_good': 1,
+        }
+        post_good_response = self.client.put(self.post_good_url, post_good_data, content_type='application/json', format='json')
+        print(post_good_response.data)
+        self.assertEqual(post_good_response.status_code, status.HTTP_200_OK)
+        post = Post.objects.first()
+        self.assertEqual(post.like_count, 1)
+
+    def test_delete_post(self):
+        post_new_response = self.post_new()
+        data = {'post_id': 1}
+        response = self.client.delete(reverse('post_delete'), data, content_type='application/json', format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Post.objects.all().count(), 0)
+
+    def test_comment_list(self):
+        post_new_response = self.post_new()
+        login_user2_response = self.switch_user()
+        for i in range(20):
+            comment_data = {
+                'comment_id': i+1,
+                'post_id': 1,
+                'user_id': self.user2.id,
+                'comment_content': f"Comment {i+1}",
+            }
+            # print(comment_data)
+            comment_new_reponse = self.client.post(self.post_comments_new_url, comment_data)
+
+        self.assertEqual(PostComment.objects.all().count(), 20)
+        data = {
+            'page_num': 1,
+            'page_size': 10,
+        }
+        response = self.client.get(reverse('post_comments', kwargs={'post_id': 1}), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        return_data = response.data['data']
+        count = return_data['count']
+        comments = return_data['comments']
+        self.assertEqual(count, 20)
+        for comment in comments:
+            comment_id = comment['comment_id']
+            comment_indb = PostComment.objects.get(id=comment_id)
+            self.assertEqual(comment['comment_content'], comment_indb.content)
+            self.assertEqual(comment['user_id'], comment_indb.create_user.id)
+            self.assertEqual(comment['create_time'], comment_indb.create_time)
+            self.assertEqual(comment['like_count'], comment_indb.like_count)
+            if comment['reply_to_id']:
+                reply_user = User.objects.get(id=comment['reply_to_id'])
+                self.assertEqual(reply_user, comment_indb.reply_to_user)
+            else:
+                self.assertIsNone(comment_indb.reply_to_user)
+
+        data = {
+            'page_num': 4,
+            'page_size': 5,
+        }
+        response = self.client.get(reverse('post_comments', kwargs={'post_id': 1}), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        return_data = response.data['data']
+        count = return_data['count']
+        comments = return_data['comments']
+        self.assertEqual(count, 20)
+        for comment in comments:
+            comment_id = comment['comment_id']
+            comment_indb = PostComment.objects.get(id=comment_id)
+            self.assertEqual(comment['comment_content'], comment_indb.content)
+            self.assertEqual(comment['user_id'], comment_indb.create_user.id)
+            self.assertEqual(comment['create_time'], comment_indb.create_time)
+            self.assertEqual(comment['like_count'], comment_indb.like_count)
+            if comment['reply_to_id']:
+                reply_user = User.objects.get(id=comment['reply_to_id'])
+                self.assertEqual(reply_user, comment_indb.reply_to_user)
+            else:
+                self.assertIsNone(comment_indb.reply_to_user)
 
     def test_post_list(self):
         data = {'email': 'abc@qq.com', 'password': '123456'}
