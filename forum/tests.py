@@ -203,5 +203,23 @@ class ForumTests(TestCase):
             self.assertEqual(post['like_count'], post_indb.like_count)
             self.assertEqual(post['comment_count'], PostComment.objects.filter(id=post_id).count())
 
+        data = {
+            'page_num': 3,
+            'page_size': 6,
+        }
+        response = self.client.get(self.post_list_url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        return_data = response.data['data']
+        count = return_data['count']
+        posts = return_data['posts']
+        self.assertEqual(count, 15)
+        for post in posts:
+            post_id = post['post_id']
+            post_indb = Post.objects.get(id=post_id)
+            self.assertEqual(post['post_title'], post_indb.title)
+            self.assertEqual(post['user_id'], post_indb.create_user.id)
+            self.assertEqual(post['like_count'], post_indb.like_count)
+            self.assertEqual(post['comment_count'], PostComment.objects.filter(id=post_id).count())
+
 
 
