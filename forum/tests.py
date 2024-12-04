@@ -55,7 +55,6 @@ class ForumTests(TestCase):
     def test_post_information(self):
         Post_new_response = self.post_new()
         response = self.client.get(reverse('post_information', kwargs={'post_id': 1}))
-        #同样，这里无法删除之前测试函数创建的数据，导致只有将本该为 1 的post_id改为 3 才能通过测试
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         post = Post.objects.filter(id=1).first()
         self.assertEqual(response.data['data']["post_title"], post.title)
