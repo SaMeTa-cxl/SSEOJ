@@ -28,7 +28,7 @@ class PostComment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
 
     content = models.TextField()
-    check_status = models.BooleanField(default=False)
+    check_status = models.BooleanField(default=True)
     like_count = models.IntegerField(default=0)
     reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reply_to_users', null=True, blank=True)
 
