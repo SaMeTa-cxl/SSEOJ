@@ -90,7 +90,7 @@ class ForumTests(TestCase):
     def test_post_good(self):
         post_new_response = self.post_new()
         login_user2_response = self.switch_user()
-
+        #?
         post_good_data = {
             'post_id': 1,
             'is_good': 1,
