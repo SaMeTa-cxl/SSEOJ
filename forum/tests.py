@@ -92,7 +92,7 @@ class ForumTests(TestCase):
         login_user2_response = self.switch_user()
 
         post_good_data = {
-            'post_id': 1,   #这里按道理来说是1，但是因为之前的User和Post删不掉，所以要想通过测试只能写2
+            'post_id': 1,
             'is_good': 1,
         }
         post_good_response = self.client.put(self.post_good_url, post_good_data, content_type='application/json', format='json')
