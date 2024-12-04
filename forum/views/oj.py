@@ -109,7 +109,7 @@ class PostCommentNewAPI(APIView):
                 )
             else:
                 comment = PostComment.objects.create(
-                    id = post_id,
+                    id=comment_id,
                     post=post,
                     create_user=user,
                     content=comment_content,
@@ -124,7 +124,7 @@ class PostCommentNewAPI(APIView):
                 )
             else:
                 comment = PostComment.objects.create(
-                    id=post_id,
+                    id=comment_id,
                     post=post,
                     create_user=user,
                     content=comment_content,
@@ -211,7 +211,7 @@ class PostDeleteAPI(APIView):
         except Post.DoesNotExist:
             return fail("帖子不存在！")
 
-        if(post.create_user == request.user):
+        if(post.create_user != request.user):
             return fail("无权限删除该帖子") #理论上不会出现，因为对于无权限的用户前端不会显示删除功能
 
         post.delete()
