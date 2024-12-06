@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
+class SysConfigs(models.Model):
+    key = models.CharField(max_length=25, unique=True, db_index=True)
+    value = models.JSONField()

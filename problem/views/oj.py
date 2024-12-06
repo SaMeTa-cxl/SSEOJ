@@ -63,11 +63,6 @@ class ProblemSolutionsDetailAPI(APIView):
         return success(solution.content)
 
 
-class ProblemSubmissionsAPI(APIView):
-    def get(self, request, problem_id):
-        pass
-
-
 class ProblemListAPI(APIView):
     def get(self, request):
         """
@@ -192,11 +187,6 @@ class ProblemListStarAPI(APIView):
             problem_list.star_users.add(request.user)
             problem_list.add_star_count()
             return success('收藏成功！')
-
-
-class ProblemSubmitAPI(APIView):
-    def post(self, request):
-        pass
 
 
 class ProblemSolutionCreateAPI(APIView):

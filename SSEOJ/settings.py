@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'utils',
     'problem',
     'forum',
+    'judge',
+    'conf',
+    'submission'
 ]
 
 MIDDLEWARE = [
@@ -151,3 +154,8 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # 内存缓存
+    }
+}
