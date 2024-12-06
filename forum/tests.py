@@ -220,6 +220,3 @@ class ForumTests(TestCase):
             self.assertEqual(post['user_id'], post_indb.create_user.id)
             self.assertEqual(post['like_count'], post_indb.like_count)
             self.assertEqual(post['comment_count'], PostComment.objects.filter(id=post_id).count())
-
-
-
