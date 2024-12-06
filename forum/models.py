@@ -14,7 +14,6 @@ class Post(models.Model):
     last_update_time = models.DateTimeField(null=True)
     is_announcement = models.BooleanField(default=False)
     check_status = models.BooleanField(default=False)
-    tags = models.CharField(max_length=100, default='')
 
     class Meta:
         db_table = 'post'
@@ -28,9 +27,8 @@ class PostComment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
 
     content = models.TextField()
-    check_status = models.BooleanField(default=True)
+    check_status = models.BooleanField(default=False)
     like_count = models.IntegerField(default=0)
-    reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reply_to_users', null=True, blank=True)
 
     class Meta:
         db_table = 'post_comment'
