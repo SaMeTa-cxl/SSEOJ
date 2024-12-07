@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
 
 from ..models import User, Following
-from ..serializers import UserLoginSerializer, UserInfoSerializer
+from ..serializers import *
 from utils.api import *
 from django.core.cache import cache
 from utils.api import ImageCode, VerificationCode, DecodePassword
@@ -63,9 +63,9 @@ class UserRegisterAPI(APIView):
         verificationCode = data.get('verification_code')
 
         if not email or not username or not password:
-            return fail("所有字段均为必填项")
+            return fail(msg = "所有字段均为必填项")
         if User.objects.filter(email=email).exists():
-            return fail("该邮箱已注册")
+            return fail(msg = "该邮箱已注册")
 
         if verificationCode != cache.get(email):
             return fail(msg='验证码错误或过期')
@@ -78,7 +78,8 @@ class UserRegisterAPI(APIView):
             user.save()
 
             avatar = ImageCode.image_base64(user.avatar)
-            data = {"id": str(user.id), "username": username, "avatar": avatar}
+            data = UserLogInformation(user).data
+            data['avatar'] = avatar
             return success(data)
         except Exception:
             return fail(msg='注册失败')
@@ -93,8 +94,9 @@ class UserLoginAPI(APIView):
             return fail(msg = "邮箱或密码错误")
         else:
             auth.login(request, user)
-            data = {"id": str(user.id), "username": user.username, "user_type": user.user_type,
-                     "avatar": ImageCode.image_base64(user.avatar)}
+            avatar = ImageCode.image_base64(user.avatar)
+            data = UserLogInformation(user).data
+            data['avatar'] = avatar
             return success(data)
 
 class UserLogoutAPI(APIView):
@@ -104,19 +106,19 @@ class UserLogoutAPI(APIView):
 
 
 
+
 class UserInfoAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request, id):
         try:
-            userInfo = User.objects.get(id = user_id)
+            userInfo = User.objects.get(id = id)
         except User.DoesNotExist:
             return fail(msg= "用户不存在")
 
-
-        serializer = UserInfoSerializer(userInfo)
-        userData = serializer.data
+        Rserializer = UserInfoSerializer(userInfo)
+        userData = Rserializer.data
         userData["avatar"] = ImageCode.image_base64(userInfo.avatar)
-        userData["subscribing_count"] = serializer.get_subscribing_count(userInfo)
-        userData["subscribers_count"] = serializer.get_subscribers_count(userInfo)
+        #userData["subscribing_count"] = serializer.get_subscribing_count(userInfo)
+        #userData["subscribers_count"] = serializer.get_subscribers_count(userInfo)
 
         return success(userData)
 
@@ -146,9 +148,9 @@ class UserSubscribeAPI(APIView):
             return success("取消关注成功")
 
 class UserFollowingAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request, id):
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=id)
         except User.DoesNotExist:
             return fail(msg = "没有找到该用户")
 
@@ -156,8 +158,10 @@ class UserFollowingAPI(APIView):
         if request.user.is_authenticated:
             myself = request.user
 
-
         following_records = Following.objects.filter(follower=user)
+        Rserializer = UserFollowingSerializer(following_records, many=True, context={'myself': myself})
+
+        """
         res = []
         for record in following_records:
             following_user = record.following
@@ -184,12 +188,14 @@ class UserFollowingAPI(APIView):
                     'is_followed_by_me': is_followed_by_me
                 }
             )
-        return success(res)
+        """
+
+        return success(Rserializer.data)
 
 class UserFollowerAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request, id):
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=id)
         except User.DoesNotExist:
             return fail(msg = "没有找到该用户")
 
@@ -198,8 +204,9 @@ class UserFollowerAPI(APIView):
             myself = request.user
 
         following_records = Following.objects.filter(following=user)
+        Rserializer = UserFollowingSerializer(following_records, many=True, context={'myself': myself})
+        """
         res = []
-
         for record in following_records:
             following_user = record.following
 
@@ -225,11 +232,16 @@ class UserFollowerAPI(APIView):
                     'is_followed_by_me': is_followed_by_me
                 }
             )
-        return success(res)
+        """
+
+        return success(Rserializer.data)
 
 class StudyPlanAPI(APIView):
     def get(self, request, user_id):
-        pass
+        if not request.user.is_authenticated:
+            return fail(msg = "未登录")
+
+
 
 class UserProfileChangeAPI(APIView):
     def put(self, request):
@@ -262,9 +274,9 @@ class UserAvatarChangeAPI(APIView):
             return fail(msg = "未登录")
 
         user = request.user
-        data = request.data
+        avatar = request.data.get("avatar")
 
-        user.avatar = ImageCode.base64_image(data.get("avatar"), user.id)
+        user.avatar = ImageCode.base64_image(avatar, user.id)
         user.save()
 
         return success("修改成功")
