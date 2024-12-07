@@ -97,7 +97,7 @@ def paginate_data(request, query_set, object_serializer=None):
     :return:返回分页后的data
     """
     try:
-        page_num = int(request.GET.get("page_num", "0"))
+        page_num = int(request.GET.get("page_num", "1"))
     except ValueError:
         page_num = 10
     if page_num < 0 or page_num > 250:

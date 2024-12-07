@@ -28,8 +28,14 @@ class ProblemDescriptionAPI(APIView):
 
 
 class ProblemSolutionsAPI(APIView):
-    @staticmethod
-    def get(request, problem_id):
+    sort_dict = {
+        'likeDesc': '-like_count',
+        'commentDesc': '-comment_count',
+        'timeDesc': '-create_time',
+        'timeAsc': 'create_time'
+    }
+
+    def get(self, request, problem_id):
         """
         获取id为problem_id的题目的所有题解信息，其中详细内容被截断为最多200个字符
         返回为一个字典列表，每个字典为一个题解的信息
@@ -41,8 +47,17 @@ class ProblemSolutionsAPI(APIView):
         except Problem.DoesNotExist:
             return fail('该题目不存在！')
         solutions = problem.solutions.all()
-        print(SolutionSerializer(solutions, many=True).data)
-        return success(SolutionSerializer(solutions, many=True).data)
+        keyword = request.GET.get('keyword', None)
+        tags = request.GET.get('tags', None)
+        sort_type = request.GET.get('sort_type', None)
+        if keyword:
+            solutions = solutions.filter(content__contains=keyword)
+        if tags:
+            solutions = solutions.filter(tags__in=tags)
+        if sort_type:
+            solutions = solutions.order_by(self.sort_dict[sort_type])
+        solutions = paginate_data(request, solutions, SolutionSerializer)
+        return success({'count': len(solutions), 'solutions': solutions})
 
 
 class ProblemSolutionsDetailAPI(APIView):

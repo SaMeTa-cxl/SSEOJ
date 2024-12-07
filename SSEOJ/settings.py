@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 import corsheaders
 
@@ -94,7 +94,7 @@ DATABASES = {
         'HOST': '127.0.0.1', # 数据库地址，本机 ip 地址 127.0.0.1
         'PORT': 3306, # 端口
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': '123456', # 数据库密码
+        'PASSWORD': os.environ.get('MYSQL_PSWD'), # 数据库密码
     }
 }
 
