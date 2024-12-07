@@ -19,3 +19,18 @@ class UserSerializer(serializers.ModelSerializer):
         if needed_fields:
             for field in set(self.fields.keys()) - set(needed_fields):
                 self.fields.pop(field)
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    subscribing_count = serializers.SerializerMethodField()
+    subscribers_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'avatar', 'profile', 'subscribing_count', 'subscribers_count']
+
+    def get_subscribing_count(self, obj):
+        return obj.followings.count()
+
+    def get_subscribers_count(self, obj):
+        return obj.followers.count()

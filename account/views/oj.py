@@ -1,58 +1,58 @@
 from django.contrib import auth
-from marshmallow import ValidationError
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
 
 from ..models import User, Following
-from ..serializers import UserLoginSerializer
+from ..serializers import UserLoginSerializer, UserInfoSerializer
 from utils.api import *
+from django.core.cache import cache
+from utils.api import ImageCode, VerificationCode, DecodePassword
+from django.contrib.sessions.models import Session
 
 
-class UserLoginAPI(APIView):
-    @validate_serializer(UserLoginSerializer)
+
+class EmailCodeAPI(APIView):
     def post(self, request):
-        """
-        POST /api/login
-        """
         data = request.data
-        user = auth.authenticate(email=data['email'], password=data['password'])
-        if not user:
-            return fail("用户名或密码错误！")
+        try:
+            requestType = int(data.get('type'))
+        except ValueError:
+            requestType = 0
+
+        toEmail = data.get('email')
+
+        if requestType == 0:
+            if request.user.is_authenticated:
+                return fail(msg = '已登录无法获取注册验证码')
+
+            if User.objects.filter(email=toEmail).exists():
+                return fail(msg='该邮箱已注册')
+
+            code = VerificationCode.sendMessage(toEmail, 0)
+            if code is None:
+                return fail(msg = "发送失败")
+
+            cache.set(toEmail, code, timeout=300)
+            return success('发送成功')
+
+        elif requestType == 1:
+            try:
+                user = User.objects.get(email=toEmail)
+            except User.DoesNotExist:
+                return fail(msg = '该邮箱不存在')
+
+            if user.email != toEmail:
+                return fail(msg = "邮箱错误")
+
+            code = VerificationCode.sendMessage(toEmail, 1)
+            if code is None:
+                return fail(msg = "发送失败")
+
+            cache.set(toEmail, code, timeout=10)
+            return success('发送成功')
+
         else:
-            auth.login(request, user)
-            return success("登录成功")
-
-
-class UserLogoutAPI(APIView):
-    def get(self, request):
-        """
-        GET /api/logout
-        """
-        auth.logout(request)
-        # return Response({"message": "登出成功"}, status=status.HTTP_200_OK)
-        return success("登出成功")
-
-
-class UserSendEmailAPI(APIView):
-    def get(self, request):
-        email = request.GET.get('email')
-        user_id = request.GET.get('user_id', None)
-        if user_id == None:
-            user = auth.authenticate(email=email)
-            if not user:    #用户未注册，使用邮箱验证码注册新账号
-                return success({"verification_code": "999999"})
-            else:   #用户已注册，使用邮箱验证码登录
-                user_id = user.id
-                return success({"verification_code": "888888", "user_id": user_id})
-
-        else:   #用户已登录
-            user = auth.authenticate(email=email, user_id=user_id)
-            if not user:    #理论上不会出现
-                return fail("用户状态异常！")
-            else:   #用户已登录，使用邮箱验证码修改密码等
-                return success({"verification_code": "777777", "user_id": user_id})
-
-
+            return fail(msg = "未知的申请类型")
 
 class UserRegisterAPI(APIView):
     def post(self, request):
@@ -60,41 +60,83 @@ class UserRegisterAPI(APIView):
         email = data.get('email')
         username = data.get('username')
         password = data.get('password')
+        verificationCode = data.get('verification_code')
+
         if not email or not username or not password:
             return fail("所有字段均为必填项")
         if User.objects.filter(email=email).exists():
             return fail("该邮箱已注册")
+
+        if verificationCode != cache.get(email):
+            return fail(msg='验证码错误或过期')
+        else:
+            cache.delete(email)
+
         try:
             user = User.objects.create_user(username=username, email=email, password=password)
             user.full_clean()
             user.save()
-            return success("注册成功！")
-        except Exception as e:
-            return fail(e)
 
+            avatar = ImageCode.image_base64(user.avatar)
+            data = {"id": str(user.id), "username": username, "avatar": avatar}
+            return success(data)
+        except Exception:
+            return fail(msg='注册失败')
+
+class UserLoginAPI(APIView):
+    @validate_serializer(UserLoginSerializer)
+    def post(self, request):
+        data = request.data
+        user = auth.authenticate(email=data.get('email'), password=data.get('password'))
+
+        if not user:
+            return fail(msg = "邮箱或密码错误")
+        else:
+            auth.login(request, user)
+            data = {"id": str(user.id), "username": user.username, "user_type": user.user_type,
+                     "avatar": ImageCode.image_base64(user.avatar)}
+            return success(data)
+
+class UserLogoutAPI(APIView):
+    def get(self, request):
+        auth.logout(request)
+        return success("退出成功")
 
 
 
 class UserInfoAPI(APIView):
     def get(self, request, user_id):
-        pass
+        try:
+            userInfo = User.objects.get(id = user_id)
+        except User.DoesNotExist:
+            return fail(msg= "用户不存在")
 
+
+        serializer = UserInfoSerializer(userInfo)
+        userData = serializer.data
+        userData["avatar"] = ImageCode.image_base64(userInfo.avatar)
+        userData["subscribing_count"] = serializer.get_subscribing_count(userInfo)
+        userData["subscribers_count"] = serializer.get_subscribers_count(userInfo)
+
+        return success(userData)
 
 class UserSubscribeAPI(APIView):
     def post(self, request):
-        if not request.user.is_authenticated: return
+        if not request.user.is_authenticated:
+            return fail(msg = "用户未登录")
+
         user_id = request.user.id
         following_user_id = request.data.get('id')
         relationship = request.data.get('relationship')
 
         if relationship not in ["0", "1"]:
-            return fail("Invalid relationship status")
+            return fail(msg = "错误的关注状态")
 
         try:
             user = User.objects.get(id=user_id)
             following_user = User.objects.get(id=following_user_id)
         except User.DoesNotExist:
-            raise NotFound("User or Following user does not exist")
+            return fail(msg = "不存在该用户")
 
         if relationship == "1":
             following_record, created = Following.objects.get_or_create(follower=user, following=following_user)
@@ -103,28 +145,39 @@ class UserSubscribeAPI(APIView):
             Following.objects.filter(follower=user, following=following_user).delete()
             return success("取消关注成功")
 
-
 class UserFollowingAPI(APIView):
     def get(self, request, user_id):
         try:
-            myid = request.data.get('user_id')
-            myself = User.objects.get(id=myid)
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            raise NotFound("User not found!")
+            return fail(msg = "没有找到该用户")
+
+        myself = None
+        if request.user.is_authenticated:
+            myself = request.user
+
 
         following_records = Following.objects.filter(follower=user)
         res = []
         for record in following_records:
             following_user = record.following
-            is_mutual_following = Following.objects.get(follower=following_user, following=user).exists()
-            is_following_me = Following.objects.get(follower=following_user, following=myself).exists()
-            is_followed_by_me = Following.objects.get(follower=myself, following=following_user).exists()
+
+            is_following_me = False
+            if myself:
+                Following.objects.get(follower=following_user, following=myself).exists()
+
+            is_followed_by_me = False
+            if myself:
+                Following.objects.get(follower=myself, following=following_user).exists()
+
+            is_mutual_following = False
+            if is_following_me and is_followed_by_me:
+                is_mutual_following = True
 
             res.append(
                 {
-                    'user_id': following_user.id,
-                    'user_name': following_user.username,
+                    'id': following_user.id,
+                    'username': following_user.username,
                     'profile': following_user.profile,
                     'is_mutual_following': is_mutual_following,
                     'is_following_me': is_following_me,
@@ -132,29 +185,40 @@ class UserFollowingAPI(APIView):
                 }
             )
         return success(res)
-
 
 class UserFollowerAPI(APIView):
     def get(self, request, user_id):
         try:
-            myid = request.data.get('user_id')
-            myself = User.objects.get(id=myid)
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            raise NotFound("User not found!")
+            return fail(msg = "没有找到该用户")
+
+        myself = None
+        if request.user.is_authenticated:
+            myself = request.user
 
         following_records = Following.objects.filter(following=user)
         res = []
+
         for record in following_records:
             following_user = record.following
-            is_mutual_following = Following.objects.get(follower=user, following=following_user).exists()
-            is_following_me = Following.objects.get(follower=following_user, following=myself).exists()
-            is_followed_by_me = Following.objects.get(follower=myself, following=following_user).exists()
+
+            is_following_me = False
+            if myself:
+                Following.objects.get(follower=following_user, following=myself).exists()
+
+            is_followed_by_me = False
+            if myself:
+                Following.objects.get(follower=myself, following=following_user).exists()
+
+            is_mutual_following = False
+            if is_following_me and is_followed_by_me:
+                is_mutual_following = True
 
             res.append(
                 {
-                    'user_id': following_user.id,
-                    'user_name': following_user.username,
+                    'id': following_user.id,
+                    'username': following_user.username,
                     'profile': following_user.profile,
                     'is_mutual_following': is_mutual_following,
                     'is_following_me': is_following_me,
@@ -163,17 +227,82 @@ class UserFollowerAPI(APIView):
             )
         return success(res)
 
-
-class UserInfoChangeAPI(APIView):
-    def put(self, request):
+class StudyPlanAPI(APIView):
+    def get(self, request, user_id):
         pass
 
+class UserProfileChangeAPI(APIView):
+    def put(self, request):
+        if not request.user.is_authenticated:
+            return fail(msg = '未登录')
+
+        user = request.user
+        data = request.data
+
+        user.profile = data.get('profile')
+        user.save()
+        return success("修改成功")
+
+class UserNameChangeAPI(APIView):
+    def put(self, request):
+        if not request.user.is_authenticated:
+            return fail(msg = "未登录")
+
+        data = request.data
+        user = request.user
+
+        user.username = data.get("username")
+        user.save()
+
+        return success("修改成功")
 
 class UserAvatarChangeAPI(APIView):
     def put(self, request):
+        if not request.user.is_authenticated:
+            return fail(msg = "未登录")
+
+        user = request.user
+        data = request.data
+
+        user.avatar = ImageCode.base64_image(data.get("avatar"), user.id)
+        user.save()
+
+        return success("修改成功")
+
+class UserPasswordChangeAPI(APIView):
+    def put(self, request):
+        data = request.data
+        try:
+            user = User.objects.get(id=data['user_id'])
+        except User.DoesNotExist:
+            return fail(msg = "User not found")
+
+        if not request.user.is_authenticated:
+            return fail(msg = "No permission to change")
+        elif request.user.id != data["user_id"]:
+            return fail(msg = "No permission to change")
+
+        user.set_password(data["password"])
+        user.save()
+
+        return success("success")
+
+class UserPasswordForgetAPI(APIView):
+    def put(self, request):
         pass
 
+class CreatProblemListAPI(APIView):
+    def get(self, request):
+        pass
 
-class UserProblemlistAPI(APIView):
+class EditProblemListAPI(APIView):
+    def put(self, request, problemlist_id):
+        pass
+
+class GetTryProblemAPI(APIView):
+    def get(self, request, user_id):
+        pass
+
+class StarProblemAPI(APIView):
     def get(self, request, user_id):
         pass

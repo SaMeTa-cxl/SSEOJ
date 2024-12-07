@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from account.models import User
-from problem.models import Problem, TagType, Tag, Solution, ProblemList
+from problem.models import Problem, Tag, Solution, ProblemList
 
 DEFAULT_PROBLEM_DATA = {
     'name': 'Test Problem 1',
