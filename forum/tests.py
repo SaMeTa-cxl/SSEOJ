@@ -1,8 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
+
 from account.models import User
 from .models import Post, PostComment
+import time
 
 class ForumTests(TestCase):
     def setUp(self):
@@ -220,3 +223,70 @@ class ForumTests(TestCase):
             self.assertEqual(post['user_id'], post_indb.create_user.id)
             self.assertEqual(post['like_count'], post_indb.like_count)
             self.assertEqual(post['comment_count'], PostComment.objects.filter(id=post_id).count())
+
+class PostListTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='1', email='abc@qq.com', password='123')
+        Post.objects.create(
+            title = 'First',
+            content = 'First',
+            create_user=self.user,
+            like_count=3,
+            check_status=True
+        )
+        time.sleep(1)
+        Post.objects.create(
+            title='Second',
+            content='Second',
+            create_user=self.user,
+            like_count=5,
+            check_status=True
+        )
+        time.sleep(1)
+        Post.objects.create(
+            title='Third',
+            content='Third',
+            create_user=self.user,
+            like_count=2,
+            check_status=False
+        )
+
+    def test_PostList1(self):
+        client = APIClient()
+        url = reverse('post_list')
+        data = {'page_num': 1, 'page_size': 3, 'sort_type': 'timeAsc'}
+
+        response = client.get(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['err'], None)
+        data = response.data.get('data')
+        self.assertEqual(data['count'], 2)
+        postList = data.get('post_list')
+        self.assertEqual(postList[0].get('post_title'), 'First')
+
+    def test_PostList2(self):
+        client = APIClient()
+        url = reverse('post_list')
+        data = {'page_num': 1, 'page_size': 3, 'sort_type': 'timeDesc'}
+        response = client.get(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['err'], None)
+        data = response.data.get('data')
+        self.assertEqual(data['count'], 2)
+        postList = data.get('post_list')
+        self.assertEqual(postList[0].get('post_title'), 'Second')
+
+    def test_PostList3(self):
+        client = APIClient()
+        url = reverse('post_list')
+        data = {'page_num': 1, 'page_size': 3, 'sort_type': 'likeDesc'}
+        response = client.get(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['err'], None)
+        data = response.data.get('data')
+        self.assertEqual(data['count'], 2)
+        postList = data.get('post_list')
+        self.assertEqual(postList[0].get('post_title'), 'Second')

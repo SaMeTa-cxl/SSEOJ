@@ -9,5 +9,6 @@ urlpatterns = [
     path('post/comment/new/', PostCommentNewAPI.as_view(), name='post_comment_new'),
     path('post/new/', PostNewAPI.as_view(), name='post_new'),
     path('post/good/', PostGoodAPI.as_view(), name='post_good'),
-    path('post/delete/', PostDeleteAPI.as_view(), name='post_delete')
+    path('post/delete/', PostDeleteAPI.as_view(), name='post_delete'),
+    path('post/comment/good/', PostCommentGoodAPI.as_view(), name ='post_comment_good')
 ]
