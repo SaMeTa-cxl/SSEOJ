@@ -6,11 +6,10 @@ from problem.models import Problem, Solution, ProblemList, Tag
 
 
 class ProblemSerializer(serializers.ModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Problem
-        exclude = ['star_users', 'pass_users', 'check_status']
+        exclude = ['star_users', 'pass_users', 'check_status', 'create_time']
 
     def __init__(self, *args, **kwargs):
         needed_fields = kwargs.pop('needed_fields', None)
@@ -21,7 +20,6 @@ class ProblemSerializer(serializers.ModelSerializer):
 
 
 class SolutionSerializer(serializers.ModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
     user_info = UserSerializer(source='create_user', read_only=True, needed_fields=['id', 'username', 'avatar'])
     content = serializers.SerializerMethodField()
 
