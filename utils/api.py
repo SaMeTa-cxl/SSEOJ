@@ -1,7 +1,11 @@
-import functools
+import functools, os, base64, smtplib, random, string
 
 from rest_framework import status
 from rest_framework.response import Response
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from fsspec.asyn import private
+from sympy.codegen.cnodes import static
 
 
 def success(data):
@@ -112,3 +116,85 @@ def paginate_data(request, query_set, object_serializer=None):
     if object_serializer:
         results = object_serializer(results, many=True).data
     return results
+
+
+class ImageCode:
+    @staticmethod
+    def image_base64(imagePath):
+        if not os.path.exists(imagePath):
+            imagePath = 'static/1.png'
+
+        with open(imagePath, 'rb') as pngFile:
+            data = pngFile.read()
+
+        encodedString = base64.b64encode(data)
+
+        return encodedString
+
+    @staticmethod
+    def base64_image(encodedString, user_id):
+        path = 'static/user_' + str(user_id) + '.png'
+
+        imgStr = base64.decodebytes(encodedString.encode('ascii'))
+        with open(path, 'wb') as imageFile:
+            imageFile.write(imgStr)
+
+        return path
+
+
+class VerificationCode:
+    smtpServer = 'smtp.qq.com' #SMTP服务器配置
+    smtpPort = 465 #SMTP服务器端口
+    emailUser = '2394160277@qq.com'  #邮箱地址
+    emailAuthCode = 'mselvjmiqgbfdjja'  # 授权码
+    title = 'SSEOJ验证码'
+    messageStr = ['您的注册账号验证码为\n\n', '您的找回密码验证码为\n\n']
+    endStr = '\n\n该验证码在3分钟内有效，请及时使用\n如并非您的操作请直接忽略此信息并防止验证码泄露'
+
+    @staticmethod
+    def randomCode():
+        return ''.join(random.choices(string.digits + string.ascii_uppercase, k=6))
+
+    @staticmethod
+    def createMessage(toEmail, title, body):
+        msg = MIMEMultipart()
+        msg['from'] = VerificationCode.emailUser
+        msg['to'] = toEmail
+        msg['Subject'] = title
+
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+        return msg
+
+    @staticmethod
+    def sendMessage(toEmail, type_code):
+        code = VerificationCode.randomCode()
+        body = f"Hello, {VerificationCode.messageStr[type_code]}{code}{VerificationCode.endStr}"
+        sendState = True
+
+        try:
+            # 使用SMTP_SSL连接到QQ邮箱的SMTP服务器
+            server = smtplib.SMTP_SSL(VerificationCode.smtpServer, VerificationCode.smtpPort)
+            server.login(VerificationCode.emailUser, VerificationCode.emailAuthCode)
+
+            # 发送邮件
+            msg = VerificationCode.createMessage(toEmail, VerificationCode.title, body)
+            text = msg.as_string()
+            server.sendmail(VerificationCode.emailUser, toEmail, text)
+
+        except Exception as e:
+            sendState = False
+        finally:
+            server.quit()
+
+        if sendState:
+            return code
+        else:
+            return None
+
+
+class DecodePassword:
+    @staticmethod
+    def GetPassword(encoded):
+        decoded = encoded
+        return decoded

@@ -1,6 +1,7 @@
 from django.db import models
 
 from account.models import User
+from problem.models import Tag
 
 
 class Post(models.Model):
@@ -14,7 +15,7 @@ class Post(models.Model):
     last_update_time = models.DateTimeField(null=True)
     is_announcement = models.BooleanField(default=False)
     check_status = models.BooleanField(default=False)
-    tags = models.CharField(max_length=100, default='')
+    tags = models.ManyToManyField(Tag, related_name='tags')
 
     class Meta:
         db_table = 'post'

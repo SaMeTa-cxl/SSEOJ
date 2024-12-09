@@ -6,16 +6,9 @@ from django.db.models import Count
 from account.models import User
 
 
-class TagType(models.Model):
-    name = models.CharField(max_length=10)
-
-    class Meta:
-        db_table = 'tag_type'
-
-
 class Tag(models.Model):
     name = models.CharField(max_length=10)
-    type = models.ForeignKey(TagType, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'tag'
