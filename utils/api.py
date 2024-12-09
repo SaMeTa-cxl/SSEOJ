@@ -4,8 +4,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from fsspec.asyn import private
-from sympy.codegen.cnodes import static
 
 
 def success(data):
