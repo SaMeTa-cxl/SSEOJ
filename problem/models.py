@@ -8,13 +8,13 @@ from account.models import User
 
 class Tag(models.Model):
     name = models.CharField(max_length=10)
-    parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, null=True)
 
     class Meta:
         db_table = 'tag'
 
     def __str__(self):
-        return self.name
+        return self.id
 
 
 class Problem(models.Model):

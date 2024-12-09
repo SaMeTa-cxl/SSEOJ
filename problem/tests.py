@@ -34,9 +34,8 @@ class ProblemDescriptionTestCase(TestCase):
     def setUp(self):
         # 准备好一个题目，设定它的tag
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
-        self.tag_type = TagType.objects.create(name='TagType')
-        self.tag1 = Tag.objects.create(name='Tag1', type=self.tag_type)
-        self.tag2 = Tag.objects.create(name='Tag2', type=self.tag_type)
+        self.tag1 = Tag.objects.create(name='Tag1')
+        self.tag2 = Tag.objects.create(name='Tag2')
         self.problem.tags.add(self.tag1, self.tag2)
 
         # 准备一个用户
@@ -46,7 +45,6 @@ class ProblemDescriptionTestCase(TestCase):
         Problem.objects.all().delete()
         Tag.objects.all().delete()
         User.objects.all().delete()
-        TagType.objects.all().delete()
 
     def login(self):
         # 登录用户
