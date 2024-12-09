@@ -81,7 +81,7 @@ class ProblemDescriptionTestCase(TestCase):
         self.assertEqual(sample['input'], ["1 2", "2 3"])
         # 测试tags无误
         tags = self.data['tags']
-        self.assertEqual(tags, [self.tag1.name, self.tag2.name])
+        self.assertEqual(tags, [self.tag1.id, self.tag2.id])
 
         # 测试similar_problem
         similar_problems = self.data['similar_problems']
