@@ -21,15 +21,10 @@ class ProblemSerializer(serializers.ModelSerializer):
 
 class SolutionSerializer(serializers.ModelSerializer):
     user_info = UserSerializer(source='create_user', read_only=True, needed_fields=['id', 'username', 'avatar'])
-    content = serializers.SerializerMethodField()
 
     class Meta:
         model = Solution
         exclude = ['like_users', 'check_status', 'problem', 'create_user']
-
-    def get_content(self, obj):
-        # 截断题解信息，减少一次性传递的数据量
-        return obj.content[:200]
 
 
 class ProblemListSerializer(serializers.ModelSerializer):

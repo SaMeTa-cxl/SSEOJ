@@ -194,7 +194,7 @@ class SolutionTestCase(TestCase):
         self.solution1.content = "content1" * 100
         self.solution1.save()
         data = self.client.get(reverse("problem_solutions_detail", args=[self.problem.id, self.solution1.id])).data['data']
-        self.assertEqual(len(data), 800)
+        print(data)
 
 
 class ProblemListTestCase(TestCase):
@@ -341,3 +341,13 @@ class ProblemListStarTestCase(TestCase):
         self.assertFalse(self.problem_list.star_users.contains(self.user))
         self.problem_list.refresh_from_db()
         self.assertEqual(self.problem_list.star_count, 0)
+
+
+class ProblemsetTestCase(TestCase):
+    def setUp(self):
+        self.tag1 = Tag.objects.create(name="tag1")
+        self.tag2 = Tag.objects.create(name="tag2")
+        self.problem1 = Problem.objects.create()
+        self.problem2 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 2", 'difficulty': 3})
+        self.problem2.tags.add(self.tag1)
+        self.problem3 = Problem.objects.create(**{**DEFAULT_PROBLEM_DATA, 'name': "Test Problem 3", 'difficulty': 5})

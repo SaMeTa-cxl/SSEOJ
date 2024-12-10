@@ -1,10 +1,25 @@
-from django.db.models import Q, F
+from django.db.models import Q, F, ExpressionWrapper, FloatField
 from rest_framework.views import APIView
 
 from problem.models import Problem, Solution, ProblemList, Tag
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
     ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer
 from utils.api import success, fail, paginate_data, validate_serializer
+
+sort_dict = {
+    'likeDesc': '-like_count',
+    'commentDesc': '-comment_count',
+    'timeDesc': '-create_time',
+    'timeAsc': 'create_time',
+    'idAsc': 'id',
+    'idDesc': '-id',
+    'countAsc': 'problem_count',
+    'countDesc': '-problem_count',
+    'starAsc': 'star_count',
+    'starDesc': '-star_count',
+    'diffAsc': 'difficulty',
+    'diffDesc': '-difficulty',
+}
 
 
 class ProblemDescriptionAPI(APIView):
@@ -28,14 +43,9 @@ class ProblemDescriptionAPI(APIView):
 
 
 class ProblemSolutionsAPI(APIView):
-    sort_dict = {
-        'likeDesc': '-like_count',
-        'commentDesc': '-comment_count',
-        'timeDesc': '-create_time',
-        'timeAsc': 'create_time'
-    }
 
-    def get(self, request, problem_id):
+    @staticmethod
+    def get(request, problem_id):
         """
         获取id为problem_id的题目的所有题解信息，其中详细内容被截断为最多200个字符
         返回为一个字典列表，每个字典为一个题解的信息
@@ -45,18 +55,20 @@ class ProblemSolutionsAPI(APIView):
         except Problem.DoesNotExist:
             return fail('该题目不存在！')
         solutions = problem.solutions.all()
-        keyword = request.GET.get('keyword', None)
-        tags = request.GET.get('tags', None)
-        sort_type = request.GET.get('sort_type', None)
+        keyword = request.GET.get('keyword')
+        tags = request.GET.get('tags')
+        sort_type = request.GET.get('sort_type')
         if keyword:
-            solutions = solutions.filter(content__contains=keyword)
+            solutions = solutions.filter(Q(content__icontains=keyword) | Q(title__icontains=keyword))
         if tags:
             solutions = solutions.filter(tags__in=tags)
         if sort_type:
-            solutions = solutions.order_by(self.sort_dict[sort_type])
+            solutions = solutions.order_by(sort_dict[sort_type])
         else:
             solutions = solutions.order_by('-create_time')
         solutions = paginate_data(request, solutions, SolutionSerializer)
+        for i in range(len(solutions)):
+            solutions[i]['content'] = solutions[i]['content'][:200]
         return success({'count': len(solutions), 'solutions': solutions})
 
 
@@ -75,7 +87,7 @@ class ProblemSolutionsDetailAPI(APIView):
         except Solution.DoesNotExist:
             return fail('该题解不存在')
 
-        return success(solution.content)
+        return success(SolutionSerializer(solution).data)
 
 
 class ProblemListAPI(APIView):
@@ -88,11 +100,15 @@ class ProblemListAPI(APIView):
         keyword = request.GET.get('keyword', '')
         problem_lists = ProblemList.objects.filter((Q(title__icontains=keyword) | Q(summary__icontains=keyword))
                                                    & Q(is_deleted=False) & Q(is_public=True))
+
+        sort_type = request.GET.get('sort_type', 'idAsc')
+        problem_lists = problem_lists.order_by(sort_dict[sort_type])
+
         if not request.user.is_authenticated:
             response_data = paginate_data(request, problem_lists, ProblemListSerializer)
             for problem_list in response_data:
                 problem_list['pass_count'] = None
-            return success(response_data)
+            return success({'count': problem_lists.count(), 'problemlists': response_data})
 
         problem_lists = problem_lists.exclude(create_user=request.user)
         response_data = paginate_data(request, problem_lists, ProblemListSerializer)
@@ -104,7 +120,7 @@ class ProblemListAPI(APIView):
                 if problem.get_pass_status(request.user):
                     problem_list['pass_count'] += 1
 
-        return success(response_data)
+        return success({'count': problem_lists.count(), 'problemlists': response_data})
 
 
 class ProblemListDetailAPI(APIView):
@@ -184,7 +200,7 @@ class ProblemListStarAPI(APIView):
         """
         收藏/取消收藏一个题单
         用户未登录或题单不存在时返回相应错误
-        当被取消收藏的题单收藏数为0时
+        当被取消收藏的题单收藏数为0且已经被发布者删除时硬删除此题单
         """
         if not request.user.is_authenticated:
             return fail('用户未登录！')
@@ -192,7 +208,7 @@ class ProblemListStarAPI(APIView):
             problem_list = ProblemList.objects.get(id=request.data['problemlist_id'])
         except ProblemList.DoesNotExist:
             return fail('不存在该题单！')
-        if problem_list.star_users.contains(request.user):
+        if request.data['is_star'] == 0:
             problem_list.star_users.remove(request.user)
             problem_list.remove_star_count()
             if not problem_list.star_users.exists() and problem_list.is_deleted:
@@ -215,9 +231,8 @@ class ProblemSolutionCreateAPI(APIView):
             return fail("不存在该题目！")
         tags = Tag.objects.filter(id__in=request.data.get('tags', []))
         solution = Solution.objects.create(content=request.data['content'], problem=problem,
-                                           create_user=request.user)
+                                           create_user=request.user, title=request.data['title'])
         solution.tags.set(tags)
-        solution.last_update_time = solution.create_time
         solution.save()
         return success('创建成功')
 
@@ -231,4 +246,39 @@ class TagAPI(APIView):
 
 class ProblemsetAPI(APIView):
     def get(self, request):
-        pass
+        """
+        获取题库，根据keyword、min_difficulty、max_difficulty、tags进行筛选，根据sort_type进行排序
+        可选的sort_type: idAsc（默认） || idDesc || diffAsc || diffDesc || passRateAsc || passRateDesc
+        返回所有的题目信息
+        """
+        keyword = request.GET.get('keyword', '')
+        min_difficulty = request.GET.get('min_difficulty')
+        max_difficulty = request.GET.get('max_difficulty')
+        tags = request.GET.get('tags')
+        sort_type = request.GET.get('sort_type', 'idAsc')
+
+        problems = Problem.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword))
+        if min_difficulty:
+            problems = problems.filter(difficulty__gte=min_difficulty)
+        if max_difficulty:
+            problems = problems.filter(difficulty__lte=max_difficulty)
+        if tags:
+            problems = problems.filter(tags__in=tags)
+        if sort_type[:8] == 'passRate':
+            problems = problems.annotate(
+                            pass_rate=ExpressionWrapper(
+                                F('passed_count') / F('attempt_count'),
+                                output_field=FloatField()
+                            )
+                        ).order_by('pass_rate' if sort_type == 'passRateAsc' else '-pass_rate')
+        else:
+            problems = problems.order_by(sort_dict[sort_type])
+        problems = paginate_data(request, problems, ProblemSerializer)
+        for problem in problems:
+            if request.user.is_authenticated:
+                problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
+            else:
+                problem['pass_status'] = None
+
+        resp = {"count": problems.count(), 'problems': problems}
+        return success(resp)
