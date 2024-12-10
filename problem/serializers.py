@@ -32,7 +32,7 @@ class ProblemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProblemList
-        fields = ['id', 'title', 'difficulty', 'problem_count', 'star_count', 'creator']
+        fields = ['id', 'title', 'problem_count', 'star_count', 'creator']
 
 
 class ProblemListDetailSerializer(serializers.ModelSerializer):
@@ -49,6 +49,12 @@ class SolutionCreateSerializer(serializers.Serializer):
     problem_id = serializers.IntegerField()
     content = serializers.CharField()
     tags = serializers.ListField(child=serializers.IntegerField(), allow_null=True, required=False)
+
+
+class ProblemListCreateSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    summary = serializers.CharField()
+    type = serializers.BooleanField()
 
 
 class TagSerializer(serializers.ModelSerializer):

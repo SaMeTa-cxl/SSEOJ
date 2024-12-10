@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 
 from problem.models import Problem, Solution, ProblemList, Tag
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
-    ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer
+    ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer, ProblemListCreateSerializer
 from utils.api import success, fail, paginate_data, validate_serializer
 
 sort_dict = {
@@ -67,9 +67,11 @@ class ProblemSolutionsAPI(APIView):
         else:
             solutions = solutions.order_by('-create_time')
         solutions = paginate_data(request, solutions, SolutionSerializer)
+        taglist = set()
         for i in range(len(solutions)):
             solutions[i]['content'] = solutions[i]['content'][:200]
-        return success({'count': len(solutions), 'solutions': solutions})
+            taglist = taglist.union(set(solutions[i]['tags']))
+        return success({'count': len(solutions), 'solutions': solutions, 'taglist': list(taglist)})
 
 
 class ProblemSolutionsDetailAPI(APIView):
@@ -123,36 +125,71 @@ class ProblemListAPI(APIView):
         return success({'count': problem_lists.count(), 'problemlists': response_data})
 
 
+class ProblemListCreateAPI(APIView):
+    @validate_serializer(ProblemListCreateSerializer)
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        title = request.data['title']
+        summary = request.data['summary']
+        is_public = request.data['type']
+        ProblemList.objects.create(title=title, summary=summary, is_public=is_public, create_user=request.user)
+        return success('创建成功')
+
+
+class ProblemListTransferAPI(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        to_transfer_list = ProblemList.objects.get(id=request.data['id'])
+        ProblemList.objects.create(tittle=to_transfer_list.title,
+                                   summary=to_transfer_list.summary,
+                                   create_user=request.user,
+                                   problem_count=to_transfer_list.problem_count,
+                                   problems=to_transfer_list.problems,
+                                   )
+        return success('转存成功！')
+
+
 class ProblemListDetailAPI(APIView):
     def get(self, request, problemlist_id):
         """
         获取id为problemlist_id的题单的详细信息。
         用户未登录时或题单id不存在时，返回对应的错误信息
         """
-        if not request.user.is_authenticated:
-            return fail("用户未登录！")
         try:
             problem_list = ProblemList.objects.get(id=problemlist_id)
         except ProblemList.DoesNotExist:
             return fail("该题单不存在！")
 
         response_data = ProblemListDetailSerializer(problem_list).data
-        response_data['star_status'] = problem_list.get_star_status(request.user)
+        if request.user.is_authenticated:
+            response_data['star_status'] = problem_list.get_star_status(request.user)
+        else:
+            response_data['star_status'] = None
+
         problems = response_data['problems']
         for problem in problems:
-            problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
+            if request.user.is_authenticated:
+                problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
+            else:
+                problem['pass_status'] = None
 
         return success(response_data)
 
     def put(self, request, problemlist_id):
         """
-        向题单添加或删除题目，路径中有一个problemlist_id参数，另外需要传递problem_ids和is_add两个字段，
-        problem_ids表示需要操作的题目id列表，is_add表示操作为添加或删除
+        向题单添加或删除题目，路径中有一个problemlist_id参数
+        另外需要传递name、summary、add、delete,
+        add和delete分别为要添加或删除的题目id列表
+        problem_ids表示需要操作的题目id列表，is_add表示操作为添加或删除的题目id列表
+        为空时表示不修改
         当用户未登录或题单创建者不是请求用户或题单不存在时返回相应的错误
         当添加的题目已经存在题单或删除的题目不在题单之中，返回相应的错误
         """
         problem_ids = request.data['problem_ids']
-        is_add = request.data['is_add']
+        add = request.data['add']
+        delete = request.data['delete']
         problems = Problem.objects.filter(id__in=problem_ids)
         try:
             problem_list = ProblemList.objects.get(id=problemlist_id)

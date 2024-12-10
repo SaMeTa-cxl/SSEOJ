@@ -91,7 +91,6 @@ class ProblemList(models.Model):
     star_count = models.IntegerField(default=0)
     problem_count = models.IntegerField(default=0)
     summary = models.TextField(blank=True)
-    difficulty = models.IntegerField(default=0)
     problems = models.ManyToManyField(Problem, related_name='problem_lists')
     is_deleted = models.BooleanField(default=False)
     is_public = models.BooleanField(default=False)
@@ -102,13 +101,8 @@ class ProblemList(models.Model):
         注意：调用此函数前需保证new_problems与self.problems无交集！！！
         """
         self.problem_count += len(new_problems)
-        avg_difficulty = 0
         self.problems.add(*new_problems)
-        for problem in self.problems.all():
-            avg_difficulty += problem.difficulty
-        avg_difficulty /= self.problem_count
-        self.difficulty = round(avg_difficulty)
-        self.save(update_fields=['problem_count', 'difficulty', ])
+        self.save(update_fields=['problem_count', ])
 
     def remove_problem(self, to_delete_problems):
         """

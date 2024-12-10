@@ -240,10 +240,6 @@ class ProblemListDetailTestCase(TestCase):
         Problem.objects.all().delete()
         User.objects.all().delete()
 
-    def test_user_unauthorized(self):
-        msg = self.client.get(reverse("problem_list_detail", args=[self.problem_list.id])).data['msg']
-        self.assertEqual(msg, "用户未登录！")
-
     def test_problem_list_nonexistent(self):
         self.client.login(email="123@qq.com", password="123")
         msg = self.client.get(reverse("problem_list_detail", args=[100])).data['msg']
