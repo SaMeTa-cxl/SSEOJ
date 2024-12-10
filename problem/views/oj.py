@@ -187,10 +187,12 @@ class ProblemListDetailAPI(APIView):
         当用户未登录或题单创建者不是请求用户或题单不存在时返回相应的错误
         当添加的题目已经存在题单或删除的题目不在题单之中，返回相应的错误
         """
-        problem_ids = request.data['problem_ids']
         add = request.data['add']
         delete = request.data['delete']
-        problems = Problem.objects.filter(id__in=problem_ids)
+        name = request.data['name']
+        summary = request.data['summary']
+        add_problems = Problem.objects.filter(id__in=add)
+        del_problems = Problem.objects.filter(id__in=delete)
         try:
             problem_list = ProblemList.objects.get(id=problemlist_id)
         except ProblemList.DoesNotExist:
@@ -198,19 +200,23 @@ class ProblemListDetailAPI(APIView):
         if not request.user.is_authenticated or problem_list.create_user != request.user:
             return fail('用户无权限！')
 
-        if is_add:
-            if problem_list.problems.filter(id__in=problem_ids).count() == len(problem_ids):
+        if add:
+            if problem_list.problems.filter(id__in=add).count() == len(add):
                 return fail('添加的题目已经存在于题单之中！')
-            problems_in_list = problem_list.problems.filter(id__in=problem_ids)
-            problem_list.add_problem(problems.difference(problems_in_list))
-            return success("添加成功")
+            problems_in_list = problem_list.problems.filter(id__in=add)
+            problem_list.add_problem(add_problems.difference(problems_in_list))
 
-        if problem_list.problems.filter(id__in=problem_ids).count() != 0:
-            problems_in_list = problem_list.problems.filter(id__in=problem_ids)
+        if problem_list.problems.filter(id__in=delete).count() != 0:
+            problems_in_list = problem_list.problems.filter(id__in=delete)
             problem_list.remove_problem(problems_in_list)
-            return success("删除成功")
         else:
             return fail('删除的题目不在题单之中')
+
+        if name:
+            problem_list.title = name
+        if summary:
+            problem_list.summary = summary
+        problem_list.save()
 
     def delete(self, request, problemlist_id):
         """
