@@ -268,6 +268,21 @@ class ProblemListStarAPI(APIView):
             return success('收藏成功！')
 
 
+class ProblemListAddProblemAPI(APIView):
+    def post(self, request):
+        try:
+            problem_list = ProblemList.objects.get(id=request.data['problemlist_id'])
+        except ProblemList.DoesNotExist:
+            return fail('题单不存在！')
+
+        try:
+            problem = Problem.objects.get(id=request.data['problem_id'])
+        except Problem.DoesNotExist:
+            return fail('题目不存在')
+
+        problem_list.add_problem(problem)
+
+
 class ProblemSolutionCreateAPI(APIView):
     @validate_serializer(SolutionCreateSerializer)
     def post(self, request):
