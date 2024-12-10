@@ -370,3 +370,22 @@ class ProblemStarAPI(APIView):
         else:
             problem.star_users.remove(request.user)
 
+
+class StudyPlanAddAPI(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        id = request.GET.get['id']
+        if not id:
+            return fail('请传入题目id')
+        request.user.study_plan.add(Problem.objects.get(id=request.data['id']))
+
+
+class StudyPlanDelAPI(APIView):
+    def delete(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        id = request.GET.get['id']
+        if not id:
+            return fail('请传入题目id')
+        request.user.study_plan.add(Problem.objects.get(id=request.GET.get['id']))
