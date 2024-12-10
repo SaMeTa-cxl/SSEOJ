@@ -339,3 +339,19 @@ class ProblemCreateAPI(APIView):
             return fail('用户未登录！')
         Problem.objects.create(**request.data)
         return success('创建成功')
+
+
+class ProblemStarAPI(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        try:
+            problem = Problem.objects.get(id=request.data['id'])
+        except Problem.DoesNotExist:
+            return fail('题目不存在！')
+
+        if request.data['relationship']:
+            problem.star_users.add(request.user)
+        else:
+            problem.star_users.remove(request.user)
+
