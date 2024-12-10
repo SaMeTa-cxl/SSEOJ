@@ -208,13 +208,17 @@ class ProblemListStarAPI(APIView):
             problem_list = ProblemList.objects.get(id=request.data['problemlist_id'])
         except ProblemList.DoesNotExist:
             return fail('不存在该题单！')
-        if request.data['is_star'] == 0:
+        if int(request.data['is_star']) == 0:
+            if not problem_list.star_users.contains(request.user):
+                return fail('你并未收藏该题单噢~')
             problem_list.star_users.remove(request.user)
             problem_list.remove_star_count()
             if not problem_list.star_users.exists() and problem_list.is_deleted:
                 problem_list.delete()
             return success('取消收藏！')
         else:
+            if problem_list.star_users.contains(request.user):
+                return fail('你已经收藏了该题单噢~')
             problem_list.star_users.add(request.user)
             problem_list.add_star_count()
             return success('收藏成功！')
