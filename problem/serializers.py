@@ -19,6 +19,21 @@ class ProblemSerializer(serializers.ModelSerializer):
                 self.fields.pop(field)
 
 
+class ProblemCreateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(required=True)
+    input_style = serializers.CharField()
+    output_style = serializers.CharField()
+    data_range = serializers.CharField(required=False)
+    difficulty = serializers.IntegerField
+    time_limit = serializers.IntegerField()
+    memory_limit = serializers.IntegerField()
+    samples = serializers.JSONField()
+    tags = serializers.JSONField()
+    source = serializers.CharField(required=False)
+
+
+
 class SolutionSerializer(serializers.ModelSerializer):
     user_info = UserSerializer(source='create_user', read_only=True, needed_fields=['id', 'username', 'avatar'])
 

@@ -7,6 +7,7 @@ urlpatterns = [
     path("problem/<int:problem_id>/solutions/", ProblemSolutionsAPI.as_view(), name="problem_solutions"),
     path("problem/<int:problem_id>/solutions/<int:solution_id>/",
          ProblemSolutionsDetailAPI.as_view(), name="problem_solutions_detail"),
+    path("problem/create/", ProblemCreateAPI.as_view(), name="problem_create"),
     path("solution/create/", ProblemSolutionCreateAPI.as_view(), name="problem_solutions_create"),
     path("problemlist/", ProblemListAPI.as_view(), name="problem_list"),
     path("problemlist/create/", ProblemListCreateAPI.as_view(), name="problem_list_create"),

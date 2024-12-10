@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 
 from problem.models import Problem, Solution, ProblemList, Tag
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
-    ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer, ProblemListCreateSerializer
+    ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer, ProblemListCreateSerializer, \
+    ProblemCreateSerializer
 from utils.api import success, fail, paginate_data, validate_serializer
 
 sort_dict = {
@@ -329,3 +330,12 @@ class ProblemsetAPI(APIView):
 
         resp = {"count": problems.count(), 'problems': problems}
         return success(resp)
+
+
+class ProblemCreateAPI(APIView):
+    @validate_serializer(ProblemCreateSerializer)
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        Problem.objects.create(**request.data)
+        return success('创建成功')
