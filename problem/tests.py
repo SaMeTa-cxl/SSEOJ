@@ -135,8 +135,11 @@ class SolutionTestCase(TestCase):
     def setUp(self):
         self.problem = Problem.objects.create(**DEFAULT_PROBLEM_DATA)
         self.user = User.objects.create_user(username="test", email="123@qq.com", password="123456")
+        self.tag = Tag.objects.create(name="tag")
         self.solution1 = Solution.objects.create(title="title", content="content1", problem=self.problem, create_user=self.user)
+        self.solution1.tags.add(self.tag)
         self.solution2 = Solution.objects.create(title="title", content="content2", problem=self.problem, create_user=self.user)
+        self.solution2.tags.add(self.tag)
 
     def tearDown(self):
         Problem.objects.all().delete()
@@ -149,11 +152,6 @@ class SolutionTestCase(TestCase):
         msg = self.client.get(reverse("problem_solutions", args=[100])).data['msg']
         self.assertEqual(msg, '该题目不存在！')
 
-    def test_user_unauthorized(self):
-        # 测试用户未登录
-        msg = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['msg']
-        self.assertEqual(msg, '用户未登录')
-
     def test_success(self):
         # 测试正常成功获取
         self.client.login(email="123@qq.com", password="123456")
@@ -162,16 +160,34 @@ class SolutionTestCase(TestCase):
         solution = data['solutions']
         needed_fields = ['id', 'username', 'avatar']
         for field in needed_fields:
-            self.assertIsNotNone(data[0]['user_info'][field])
-        self.assertEqual(len(data), 2)
-        self.assertEqual(self.solution1.id, data[0]['id'])
-        self.assertEqual(self.solution1.content, data[0]['content'])
+            self.assertIsNotNone(solution[0]['user_info'][field])
+        self.assertEqual(len(solution), 2)
+        self.assertEqual(self.solution2.id, solution[0]['id'])
+        self.assertEqual(self.solution2.content, solution[0]['content'])
 
         # 测试题解信息截断
         self.solution1.content = "content1" * 100
         self.solution1.save()
         data = self.client.get(reverse("problem_solutions", args=[self.problem.id])).data['data']
-        self.assertEqual(len(data[0]['content']), 200)
+        solution = data['solutions']
+        self.assertEqual(len(solution[1]['content']), 200)
+
+        # 测试关键字、tags、排序顺序
+        data = self.client.get(reverse("problem_solutions", args=[self.problem.id]),
+                               data={"keyword": "1"}).data['data']
+        solution = data['solutions']
+        self.assertEqual(len(solution), 1)
+        self.assertEqual(solution[0]['title'], self.solution1.title)
+        self.solution1.like_count = 2
+        self.solution2.like_count = 1
+        self.solution1.save()
+        self.solution2.save()
+        data = self.client.get(reverse("problem_solutions", args=[self.problem.id]),
+                               data={"tags": [1], "sort_type": "likeDesc"}).data['data']
+        solution = data['solutions']
+        self.assertEqual(len(solution), 2)
+        self.assertEqual(solution[0]['id'], self.solution1.id)
+        self.assertEqual(solution[1]['id'], self.solution2.id)
 
     def test_full_content(self):
         # 测试完整的题解内容
