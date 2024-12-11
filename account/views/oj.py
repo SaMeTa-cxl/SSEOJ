@@ -1,14 +1,17 @@
 from django.contrib import auth
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
 
+from problem.models import ProblemList
+from problem.serializers import ProblemSerializer
+from submission.models import Submission, JudgeStatus
 from ..models import User, Following
 from ..serializers import *
 from utils.api import *
 from django.core.cache import cache
 from utils.api import ImageCode, VerificationCode, DecodePassword
 from django.contrib.sessions.models import Session
-
 
 
 class EmailCodeAPI(APIView):
@@ -54,6 +57,7 @@ class EmailCodeAPI(APIView):
         else:
             return fail(msg = "未知的申请类型")
 
+
 class UserRegisterAPI(APIView):
     def post(self, request):
         data = request.data
@@ -84,6 +88,7 @@ class UserRegisterAPI(APIView):
         except Exception:
             return fail(msg='注册失败')
 
+
 class UserLoginAPI(APIView):
     @validate_serializer(UserLoginSerializer)
     def post(self, request):
@@ -99,12 +104,11 @@ class UserLoginAPI(APIView):
             data['avatar'] = avatar
             return success(data)
 
+
 class UserLogoutAPI(APIView):
     def get(self, request):
         auth.logout(request)
         return success("退出成功")
-
-
 
 
 class UserInfoAPI(APIView):
@@ -121,6 +125,7 @@ class UserInfoAPI(APIView):
         #userData["subscribers_count"] = serializer.get_subscribers_count(userInfo)
 
         return success(userData)
+
 
 class UserSubscribeAPI(APIView):
     def post(self, request):
@@ -146,6 +151,7 @@ class UserSubscribeAPI(APIView):
         else:
             Following.objects.filter(follower=user, following=following_user).delete()
             return success("取消关注成功")
+
 
 class UserFollowingAPI(APIView):
     def get(self, request, id):
@@ -192,6 +198,7 @@ class UserFollowingAPI(APIView):
 
         return success(Rserializer.data)
 
+
 class UserFollowerAPI(APIView):
     def get(self, request, id):
         try:
@@ -236,11 +243,11 @@ class UserFollowerAPI(APIView):
 
         return success(Rserializer.data)
 
+
 class StudyPlanAPI(APIView):
     def get(self, request, user_id):
         if not request.user.is_authenticated:
             return fail(msg = "未登录")
-
 
 
 class UserProfileChangeAPI(APIView):
@@ -255,6 +262,7 @@ class UserProfileChangeAPI(APIView):
         user.save()
         return success("修改成功")
 
+
 class UserNameChangeAPI(APIView):
     def put(self, request):
         if not request.user.is_authenticated:
@@ -268,6 +276,7 @@ class UserNameChangeAPI(APIView):
 
         return success("修改成功")
 
+
 class UserAvatarChangeAPI(APIView):
     def put(self, request):
         if not request.user.is_authenticated:
@@ -280,6 +289,7 @@ class UserAvatarChangeAPI(APIView):
         user.save()
 
         return success("修改成功")
+
 
 class UserPasswordChangeAPI(APIView):
     def put(self, request):
@@ -299,22 +309,53 @@ class UserPasswordChangeAPI(APIView):
 
         return success("success")
 
+
 class UserPasswordForgetAPI(APIView):
     def put(self, request):
         pass
 
-class CreatProblemListAPI(APIView):
-    def get(self, request):
-        pass
-
-class EditProblemListAPI(APIView):
-    def put(self, request, problemlist_id):
-        pass
 
 class GetTryProblemAPI(APIView):
     def get(self, request, user_id):
-        pass
+        submissions = Submission.objects.filter(user_id=user_id)
+        problems = []
+        for submission in submissions:
+            problems.append(submission.problem)
+        problems = list(set(problems))
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return fail('用户不存在！')
+        problems = [{
+            'pass_status': problem.pass_users.contains(user),
+            'id': problem.id,
+            'name': problem.name,
+            'difficulty': problem.difficulty,
+        } for problem in problems]
+        return success(problems)
+
 
 class StarProblemAPI(APIView):
     def get(self, request, user_id):
-        pass
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return fail('用户不存在！')
+        return success(ProblemSerializer(user.star_problems,
+                                         many=True,
+                                         needed_fields=['id', 'name', 'difficulty',
+                                                        'tags', 'pass_count', 'attempt_count']).data)
+
+
+class UserProblemListAPI(APIView):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id = user_id)
+        except User.DoesNotExist:
+            return fail('用户不存在！')
+        if request.User != user:
+            problem_lists = ProblemList.objects.filter(Q(creator=user) & Q(is_public=True))
+            return success(ProblemListSerializer(problem_lists, many=True).data)
+        else:
+            problem_lists = ProblemList.objects.filter(Q(creator=user))
+            return success(ProblemListSerializer(problem_lists, many=True).data)

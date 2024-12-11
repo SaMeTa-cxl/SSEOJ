@@ -18,5 +18,5 @@ urlpatterns = [
     path("problemlist/add_problem/", ProblemListAddProblemAPI.as_view(), name="problem_list_add_problem"),
     path("problemset/", ProblemsetAPI.as_view(), name="problemset"),
     path("study_plan/add/", StudyPlanAddAPI.as_view(), name="study_plan_add_problem"),
-    path("study_plan/del/", StudyPlanDelAPI.as_view(), name="study_plan_del_problem"),
+    path("study_plan/delete/", StudyPlanDelAPI.as_view(), name="study_plan_del_problem"),
 ]

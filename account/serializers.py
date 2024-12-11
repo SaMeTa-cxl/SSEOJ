@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from account.models import User, Following
+from problem.models import Problem, ProblemList
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -77,3 +78,14 @@ class UserLogInformation(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'avatar', 'user_type')
+
+
+class ProblemListSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProblemList
+        fields = ('id', 'title', 'problem_count', 'type')
+
+    def get_type(self, obj):
+        return obj.is_public

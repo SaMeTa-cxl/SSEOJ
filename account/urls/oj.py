@@ -19,8 +19,7 @@ urlpatterns = [
     path("user/avatar_change/", UserAvatarChangeAPI.as_view(), name="user_avatar_change"),
     path("user/password_change/", UserPasswordChangeAPI.as_view(), name="user_password_change"),
     path("user/password_forget/", UserPasswordForgetAPI.as_view(), name="user_password_forget"),
-    path("user/<int:user_id>/create_problemlist/", CreatProblemListAPI.as_view(), name="user_create_problemlist"),
-    path("problemlist/<int:problemlist_id>/", EditProblemListAPI.as_view(), name="user_problemlist"),
     path("user/<int:user_id>/practice/", GetTryProblemAPI.as_view(), name="user_practice"),
     path("user/<int:user_id>/default_problemlist/", StarProblemAPI.as_view(), name="user_default_problemlist"),
+    path("user/<int:user_id>/create_problemlist/", UserProblemListAPI.as_view(), name="user_problem_list")
 ]
