@@ -56,16 +56,10 @@ class Problem(models.Model):
         ordering = ('create_time',)
 
     def get_pass_status(self, user):
-        if user.is_authenticated:
-            return self.pass_users.contains(user)
-        else:
-            return None
+        return self.pass_users.contains(user)
 
     def get_star_status(self, user):
-        if user.is_authenticated:
-            return self.star_users.contains(user)
-        else:
-            return None
+        return self.star_users.contains(user)
 
     def get_similar_problems(self, user):
         similar_problems = (
