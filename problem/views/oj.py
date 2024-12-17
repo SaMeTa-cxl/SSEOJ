@@ -1,10 +1,12 @@
+import pickle
+
 from django.db.models import Q, F, ExpressionWrapper, FloatField
 from rest_framework.views import APIView
 
-from problem.models import Problem, Solution, ProblemList, Tag
+from problem.models import Problem, Solution, ProblemList, Tag, SolutionComment
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
     ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer, ProblemListCreateSerializer, \
-    ProblemCreateSerializer
+    ProblemCreateSerializer, SolutionCommentSerializer
 from utils.api import success, fail, paginate_data, validate_serializer
 
 sort_dict = {
@@ -389,3 +391,57 @@ class StudyPlanDelAPI(APIView):
         if not id:
             return fail('请传入题目id')
         request.user.study_plan.add(Problem.objects.get(id=request.GET.get['id']))
+
+
+class SolutionGoodAPI(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail("用户未登录！")
+        try:
+            solution = Solution.objects.get(id=request.data['id'])
+        except Solution.DoesNotExist:
+            return fail('该题解不存在！')
+
+        if request.data['is_good']:
+            solution.like_users.add(request.user)
+            solution.like_count = F('like_count') + 1
+            solution.save()
+        else:
+            solution.like_users.remove(request.user)
+            solution.like_count = F('like_count') - 1
+            solution.save()
+
+
+class SolutionCommentGoodAPI(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail("用户未登录！")
+        try:
+            comment = SolutionComment.objects.get(id=request.data['id'])
+        except SolutionComment.DoesNotExist:
+            return fail('该题解不存在！')
+
+        if request.data['is_good']:
+            comment.like_users.add(request.user)
+            comment.like_count = F('like_count') + 1
+            comment.save()
+        else:
+            comment.like_users.remove(request.user)
+            comment.like_count = F('like_count') - 1
+            comment.save()
+
+
+class SolutionCommentsAPI(APIView):
+    def get(self, request):
+        try:
+            solution = Solution.objects.get(id=request.data['id'])
+        except Solution.DoesNotExist:
+            return fail('该题解不存在！')
+
+        comments = solution.comments.all()
+        comments = paginate_data(request, comments, SolutionCommentSerializer)
+
+        for comment in comments:
+            comment['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
+
+        return success({'count': len(comments), 'comments': comments})

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from account.models import User
 from account.serializers import UserSerializer
-from problem.models import Problem, Solution, ProblemList, Tag
+from problem.models import Problem, Solution, ProblemList, Tag, SolutionComment
 
 
 class ProblemSerializer(serializers.ModelSerializer):
@@ -76,3 +76,12 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
+
+class SolutionCommentSerializer(serializers.ModelSerializer):
+    user_info = UserSerializer(source='create_user', read_only=True, needed_fields=['id', 'username', 'avatar'])
+    reply_to_user_info = UserSerializer(source='reply_to_user', read_only=True, needed_fields=['id', 'username'])
+
+    class Meta:
+        model = SolutionComment
+        fields = ['id', 'user_info', 'content', 'like_count', 'create_time', 'reply_to_user_info']

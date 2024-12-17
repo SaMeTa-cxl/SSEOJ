@@ -158,6 +158,7 @@ class SolutionComment(models.Model):
     like_users = models.ManyToManyField(User, related_name='like_solution_comments')
     create_time = models.DateTimeField(auto_now_add=True)
     check_status = models.BooleanField(default=False)
+    reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='solution_comment_replies', null=True)
 
     class Meta:
         db_table = 'solution_comment'
