@@ -1,3 +1,8 @@
 from django.test import TestCase
 
-# Create your tests here.
+from conf.conf import SysConfigs
+
+
+class JudgeTestCase(TestCase):
+    def test_judge(self):
+        print(SysConfigs.judge_server_token)

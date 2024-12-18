@@ -167,3 +167,8 @@ class StudyPlan(models.Model):
 
     class Meta:
         db_table = 'study_plan'
+
+
+class ProblemIOMode:
+    standard = "Standard IO"
+    file = "File IO"

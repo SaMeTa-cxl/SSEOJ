@@ -119,7 +119,7 @@ class ConfigDefaultValue:
     languages = languages
 
 
-class SysConfigs:
+class _SysConfigsMeta(type):
     @classmethod
     def _get_keys(cls):
         return [key for key in ConfigKeys.__dict__ if not key.startswith("__")]
@@ -275,3 +275,7 @@ class SysConfigs:
 
     def reset_languages(cls):
         cls.languages = languages
+
+
+class SysConfigs(metaclass=_SysConfigsMeta):
+    pass
