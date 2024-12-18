@@ -1,7 +1,52 @@
 import hashlib
+import json
+from urllib.parse import urljoin
+
 import requests
+from django.core.cache import cache
+from django.db import transaction
+from django.db.models import F
 
 from conf.conf import SysConfigs
+from judge.models import JudgeServer
+from problem.models import Problem
+from submission.models import Submission, JudgeStatus
+from utils.constants import CacheKey
+
+
+def process_pending_task():
+    tmp = cache.get(CacheKey.waiting_queue, [])
+    tmp = []
+    if len(tmp):
+        # 防止循环引入
+        from judge.tasks import judge_task
+        tmp_data = tmp.pop(-1)
+        cache.set(CacheKey.waiting_queue, tmp)
+        if tmp_data:
+            data = json.loads(tmp_data.decode("utf-8"))
+            judge_task.send(**data)
+
+
+class ChooseJudgeServer:
+    def __init__(self):
+        self.server = None
+
+    def __enter__(self) -> [JudgeServer, None]:
+        with transaction.atomic():
+            # 选择最轻松的cpu核来判题
+            servers = JudgeServer.objects.select_for_update().filter(is_disabled=False).order_by("task_number")
+            servers = [s for s in servers if s.status == "normal"]
+            for server in servers:
+                if server.task_number <= server.cpu_core * 2:
+                    server.task_number = F("task_number") + 1
+                    server.save(update_fields=["task_number"])
+                    self.server = server
+                    return server
+        return None
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.server:
+            JudgeServer.objects.filter(id=self.server.id).update(task_number=F("task_number") - 1)
 
 
 class DispatcherBase(object):
@@ -19,14 +64,8 @@ class JudgeDispatcher(DispatcherBase):
     def __init__(self, submission_id, problem_id):
         super().__init__()
         self.submission = Submission.objects.get(id=submission_id)
-        self.contest_id = self.submission.contest_id
         self.last_result = self.submission.result if self.submission.info else None
-
-        if self.contest_id:
-            self.problem = Problem.objects.select_related("contest").get(id=problem_id, contest_id=self.contest_id)
-            self.contest = self.problem.contest
-        else:
-            self.problem = Problem.objects.get(id=problem_id)
+        self.problem = Problem.objects.get(id=problem_id)
 
     def _compute_statistic_info(self, resp_data):
         # 用时和内存占用保存为多个测试点中最长的那个
@@ -34,36 +73,26 @@ class JudgeDispatcher(DispatcherBase):
         self.submission.statistic_info["memory_cost"] = max([x["memory"] for x in resp_data])
 
         # sum up the score in OI mode
-        if self.problem.rule_type == ProblemRuleType.OI:
-            score = 0
-            try:
-                for i in range(len(resp_data)):
-                    if resp_data[i]["result"] == JudgeStatus.ACCEPTED:
-                        resp_data[i]["score"] = self.problem.test_case_score[i]["score"]
-                        score += resp_data[i]["score"]
-                    else:
-                        resp_data[i]["score"] = 0
-            except IndexError:
-                logger.error(f"Index Error raised when summing up the score in problem {self.problem.id}")
-                self.submission.statistic_info["score"] = 0
-                return
-            self.submission.statistic_info["score"] = score
+        # if self.problem.rule_type == ProblemRuleType.OI:
+        #     score = 0
+        #     try:
+        #         for i in range(len(resp_data)):
+        #             if resp_data[i]["result"] == JudgeStatus.ACCEPTED:
+        #                 resp_data[i]["score"] = self.problem.test_case_score[i]["score"]
+        #                 score += resp_data[i]["score"]
+        #             else:
+        #                 resp_data[i]["score"] = 0
+        #     except IndexError:
+        #         logger.error(f"Index Error raised when summing up the score in problem {self.problem.id}")
+        #         self.submission.statistic_info["score"] = 0
+        #         return
+        #     self.submission.statistic_info["score"] = score
 
     def judge(self):
         language = self.submission.language
-        sub_config = list(filter(lambda item: language == item["name"], SysOptions.languages))[0]
-        spj_config = {}
-        if self.problem.spj_code:
-            for lang in SysOptions.spj_languages:
-                if lang["name"] == self.problem.spj_language:
-                    spj_config = lang["spj"]
-                    break
+        sub_config = list(filter(lambda item: language == item["name"], SysConfigs.languages))[0]
 
-        if language in self.problem.template:
-            template = parse_problem_template(self.problem.template[language])
-            code = f"{template['prepend']}\n{self.submission.code}\n{template['append']}"
-        else:
-            code = self.submission.code
+        code = self.submission.code
 
         data = {
             "language_config": sub_config["config"],
@@ -71,18 +100,14 @@ class JudgeDispatcher(DispatcherBase):
             "max_cpu_time": self.problem.time_limit,
             "max_memory": 1024 * 1024 * self.problem.memory_limit,
             "test_case_id": self.problem.test_case_id,
-            "output": False,
-            "spj_version": self.problem.spj_version,
-            "spj_config": spj_config.get("config"),
-            "spj_compile_config": spj_config.get("compile"),
-            "spj_src": self.problem.spj_code,
-            "io_mode": self.problem.io_mode
+            "output": True,
         }
 
         with ChooseJudgeServer() as server:
             if not server:
                 data = {"submission_id": self.submission.id, "problem_id": self.problem.id}
-                cache.lpush(CacheKey.waiting_queue, json.dumps(data))
+                tmp = cache.get(CacheKey.waiting_queue, [])
+                cache.set(CacheKey.waiting_queue, tmp.append(data))
                 return
             Submission.objects.filter(id=self.submission.id).update(result=JudgeStatus.JUDGING)
             resp = self._request(urljoin(server.service_url, "/judge"), data=data)
