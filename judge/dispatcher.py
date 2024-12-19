@@ -69,8 +69,8 @@ class JudgeDispatcher(DispatcherBase):
 
     def _compute_statistic_info(self, resp_data):
         # 用时保存为用时之和，空间保存为最大值
-        self.submission.statistic_info["time_cost"] = sum([x["cpu_rtime"] for x in resp_data])
-        self.submission.statistic_info["memory_cost"] = max([x["memory"] for x in resp_data])
+        self.submission.time_spent = sum([x["cpu_rtime"] for x in resp_data])
+        self.submission.memory_spent = max([x["memory"] for x in resp_data])
 
     def judge(self):
         language = self.submission.language
@@ -102,11 +102,9 @@ class JudgeDispatcher(DispatcherBase):
 
         if resp["err"]:
             self.submission.result = JudgeStatus.COMPILE_ERROR
-            self.submission.statistic_info["err_info"] = resp["data"]
-            self.submission.statistic_info["score"] = 0
+            self.submission.error_info = resp["data"]
         else:
             resp["data"].sort(key=lambda x: int(x["test_case"]))
-            self.submission.info = resp
             self._compute_statistic_info(resp["data"])
             error_test_case = list(filter(lambda case: case["result"] != JudgeStatus.ACCEPTED, resp["data"]))
 
@@ -115,6 +113,9 @@ class JudgeDispatcher(DispatcherBase):
                 self.submission.result = JudgeStatus.ACCEPTED
             else:
                 self.submission.result = error_test_case[0]["result"]
+                self.submission.error_info = error_test_case[0]
+                # 获取错误的输入输出，超过指定长度截断
+
         self.submission.save()
         self.update_problem_status()
         # 判题结束，尝试处理任务队列中剩余的任务
