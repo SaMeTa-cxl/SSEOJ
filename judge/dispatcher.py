@@ -17,11 +17,10 @@ from utils.constants import CacheKey
 
 def process_pending_task():
     tmp = cache.get(CacheKey.waiting_queue, [])
-    tmp = []
     if len(tmp):
         # 防止循环引入
         from judge.tasks import judge_task
-        tmp_data = tmp.pop(-1)
+        tmp_data = tmp.pop(0)
         cache.set(CacheKey.waiting_queue, tmp)
         if tmp_data:
             data = json.loads(tmp_data.decode("utf-8"))
@@ -69,25 +68,9 @@ class JudgeDispatcher(DispatcherBase):
         self.problem = Problem.objects.get(id=problem_id)
 
     def _compute_statistic_info(self, resp_data):
-        # 用时和内存占用保存为多个测试点中最长的那个
-        self.submission.statistic_info["time_cost"] = max([x["cpu_time"] for x in resp_data])
+        # 用时保存为用时之和，空间保存为最大值
+        self.submission.statistic_info["time_cost"] = sum([x["cpu_rtime"] for x in resp_data])
         self.submission.statistic_info["memory_cost"] = max([x["memory"] for x in resp_data])
-
-        # sum up the score in OI mode
-        # if self.problem.rule_type == ProblemRuleType.OI:
-        #     score = 0
-        #     try:
-        #         for i in range(len(resp_data)):
-        #             if resp_data[i]["result"] == JudgeStatus.ACCEPTED:
-        #                 resp_data[i]["score"] = self.problem.test_case_score[i]["score"]
-        #                 score += resp_data[i]["score"]
-        #             else:
-        #                 resp_data[i]["score"] = 0
-        #     except IndexError:
-        #         logger.error(f"Index Error raised when summing up the score in problem {self.problem.id}")
-        #         self.submission.statistic_info["score"] = 0
-        #         return
-        #     self.submission.statistic_info["score"] = score
 
     def judge(self):
         language = self.submission.language
@@ -99,7 +82,7 @@ class JudgeDispatcher(DispatcherBase):
             "language_config": sub_config["config"],
             "src": code,
             "max_cpu_time": self.problem.time_limit,
-            "max_memory": 1024 * 1024 * self.problem.memory_limit,
+            "max_memory": 1024 * self.problem.memory_limit, # KB -> Byte
             "test_case_id": self.problem.test_case_id,
             "output": True,
         }
