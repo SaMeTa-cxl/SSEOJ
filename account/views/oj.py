@@ -2,6 +2,7 @@ from django.contrib import auth
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
+from sympy import Integer
 
 from problem.models import ProblemList
 from problem.serializers import ProblemSerializer
@@ -63,7 +64,7 @@ class UserRegisterAPI(APIView):
         data = request.data
         email = data.get('email')
         username = data.get('username')
-        password = data.get('password')
+        password = DecodePassword.decryption(data.get('password'))
         verificationCode = data.get('verification_code')
 
         if not email or not username or not password:
@@ -93,7 +94,7 @@ class UserLoginAPI(APIView):
     @validate_serializer(UserLoginSerializer)
     def post(self, request):
         data = request.data
-        user = auth.authenticate(email=data.get('email'), password=data.get('password'))
+        user = auth.authenticate(email=data.get('email'), password=DecodePassword.decryption(data.get('password')))
 
         if not user:
             return fail(msg = "邮箱或密码错误")
@@ -113,6 +114,8 @@ class UserLogoutAPI(APIView):
 
 class UserInfoAPI(APIView):
     def get(self, request, id):
+        user = request.user
+
         try:
             userInfo = User.objects.get(id = id)
         except User.DoesNotExist:
@@ -249,6 +252,10 @@ class StudyPlanAPI(APIView):
         if not request.user.is_authenticated:
             return fail(msg = "未登录")
 
+        user = request.user
+
+
+
 
 class UserProfileChangeAPI(APIView):
     def put(self, request):
@@ -293,26 +300,50 @@ class UserAvatarChangeAPI(APIView):
 
 class UserPasswordChangeAPI(APIView):
     def put(self, request):
-        data = request.data
-        try:
-            user = User.objects.get(id=data['user_id'])
-        except User.DoesNotExist:
-            return fail(msg = "User not found")
-
         if not request.user.is_authenticated:
-            return fail(msg = "No permission to change")
-        elif request.user.id != data["user_id"]:
-            return fail(msg = "No permission to change")
+            return fail(msg = '未登录')
 
-        user.set_password(data["password"])
-        user.save()
+        data = request.data
+        user = request.user
+        userId = -1
+        passBefore = DecodePassword.decryption(data.get("password_before"))
+        passNew = DecodePassword.decryption(data.get("password_new"))
+        try:
+            userId = int(data.get("id"))
+        except ValueError:
+            pass
 
-        return success("success")
+        if user.id != userId:
+            return fail(msg = '权限不足')
+
+        if not user.check_password(passBefore):
+            return fail(msg = '旧密码错误')
+
+        user.set_password(passNew)
+
+        return success('修改成功')
 
 
 class UserPasswordForgetAPI(APIView):
     def put(self, request):
-        pass
+        data = request.data
+        email = data.get('email')
+        passNew = DecodePassword.decryption(data.get('password_new'))
+        verificationCode = data.get('verification_code')
+
+        if verificationCode != cache.get(email):
+            return fail(msg='验证码错误或过期')
+        else:
+            cache.delete(email)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return fail(msg = '用户不存在')
+
+        user.set_password(passNew)
+
+        return success('修改成功')
 
 
 class GetTryProblemAPI(APIView):
