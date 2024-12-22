@@ -26,17 +26,12 @@ class Submission(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     create_time = models.DateTimeField(auto_now_add=True)
     user_id = models.IntegerField(db_index=True)
-    username = models.TextField()
     code = models.TextField()
     result = models.IntegerField(db_index=True, default=JudgeStatus.PENDING)
-    # 从JudgeServer返回的判题详情
-    info = models.JSONField(default=dict)
+    time_spent = models.IntegerField()
+    memory_spent = models.IntegerField()
+    error_info = models.JSONField(null=True)
     language = models.TextField()
-    shared = models.BooleanField(default=False)
-    # 存储该提交所用时间和内存值，方便提交列表显示
-    # {time_cost: "", memory_cost: "", err_info: "", score: 0}
-    statistic_info = models.JSONField(default=dict)
-    ip = models.TextField(null=True)
 
     class Meta:
         db_table = "submission"

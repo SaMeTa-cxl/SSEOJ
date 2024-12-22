@@ -50,6 +50,7 @@ class Problem(models.Model):
     pass_users = models.ManyToManyField(User, related_name='pass_problems')
     create_time = models.DateTimeField(auto_now_add=True)
     check_status = models.BooleanField(default=True)
+    test_case_id = models.TextField()
 
     class Meta:
         db_table = 'problem'
