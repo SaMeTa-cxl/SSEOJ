@@ -43,7 +43,7 @@ class SolutionSerializer(serializers.ModelSerializer):
 
 
 class ProblemListSerializer(serializers.ModelSerializer):
-    creator = UserSerializer(source='create_user', read_only=True, needed_fields=['username'])
+    creator = UserSerializer(source='create_user', read_only=True, needed_fields=['username', 'avatar'])
 
     class Meta:
         model = ProblemList

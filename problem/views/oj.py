@@ -113,15 +113,18 @@ class ProblemListAPI(APIView):
             response_data = paginate_data(request, problem_lists, ProblemListSerializer)
             for problem_list in response_data:
                 problem_list['pass_count'] = None
+                problem_list['is_star'] = False
             return success({'count': problem_lists.count(), 'problemlists': response_data})
 
         problem_lists = problem_lists.exclude(create_user=request.user)
         response_data = paginate_data(request, problem_lists, ProblemListSerializer)
         # response_data为list,problem_list为字典
         for problem_list in response_data:
+            problem_list_entity = ProblemList.objects.get(id=problem_list['id'])
+            problem_list['is_star'] = problem_list_entity.star_users.contains(request.user)
             problem_list['pass_count'] = 0
             # problem_list['id']取自于数据库，可保证存在，不需要处理异常
-            for problem in ProblemList.objects.get(id=problem_list['id']).problems.all():
+            for problem in problem_list_entity.problems.all():
                 if problem.get_pass_status(request.user):
                     problem_list['pass_count'] += 1
 
@@ -322,7 +325,7 @@ class ProblemsetAPI(APIView):
         tags = request.GET.get('tags')
         sort_type = request.GET.get('sort_type', 'idAsc')
 
-        problems = Problem.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword))
+        problems = Problem.objects.filter(Q(name__icontains=keyword) | Q(description__icontains=keyword))
         if min_difficulty:
             problems = problems.filter(difficulty__gte=min_difficulty)
         if max_difficulty:
@@ -345,7 +348,7 @@ class ProblemsetAPI(APIView):
             else:
                 problem['pass_status'] = None
 
-        resp = {"count": problems.count(), 'problems': problems}
+        resp = {"count": len(problems), 'problems': problems}
         return success(resp)
 
 

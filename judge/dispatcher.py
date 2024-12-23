@@ -114,7 +114,15 @@ class JudgeDispatcher(DispatcherBase):
             else:
                 self.submission.result = error_test_case[0]["result"]
                 self.submission.error_info = error_test_case[0]
-                # 获取错误的输入输出，超过指定长度截断
+                # 获取错误用例的输入输出，超过指定长度截断
+                with open("static/test_case/" + self.problem.test_case_id + "/" +
+                          error_test_case[0]["test_case"] + ".in", "r") as file:
+                    content = file.read()
+                    self.submission.error_info["input"] = content[:2000]
+                with open("static/test_case/" + self.problem.test_case_id + "/" +
+                          error_test_case[0]["test_case"] + ".out", "r") as file:
+                    content = file.read()
+                    self.submission.error_info["right_output"] = content[:2000]
 
         self.submission.save()
         self.update_problem_status()
