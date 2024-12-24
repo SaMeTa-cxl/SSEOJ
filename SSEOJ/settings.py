@@ -29,6 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition
@@ -159,3 +160,8 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # 内存缓存
     }
 }
+
+# SESSION_COOKIE_SAMESITE = 'None'  # 允许跨域时，设置为 None
+# SESSION_COOKIE_SECURE = False  # 开发环境使用 http，可以设置为 False，生产环境使用 https，设置为 True
+# SESSION_COOKIE_DOMAIN = 'localhost'  # 设置为 localhost
+
