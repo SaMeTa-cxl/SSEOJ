@@ -7,11 +7,14 @@ from judge.tasks import judge_task
 
 class ProblemSubmissionsAPI(APIView):
     def get(self, request, problem_id):
+        if not request.user.is_authenticated:
+            return fail("User not authenticated")
+        user_id = request.user.id
         status = request.query_params.get('status')
         language = request.query_params.get('language')
         sort_type = request.query_params.get('sort_type')
 
-        filter_conditions = {'problem_id': problem_id}
+        filter_conditions = {'problem_id': problem_id, 'user_id': user_id}
         if status:
             filter_conditions['status'] = status
         if language:
@@ -19,7 +22,10 @@ class ProblemSubmissionsAPI(APIView):
 
         submissions = Submission.objects.filter(**filter_conditions)
         if sort_type:
-            submissions = submissions.order_by(sort_type)
+            if sort_type == "time":
+                submissions = submissions.order_by("-create_time")
+            elif sort_type == "optimal":
+                submissions = submissions.order_by("time_spent", "memory_spent")
 
         submission_data = []
         for submission in submissions:
