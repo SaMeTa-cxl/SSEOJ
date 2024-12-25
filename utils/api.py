@@ -6,6 +6,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
+from Crypto import Random
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5
+
+
 def success(data):
     """
     业务逻辑成功执行时返回的结果，data中err字段为none，data中才是实际的数据
@@ -143,8 +148,8 @@ class ImageCode:
 class VerificationCode:
     smtpServer = 'smtp.qq.com' #SMTP服务器配置
     smtpPort = 465 #SMTP服务器端口
-    emailUser = '2394160277@qq.com'  #邮箱地址
-    emailAuthCode = 'mselvjmiqgbfdjja'  # 授权码
+    emailUser = 'xx@qq.com'  #邮箱地址
+    emailAuthCode = 'xx'  #邮箱密码
     title = 'SSEOJ验证码'
     messageStr = ['您的注册账号验证码为\n\n', '您的找回密码验证码为\n\n']
     endStr = '\n\n该验证码在3分钟内有效，请及时使用\n如并非您的操作请直接忽略此信息并防止验证码泄露'
@@ -171,19 +176,22 @@ class VerificationCode:
         sendState = True
 
         try:
-            # 使用SMTP_SSL连接到QQ邮箱的SMTP服务器
-            server = smtplib.SMTP_SSL(VerificationCode.smtpServer, VerificationCode.smtpPort)
+            # 使用SMTP_SSL连接到邮箱的SMTP服务器
+            server = smtplib.SMTP(VerificationCode.smtpServer, VerificationCode.smtpPort)
+            # server.starttls()  # 启动TLS加密
             server.login(VerificationCode.emailUser, VerificationCode.emailAuthCode)
 
-            # 发送邮件
+            # 创建并发送邮件
             msg = VerificationCode.createMessage(toEmail, VerificationCode.title, body)
             text = msg.as_string()
             server.sendmail(VerificationCode.emailUser, toEmail, text)
 
         except Exception as e:
+            print(f"发送邮件时发生错误: {e}")
             sendState = False
         finally:
-            server.quit()
+            if server is not None:
+                server.quit()
 
         if sendState:
             return code
@@ -193,6 +201,49 @@ class VerificationCode:
 
 class DecodePassword:
     @staticmethod
-    def GetPassword(encoded):
-        decoded = encoded
-        return decoded
+    def Read_public_key(file_path = 'keys/public_key.pem'):
+        with open(file_path, 'rb') as f:
+            r = f.read()
+        return r
+
+    @staticmethod
+    def Read_private_key(file_path = 'keys/private_key.pem'):
+        with open(file_path, 'rb') as f:
+            r = f.read()
+        return r
+
+    @staticmethod
+    def encryption(text: str):
+        try:
+            # 字符串转为bytes
+            text = text.encode('utf-8')
+            # 获取公钥
+            public_key = DecodePassword.Read_public_key()
+            # 公钥对象
+            cipher_public = PKCS1_v1_5.new(RSA.importKey(public_key))
+            # 加密（bytes）
+            text_encrypted = cipher_public.encrypt(text)
+            # base64编码，并转为字符串
+            text_encrypted_base64 = base64.b64encode(text_encrypted).decode()
+            return text_encrypted_base64
+        except Exception as e:
+            return None
+
+    @staticmethod
+    def decryption(text_encrypted_base64: str):
+        try:
+            # 字符串转为bytes
+            text_encrypted_base64 = text_encrypted_base64.encode('utf-8')
+            # base64解码
+            text_encrypted = base64.b64decode(text_encrypted_base64)
+            # 获取私钥
+            private_key = DecodePassword.Read_private_key()
+            # 私钥对象
+            cipher_private = PKCS1_v1_5.new(RSA.importKey(private_key))
+            # 解密
+            text_decrypted = cipher_private.decrypt(text_encrypted, Random.new().read)
+            #解码为字符串
+            text_decrypted = text_decrypted.decode()
+            return text_decrypted
+        except Exception as e:
+            return None
