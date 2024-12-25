@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from account.models import User, Following
-from problem.models import Problem, ProblemList
+from problem.models import Problem, ProblemList, StudyPlan
+from django.db.models import Q
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -25,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserInfoSerializer(serializers.ModelSerializer):
     subscribing_count = serializers.SerializerMethodField()
     subscribers_count = serializers.SerializerMethodField()
+    is_subscribe = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -35,6 +37,22 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     def get_subscribers_count(self, obj):
         return obj.followers.count()
+
+    def get_is_subscribe(self, obj):
+        user = self.context.get('user')
+
+        if not user.is_authenticated:
+            return True
+
+        if user.id == obj.id:
+            return True
+
+        try:
+            Following.objects.get(Q(follower = user) and Q(following = obj))
+        except Following.DoesNotExist:
+            return False
+
+        return True
 
 
 class UserFollowingSerializer(serializers.ModelSerializer):
@@ -78,6 +96,25 @@ class UserLogInformation(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'avatar', 'user_type')
+
+
+class GetStudyPlanSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    difficulty = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StudyPlan
+        fields = ['problem_status']
+
+    def get_id(self, obj):
+        return obj.problem.idw
+
+    def get_name(self, obj):
+        return obj.problem.name
+
+    def get_difficulty(self, obj):
+        return obj.problem.difficulty
 
 
 class ProblemListSerializer(serializers.ModelSerializer):

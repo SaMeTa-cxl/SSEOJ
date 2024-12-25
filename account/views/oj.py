@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
 from sympy import Integer
 
-from problem.models import ProblemList
+from problem.models import ProblemList, StudyPlan
 from problem.serializers import ProblemSerializer
 from submission.models import Submission, JudgeStatus
 from ..models import User, Following
@@ -121,7 +121,7 @@ class UserInfoAPI(APIView):
         except User.DoesNotExist:
             return fail(msg= "用户不存在")
 
-        Rserializer = UserInfoSerializer(userInfo)
+        Rserializer = UserInfoSerializer(userInfo, context={'user': user})
         userData = Rserializer.data
         userData["avatar"] = ImageCode.image_base64(userInfo.avatar)
         #userData["subscribing_count"] = serializer.get_subscribing_count(userInfo)
@@ -141,6 +141,9 @@ class UserSubscribeAPI(APIView):
 
         if relationship not in ["0", "1"]:
             return fail(msg = "错误的关注状态")
+
+        if user_id == following_user_id:
+            return fail(msg = '不能关注自己')
 
         try:
             user = User.objects.get(id=user_id)
@@ -248,13 +251,27 @@ class UserFollowerAPI(APIView):
 
 
 class StudyPlanAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request, id):
         if not request.user.is_authenticated:
             return fail(msg = "未登录")
 
-        user = request.user
+        myself = request.user
+        if myself.id != id:
+            return fail(msg = '无权查看')
 
+        plans = StudyPlan.objects.filter(Q(user = myself))
+        for plan in plans:
+            if not plan.problem_status:
+                problem = plan.problem
+                submissions = Submission.objects.filter(Q(problem = problem) & Q(user_id = myself.id))
+                for sub in submissions:
+                    if sub.result == JudgeStatus.ACCEPTED:
+                        plan.problem_status = True
+                        plan.save()
+                        break
 
+        data = GetStudyPlanSerializer(plans, many = True).data
+        return success(data)
 
 
 class UserProfileChangeAPI(APIView):
