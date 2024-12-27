@@ -171,7 +171,11 @@ class UserFollowingAPI(APIView):
             myself = request.user
 
         following_records = Following.objects.filter(follower=user)
-        Rserializer = UserFollowingSerializer(following_records, many=True, context={'myself': myself})
+        following_user = []
+        for record in following_records:
+            following_user.append(record.following)
+
+        Rserializer = UserFollowingSerializer(following_user, many=True, context={'myself': myself})
 
         """
         res = []
