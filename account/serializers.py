@@ -1,3 +1,4 @@
+from prompt_toolkit.filters import is_multiline
 from rest_framework import serializers
 
 from account.models import User, Following
@@ -30,7 +31,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', 'profile', 'subscribing_count', 'subscribers_count']
+        fields = ['id', 'username', 'avatar', 'profile', 'subscribing_count', 'subscribers_count', 'is_subscribe']
 
     def get_subscribing_count(self, obj):
         return obj.followings.count()
@@ -62,31 +63,30 @@ class UserFollowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'profile']
+        fields = ['id', 'username', 'profile', 'is_following_me', 'is_followed_by_me', 'is_mutual_following']
 
     def get_is_following_me(self, obj):
-        following_user = obj.following
+        follower_user = obj
         myself = self.context.get('myself')
 
         if myself:
-            return Following.objects.get(follower=following_user, following=myself).exists()
+            return Following.objects.filter(follower=follower_user, following=myself).exists()
         else:
             return False
 
     def get_is_followed_by_me(self, obj):
-        following_user = obj.following
+        following_user = obj
         myself = self.context.get('myself')
 
         if myself:
-            return Following.objects.get(follower=myself, following=following_user).exists()
+            return Following.objects.filter(follower=myself, following=following_user).exists()
         else:
             return False
 
     def get_is_mutual_following(self, obj):
-        following_user = obj.following
         myself = self.context.get('myself')
 
-        if self.is_following_me and self.is_followed_by_me:
+        if self.get_is_followed_by_me(obj) and self.get_is_following_me(obj):
             return True
         else:
             return False
