@@ -2,4 +2,4 @@ __pycache__/
 *.pyc
 *.pyo
 .idea/
-keys/
+.keys/
