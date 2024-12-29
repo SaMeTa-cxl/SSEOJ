@@ -124,7 +124,7 @@ class ImageCode:
     @staticmethod
     def image_base64(imagePath):
         if not os.path.exists(imagePath):
-            imagePath = 'static/1.png'
+            imagePath = 'static/avatar.png'
 
         with open(imagePath, 'rb') as pngFile:
             data = pngFile.read()
