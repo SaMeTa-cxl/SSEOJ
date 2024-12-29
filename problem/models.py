@@ -7,7 +7,7 @@ from account.models import User
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=20)
     parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
