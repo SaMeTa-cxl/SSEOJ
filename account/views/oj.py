@@ -7,7 +7,7 @@ from sympy import Integer
 from problem.models import ProblemList, StudyPlan
 from problem.serializers import ProblemSerializer
 from submission.models import Submission, JudgeStatus
-from ..models import User, Following
+from ..models import *
 from ..serializers import *
 from utils.api import *
 from django.core.cache import cache
