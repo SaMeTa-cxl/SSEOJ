@@ -690,7 +690,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  5);
 
--- 插入标签关联关系
+-- 插入标签关联关系nothing
 insert into solution_tags (solution_id, tag_id) values
 (1, 1), (1, 13),
 (2, 1), (2, 13),
