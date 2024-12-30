@@ -322,7 +322,7 @@ class ProblemsetAPI(APIView):
         keyword = request.GET.get('keyword', '')
         min_difficulty = request.GET.get('min_difficulty')
         max_difficulty = request.GET.get('max_difficulty')
-        tags = request.GET.get('tags')
+        tags = request.GET.getlist('tags[]')
         sort_type = request.GET.get('sort_type', 'idAsc')
 
         problems = Problem.objects.filter(Q(name__icontains=keyword) | Q(description__icontains=keyword))
