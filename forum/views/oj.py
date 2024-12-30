@@ -83,6 +83,7 @@ class PostCommentInformationAPI(APIView):
             tmp['create_time'] = comment.create_time
             tmp['reply_to_id'] = comment.reply_to_user.id if comment.reply_to_user else None
             tmp['reply_to_name'] = comment.reply_to_user.username if comment.reply_to_user else None
+            tmp['under_comment_id'] = comment.under_comment_id if comment.under_comment_id else None
             comment_array.append(tmp)
 
         comment_data["count"] = count
