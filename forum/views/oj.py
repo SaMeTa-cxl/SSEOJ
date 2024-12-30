@@ -76,13 +76,14 @@ class PostCommentInformationAPI(APIView):
             tmp['comment_id'] = comment.id
             tmp['user_id'] = comment.create_user.id
             tmp['user_name'] = comment.create_user.username
-            tmp['avatar'] = comment.create_user.avatar
+            tmp['avatar'] = ImageCode.image_base64(comment.create_user.avatar)
             tmp['like_status'] = comment.like_users.filter(id=self_id).exists()
             tmp['comment_content'] = comment.content
             tmp['like_count'] = comment.like_count
             tmp['create_time'] = comment.create_time
             tmp['reply_to_id'] = comment.reply_to_user.id if comment.reply_to_user else None
             tmp['reply_to_name'] = comment.reply_to_user.username if comment.reply_to_user else None
+            tmp['under_comment_id'] = comment.under_comment_id if comment.under_comment_id else None
             comment_array.append(tmp)
 
         comment_data["count"] = count
@@ -99,6 +100,7 @@ class PostCommentNewAPI(APIView):
         comment_content = request.data.get('comment_content')
         user_id = request.user.id
         reply_to_user_id = request.data.get('reply_to_user_id', None)
+        under_comment_id = request.data.get('under_comment_id', None)
 
         if not post_id or not comment_content or not user_id:
             return fail("评论出问题啦！")
@@ -113,6 +115,7 @@ class PostCommentNewAPI(APIView):
                     create_user=user,
                     content=comment_content,
                     reply_to_user=reply_to_user,
+                    under_comment_id=under_comment_id,
                 )
             else:
                 comment = PostComment.objects.create(
@@ -121,6 +124,7 @@ class PostCommentNewAPI(APIView):
                     create_user=user,
                     content=comment_content,
                     reply_to_user=reply_to_user,
+                    under_comment_id=under_comment_id,
                 )
         else:
             if not comment_id:
