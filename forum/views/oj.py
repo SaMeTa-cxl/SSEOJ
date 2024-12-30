@@ -76,7 +76,7 @@ class PostCommentInformationAPI(APIView):
             tmp['comment_id'] = comment.id
             tmp['user_id'] = comment.create_user.id
             tmp['user_name'] = comment.create_user.username
-            tmp['avatar'] = comment.create_user.avatar
+            tmp['avatar'] = ImageCode.image_base64(comment.create_user.avatar)
             tmp['like_status'] = comment.like_users.filter(id=self_id).exists()
             tmp['comment_content'] = comment.content
             tmp['like_count'] = comment.like_count
