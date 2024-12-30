@@ -24,4 +24,5 @@ urlpatterns = [
     path("api/", include("account.urls.oj")),
     path("api/", include("problem.urls.oj")),
     path("api/", include("forum.urls.oj")),
+    #path("api/", include("submission.urls.oj")),
 ]
