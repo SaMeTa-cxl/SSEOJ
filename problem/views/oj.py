@@ -39,10 +39,8 @@ class ProblemDescriptionAPI(APIView):
         serializer = ProblemSerializer(problem)
         response_data = serializer.data
         response_data['similar_problems'] = problem.get_similar_problems(request.user)
-        print("here")
         response_data['pass_status'] = problem.get_pass_status(request.user)
         response_data['star_status'] = problem.get_star_status(request.user)
-        print("there")
         # print(response_data)
         return success(response_data)
 
