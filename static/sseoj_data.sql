@@ -191,6 +191,7 @@ insert into problem (
  insert into tag (
  id, name, parent_id
  ) values
+ (0, '语言', null),
  (1, '分治', null),
  (2, '动态规划', null),
  (3, '贪心算法', null),
@@ -210,7 +211,13 @@ insert into problem (
  (17, '最长递增子序列', 2),
  (18, '最长公共子序列', 2),
  (19, '动态规划树', 2),
- (20, '区间规划', 2);
+ (20, '区间规划', 2),
+ (21, 'C', 0),
+ (22, 'C++', 0),
+ (23, 'Java', 0),
+ (24, 'Python3', 0),
+ (25, 'JavaScript', 0),
+ (26, 'Golang', 0);
 
 
 -- 插入关注数据
