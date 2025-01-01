@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173",]
 
 # Application definition
 
@@ -203,3 +203,4 @@ LOGGING = {
 }
 """
 
+CSRF_COOKIE_AGE = 1800

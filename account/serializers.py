@@ -46,10 +46,10 @@ class UserInfoSerializer(serializers.ModelSerializer):
             return True
 
         if user.id == obj.id:
-            return True
+            return False
 
         try:
-            Following.objects.get(Q(follower = user) and Q(following = obj))
+            Following.objects.get(Q(follower = user) & Q(following = obj))
         except Following.DoesNotExist:
             return False
 
