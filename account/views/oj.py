@@ -113,6 +113,8 @@ class UserLogoutAPI(APIView):
 
 
 class UserInfoAPI(APIView):
+    http_method_names = ['get', 'post', 'put', 'delete']
+
     def get(self, request, id):
         user = request.user
 
