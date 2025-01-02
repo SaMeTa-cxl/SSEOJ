@@ -15,7 +15,7 @@ class Tag(models.Model):
 
 
 class Problem(models.Model):
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     # 题目描述
     description = models.TextField()
     # 输入格式
