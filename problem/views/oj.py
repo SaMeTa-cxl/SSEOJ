@@ -348,6 +348,7 @@ class ProblemsetAPI(APIView):
             else:
                 problem['pass_status'] = None
 
+        # print(problems)
         resp = {"count": len(problems), 'problems': problems}
         return success(resp)
 
