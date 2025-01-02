@@ -10,5 +10,8 @@ urlpatterns = [
     path('post/new/', PostNewAPI.as_view(), name='post_new'),
     path('post/good/', PostGoodAPI.as_view(), name='post_good'),
     path('post/delete/', PostDeleteAPI.as_view(), name='post_delete'),
-    path('post/comment/good/', PostCommentGoodAPI.as_view(), name ='post_comment_good')
+    path('post/comment/good/', PostCommentGoodAPI.as_view(), name ='post_comment_good'),
+    path('post/hot_post/', PostHotAPI.as_view(), name='post_hot_post'),
+    path('post/my_post/', PostMyAPI.as_view(), name='post_my_post'),
+    path('post/subscribe_post/', PostSubscribeAPI.as_view(), name='post_subscribe_post'),
 ]

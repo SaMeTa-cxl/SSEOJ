@@ -14,7 +14,7 @@ class Post(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     last_update_time = models.DateTimeField(null=True)
     is_announcement = models.BooleanField(default=False)
-    check_status = models.BooleanField(default=False)
+    check_status = models.BooleanField(default=True)
     tags = models.ManyToManyField(Tag, related_name='tags')
 
     class Meta:

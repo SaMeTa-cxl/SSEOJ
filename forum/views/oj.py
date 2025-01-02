@@ -24,6 +24,7 @@ class PostListAPI(APIView):
         postList = []
 
         for post in postData:
+            print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
@@ -155,7 +156,7 @@ class PostNewAPI(APIView):
         user_id = request.user.id
         post_content = request.data.get("post_content")
         post_title = request.data.get("post_title", None)
-        tags = request.data.get("tags", None)
+        tags = request.data.get("tags", [])
 
 
         user = User.objects.get(id=user_id)
@@ -258,3 +259,87 @@ class PostCommentGoodAPI(APIView):
             comment.like_users.remove(user)
 
         return success('操作成功')
+
+
+class PostHotAPI(APIView):
+    def get(self, request):
+        page_num = int(request.GET.get('page_num', 1))
+        page_size = int(request.GET.get('page_size', 30))
+        print(page_num, page_size)
+        postData = Post.objects.order_by('-like_count')[(page_num - 1) * page_size: page_num * page_size]
+        postList = []
+
+        for post in postData:
+            print(post.title)
+            postRelateData = {}
+            creatUser = post.create_user
+
+            postRelateData['post_id'] = post.id
+            postRelateData['post_title'] = post.title
+            postRelateData['id'] = creatUser.id
+            postRelateData['username'] = creatUser.username
+            postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
+            postRelateData['like_count'] = post.like_count
+            postRelateData['comment_count'] = post.comment_count
+
+            postList.append(postRelateData)
+        has_next = page_num * page_size < Post.objects.count()
+        return success({'posts': postList, 'has_next': has_next})
+
+
+class PostMyAPI(APIView):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return success({'posts': [], 'has_next': False})
+
+        page_num = request.GET.get('page_num', 1)
+        page_size = request.GET.get('page_size', 30)
+        postData = Post.objects.filter(create_user=request.user)
+        has_next = page_num * page_size < postData.count()
+        postData = postData[(page_num - 1) * page_size: page_num * page_size]
+        postList = []
+
+        for post in postData:
+            print(post.title)
+            postRelateData = {}
+            creatUser = post.create_user
+
+            postRelateData['post_id'] = post.id
+            postRelateData['post_title'] = post.title
+            postRelateData['id'] = creatUser.id
+            postRelateData['username'] = creatUser.username
+            postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
+            postRelateData['like_count'] = post.like_count
+            postRelateData['comment_count'] = post.comment_count
+
+            postList.append(postRelateData)
+        return success({'posts': postList, 'has_next':has_next})
+
+
+class PostSubscribeAPI(APIView):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return success({'posts': [], 'has_next': False})
+
+        page_num = request.GET.get('page_num', 1)
+        page_size = request.GET.get('page_size', 30)
+        postData = Post.objects.filter(create_user__in=request.user.followings.all())
+        has_next = page_num * page_size < postData.count()
+        postData = postData[(page_num - 1) * page_size: page_num * page_size]
+        postList = []
+
+        for post in postData:
+            print(post.title)
+            postRelateData = {}
+            creatUser = post.create_user
+
+            postRelateData['post_id'] = post.id
+            postRelateData['post_title'] = post.title
+            postRelateData['id'] = creatUser.id
+            postRelateData['username'] = creatUser.username
+            postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
+            postRelateData['like_count'] = post.like_count
+            postRelateData['comment_count'] = post.comment_count
+
+            postList.append(postRelateData)
+        return success({'posts': postList, 'has_next': has_next})
