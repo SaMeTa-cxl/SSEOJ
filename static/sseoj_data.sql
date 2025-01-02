@@ -1,29 +1,26 @@
 use sseoj;
--- 需要添加的数据表，有3个tab缩进的表为已完成的表
-
--- judge_server
-			-- tag
-			-- following
-			-- post
+-- tag
+-- following
+-- post
 -- post_comment
 -- post_comment_like_users
 -- post_like_users
 -- post_tags
-			-- problem
-			-- problem_list
-			-- problem_list_problems
-			-- problem_list_star_users
-			-- problem_pass_users
-			-- problem_star_users
-			-- problem_tags
-			-- solution
-			-- solution_comment
+-- problem
+-- problem_list
+-- problem_list_problems
+-- problem_list_star_users
+-- problem_pass_users
+-- problem_star_users
+-- problem_tags
+-- solution
+-- solution_comment
 -- solution_comment_like_users
 -- solution_like_users
 -- solution_tags
-			-- study_plan
+-- study_plan
 -- submission
-			-- tag
+-- tag
 
 
 
@@ -377,55 +374,7 @@ insert into problem (
  TRUE,
  'test_case_15');
 
--- 插入problem_tags
-insert into problem_tags
-(id, problem_id, tag_id)
-values
-(1, 1, 1),
-(2, 1, 2),
-(3, 1, 3),
-(4, 2, 4),
-(5, 2, 5),
-(6, 2, 6),
-(7, 3, 7),
-(8, 3, 8),
-(9, 3, 9),
-(10, 4, 10),
-(11, 4, 11),
-(12, 4, 12),
-(13, 5, 13),
-(14, 5, 14),
-(15, 5, 15),
-(16, 6, 16),
-(17, 6, 17),
-(18, 6, 18),
-(19, 7, 19),
-(20, 7, 20),
-(21, 7, 21),
-(22, 8, 22),
-(23, 8, 23),
-(24, 8, 24),
-(25, 9, 25),
-(26, 9, 26),
-(27, 9, 27),
-(28, 10, 1),
-(29, 10, 2),
-(30, 10, 3),
-(31, 11, 4),
-(32, 11, 5),
-(33, 11, 6),
-(34, 12, 7),
-(35, 12, 8),
-(36, 12, 9),
-(37, 13, 10),
-(38, 13, 11),
-(39, 13, 12),
-(40, 14, 13),
-(41, 14, 14),
-(42, 14, 15),
-(43, 15, 16),
-(44, 15, 17),
-(45, 15, 18);
+
 
 
  -- 插入problem_pass_users
@@ -505,6 +454,56 @@ values
  (25, 'Python3', 21),
  (26, 'JavaScript', 21),
  (27, 'Golang', 21);
+
+ -- 插入problem_tags
+insert into problem_tags
+(id, problem_id, tag_id)
+values
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 2, 4),
+(5, 2, 5),
+(6, 2, 6),
+(7, 3, 7),
+(8, 3, 8),
+(9, 3, 9),
+(10, 4, 10),
+(11, 4, 11),
+(12, 4, 12),
+(13, 5, 13),
+(14, 5, 14),
+(15, 5, 15),
+(16, 6, 16),
+(17, 6, 17),
+(18, 6, 18),
+(19, 7, 19),
+(20, 7, 20),
+(21, 7, 21),
+(22, 8, 22),
+(23, 8, 23),
+(24, 8, 24),
+(25, 9, 25),
+(26, 9, 26),
+(27, 9, 27),
+(28, 10, 1),
+(29, 10, 2),
+(30, 10, 3),
+(31, 11, 4),
+(32, 11, 5),
+(33, 11, 6),
+(34, 12, 7),
+(35, 12, 8),
+(36, 12, 9),
+(37, 13, 10),
+(38, 13, 11),
+(39, 13, 12),
+(40, 14, 13),
+(41, 14, 14),
+(42, 14, 15),
+(43, 15, 16),
+(44, 15, 17),
+(45, 15, 18);
 
 
 -- 插入关注数据
@@ -1194,6 +1193,33 @@ values
 ('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null),
 ('Have you considered optimizing this further?', 2, 5, 0, now(), false, 1);
 
+-- 插入题解评论点赞表
+insert into solution_comment_like_users (solutioncomment_id, user_id)
+values
+(1, 4),
+(2, 7),
+(3, 1),
+(4, 6),
+(5, 3),
+(6, 8),
+(7, 2),
+(8, 10),
+(9, 5),
+(10, 9);
+
+-- 插入题解点赞表
+insert into solution_like_users (solution_id, user_id)
+values
+(1, 5),
+(2, 3),
+(3, 9),
+(4, 1),
+(5, 7),
+(6, 2),
+(7, 8),
+(8, 6),
+(9, 10),
+(10, 4);
 
 -- 插入题单
 insert into problem_list
@@ -1279,4 +1305,172 @@ values
 (5, 10, now(), false);
 
 
--- 插入
+-- 插入帖子评论
+insert into post_comment
+(post_id, create_user_id, content, check_status, like_count, reply_to_user_id, under_comment_id_id, create_time)
+values
+(1, 2, 'This is a comment for post 1.', true, 5, null, null, now()),
+(1, 3, 'Another comment on post 1.', true, 3, 2, null, now()),
+(1, 4, 'Reply to the first comment.', true, 2, 2, 1, now()),
+(2, 5, 'This is a comment for post 2.', true, 8, null, null, now()),
+(2, 6, 'Another comment on post 2.', true, 0, 5, null, now()),
+(3, 7, 'Comment on post 3.', true, 4, null, null, now()),
+(3, 8, 'Reply to the comment on post 3.', true, 7, 7, 6, now()),
+(4, 9, 'First comment on post 4.', true, 1, null, null, now()),
+(4, 10, 'Another comment on post 4.', true, 3, 9, null, now()),
+(5, 11, 'Comment on post 5.', true, 2, null, null, now()),
+(5, 12, 'Reply to post 5 comment.', true, 5, 11, 10, now()),
+(6, 13, 'First comment on post 6.', true, 6, null, null, now()),
+(6, 14, 'Another comment for post 6.', true, 0, 13, null, now()),
+(7, 15, 'Comment on post 7.', true, 2, null, null, now()),
+(7, 16, 'Reply to post 7 comment.', true, 4, 15, 13, now()),
+(8, 17, 'First comment on post 8.', true, 5, null, null, now()),
+(8, 18, 'Another comment for post 8.', true, 1, 17, null, now()),
+(9, 19, 'Comment on post 9.', true, 7, null, null, now()),
+(9, 20, 'Reply to post 9 comment.', true, 2, 19, 15, now()),
+(10, 21, 'First comment on post 10.', true, 0, null, null, now()),
+(10, 22, 'Another comment for post 10.', true, 3, 21, null, now()),
+(11, 23, 'First comment on post 11.', true, 9, null, null, now()),
+(11, 24, 'Reply to post 11 comment.', true, 0, 23, null, now()),
+(12, 25, 'Comment on post 12.', true, 4, null, null, now()),
+(12, 26, 'Reply to post 12 comment.', true, 1, 25, 20, now()),
+(13, 27, 'First comment on post 13.', true, 5, null, null, now()),
+(13, 28, 'Another comment for post 13.', true, 6, 27, null, now()),
+(14, 29, 'Comment on post 14.', true, 2, null, null, now()),
+(14, 30, 'Reply to post 14 comment.', true, 3, 29, 26, now()),
+(15, 1, 'First comment on post 15.', true, 8, null, null, now()),
+(15, 2, 'Another comment for post 15.', true, 0, 1, null, now()),
+(16, 3, 'Comment on post 16.', true, 4, null, null, now()),
+(16, 4, 'Reply to post 16 comment.', true, 1, 3, null, now()),
+(17, 5, 'First comment on post 17.', true, 6, null, null, now()),
+(17, 6, 'Another comment for post 17.', true, 0, 5, 31, now()),
+(18, 7, 'Comment on post 18.', true, 2, null, null, now()),
+(18, 8, 'Reply to post 18 comment.', true, 4, 7, 33, now()),
+(19, 9, 'First comment on post 19.', true, 5, null, null, now()),
+(19, 10, 'Another comment for post 19.', true, 1, 9, null, now()),
+(20, 11, 'Comment on post 20.', true, 7, null, null, now()),
+(20, 12, 'Reply to post 20 comment.', true, 2, 11, null, now()),
+(21, 13, 'First comment on post 21.', true, 6, null, null, now()),
+(21, 14, 'Another comment for post 21.', true, 1, 13, 37, now()),
+(22, 15, 'Comment on post 22.', true, 4, null, null, now()),
+(22, 16, 'Reply to post 22 comment.', true, 1, 15, null, now()),
+(23, 17, 'First comment on post 23.', true, 5, null, null, now()),
+(23, 18, 'Another comment for post 23.', true, 0, 17, null, now()),
+(24, 19, 'Comment on post 24.', true, 2, null, null, now()),
+(24, 20, 'Reply to post 24 comment.', true, 3, 19, 40, now()),
+(25, 21, 'First comment on post 25.', true, 8, null, null, now()),
+(25, 22, 'Another comment for post 25.', true, 0, 21, null, now()),
+(26, 23, 'Comment on post 26.', true, 4, null, null, now()),
+(26, 24, 'Reply to post 26 comment.', true, 1, 23, null, now()),
+(27, 25, 'First comment on post 27.', true, 6, null, null, now()),
+(27, 26, 'Another comment for post 27.', true, 0, 25, 43, now()),
+(28, 27, 'Comment on post 28.', true, 2, null, null, now()),
+(28, 28, 'Reply to post 28 comment.', true, 4, 27, null, now()),
+(29, 29, 'First comment on post 29.', true, 5, null, null, now()),
+(29, 30, 'Another comment for post 29.', true, 1, 29, null, now()),
+(30, 1, 'First comment on post 30.', true, 7, null, null, now()),
+(30, 2, 'Another comment for post 30.', true, 2, 1, null, now());
+
+-- 向 post_comment 表插入数据
+insert into post_comment
+(post_id, create_user_id, content, check_status, like_count, reply_to_user_id, under_comment_id_id, create_time)
+values
+(1, 2, 'This is a comment for post 1.', true, 5, null, null, now()),
+(2, 3, 'Comment on post 2.', true, 3, 2, null, now()),
+(3, 4, 'Reply to the comment.', true, 2, 2, 1, now()),
+(4, 5, 'First comment on post 4.', true, 8, null, null, now()),
+(5, 6, 'Another comment.', true, 0, 5, null, now()),
+(6, 7, 'Comment on post 6.', true, 4, null, null, now()),
+(7, 8, 'Reply to the comment.', true, 7, 7, 6, now()),
+(8, 9, 'Another comment.', true, 1, null, null, now()),
+(9, 10, 'First comment.', true, 3, 9, null, now()),
+(10, 11, 'Comment on post 10.', true, 2, null, null, now());
+
+-- 向 post_comment_like_users 表插入数据
+insert into post_comment_like_users
+(postcomment_id, user_id)
+values
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(3, 6),
+(4, 7),
+(5, 8),
+(6, 9),
+(7, 10),
+(8, 11),
+(9, 12),
+(10, 13);
+
+-- 向 post_like_users 表插入数据
+insert into post_like_users
+(post_id, user_id)
+values
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(3, 6),
+(3, 7),
+(4, 8),
+(4, 9),
+(5, 10),
+(6, 11),
+(7, 12),
+(8, 13),
+(9, 14),
+(10, 15);
+
+-- 向 post_tags 表插入数据
+insert into post_tags
+(post_id, tag_id)
+values
+(1, 1),
+(1, 2),
+(2, 3),
+(2, 4),
+(3, 5),
+(3, 6),
+(4, 7),
+(5, 8),
+(6, 9),
+(7, 10),
+(8, 11),
+(9, 12),
+(10, 13),
+(10, 14),
+(11, 15),
+(12, 16),
+(13, 17),
+(14, 18),
+(15, 19),
+(16, 20),
+(17, 21),
+(18, 22),
+(19, 23),
+(20, 24),
+(21, 25),
+(22, 26),
+(23, 27);
+
+-- 插入 submission 表数据
+insert into submission
+(id, problem_id, create_time, user_id, code, result, time_spent, memory_spent, error_info, language)
+values
+(uuid(), 1, now(), 2, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 4, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 5, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 6, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 7, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 8, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 9, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 10, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 11, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 12, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 13, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 14, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 15, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 16, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java');
+
