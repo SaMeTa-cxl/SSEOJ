@@ -1,4 +1,28 @@
 use sseoj;
+-- tag
+-- following
+-- post
+-- post_comment
+-- post_comment_like_users
+-- post_like_users
+-- post_tags
+-- problem
+-- problem_list
+-- problem_list_problems
+-- problem_list_star_users
+-- problem_pass_users
+-- problem_star_users
+-- problem_tags
+-- solution
+-- solution_comment
+-- solution_comment_like_users
+-- solution_like_users
+-- solution_tags
+-- study_plan
+-- submission
+-- tag
+
+
 
 -- 禁用外键约束
 set foreign_key_checks = 0;
@@ -75,12 +99,6 @@ alter table tag auto_increment = 1;
 
 -- 恢复外键约束
 set foreign_key_checks = 1;
-
-
--- user
--- user_groups
--- user_user_permissions
--- user部分不做处理
 
 -- 插入题目数据
 insert into problem (
@@ -184,7 +202,225 @@ insert into problem (
  0,
  NOW(),
  TRUE,
- 'test_case_5');
+ 'test_case_5'),
+
+ ('Greatest Common Divisor',
+ 'Calculate the greatest common divisor (GCD) of two integers.',
+ 'Two integers separated by a space.',
+ 'An integer representing the GCD.',
+ '1 <= a, b <= 1000',
+ '{"inputs": ["12 18", "100 45"], "outputs": ["6", "5"]}',
+ 2,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'Number theory problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_6'),
+
+('Least Common Multiple',
+ 'Calculate the least common multiple (LCM) of two integers.',
+ 'Two integers separated by a space.',
+ 'An integer representing the LCM.',
+ '1 <= a, b <= 1000',
+ '{"inputs": ["4 6", "10 15"], "outputs": ["12", "30"]}',
+ 2,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'Number theory problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_7'),
+
+('Factorial',
+ 'Calculate the factorial of a given integer.',
+ 'A single integer.',
+ 'An integer representing the factorial.',
+ '1 <= n <= 20',
+ '{"inputs": ["5", "10"], "outputs": ["120", "3628800"]}',
+ 3,
+ 2000,
+ 256,
+ 0,
+ 0,
+ 'Basic recursion problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_8'),
+
+('Fibonacci Sequence',
+ 'Calculate the Nth term of the Fibonacci sequence.',
+ 'A single integer N.',
+ 'An integer representing the Nth term.',
+ '1 <= N <= 50',
+ '{"inputs": ["5", "10"], "outputs": ["5", "55"]}',
+ 3,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'Dynamic programming problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_9'),
+
+('Palindrome Check',
+ 'Check if a given string is a palindrome.',
+ 'A single string.',
+ 'YES if it is a palindrome, NO otherwise.',
+ '1 <= length of string <= 100',
+ '{"inputs": ["racecar", "hello"], "outputs": ["YES", "NO"]}',
+ 1,
+ 1000,
+ 128,
+ 0,
+ 0,
+ 'String processing problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_10'),
+
+('Anagram Check',
+ 'Check if two strings are anagrams of each other.',
+ 'Two strings separated by a space.',
+ 'YES if they are anagrams, NO otherwise.',
+ '1 <= length of each string <= 100',
+ '{"inputs": ["listen silent", "hello world"], "outputs": ["YES", "NO"]}',
+ 2,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'String processing problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_11'),
+
+('Matrix Multiplication',
+ 'Multiply two matrices of given dimensions.',
+ 'Two matrices represented as space-separated rows and columns.',
+ 'A matrix representing the product.',
+ '1 <= rows, cols <= 10',
+ '{"inputs": ["1 2 3 4|5 6 7 8", "1 0 0 1|0 1 1 0"], "outputs": ["19 22|43 50", "1 1|0 1"]}',
+ 4,
+ 2000,
+ 512,
+ 0,
+ 0,
+ 'Matrix manipulation problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_12'),
+
+('Longest Common Subsequence',
+ 'Find the length of the longest common subsequence of two strings.',
+ 'Two strings separated by a space.',
+ 'An integer representing the LCS length.',
+ '1 <= length of each string <= 1000',
+ '{"inputs": ["abcde ace", "abc xyz"], "outputs": ["3", "0"]}',
+ 4,
+ 3000,
+ 256,
+ 0,
+ 0,
+ 'Dynamic programming problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_13'),
+
+('Binary Search',
+ 'Perform a binary search on a sorted array to find a target value.',
+ 'An array followed by an integer, separated by a space.',
+ 'The index of the target value, or -1 if not found.',
+ '1 <= length of array <= 1000, -10^6 <= elements, target <= 10^6',
+ '{"inputs": ["1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59 61 63 65 67 69 71 73 75 77 79 81 83 85 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149 151 153 155 157 159 161 163 165 167 169 171 173 175 177 179 181 183 185 187 189 191 193 195 197 199", "125"], "outputs": ["62"]}',
+ 2,
+ 2000,
+ 128,
+ 0,
+ 0,
+ 'Search algorithm problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_14'),
+
+('Knapsack Problem',
+ 'Solve the 0/1 knapsack problem to maximize value.',
+ 'Number of items, capacity, and weights and values of items.',
+ 'An integer representing the maximum value.',
+ '1 <= number of items <= 100, 1 <= capacity <= 1000',
+ '{"inputs": ["4 7|1 3 4 5|1 4 5 7"], "outputs": ["9"]}',
+ 5,
+ 3000,
+ 256,
+ 0,
+ 0,
+ 'Optimization problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_15');
+
+
+
+
+ -- 插入problem_pass_users
+ insert into problem_pass_users
+ (id, problem_id, user_id)
+ values
+(1, 1, 2),
+(2, 2, 8),
+(3, 3, 9),
+(4, 4, 6),
+(5, 5, 15),
+(6, 6, 3),
+(7, 7, 4),
+(8, 8, 7),
+(9, 9, 10),
+(10, 10, 11),
+(11, 11, 12),
+(12, 12, 5),
+(13, 13, 14),
+(14, 14, 1),
+(15, 15, 13);
+
+ -- 插入problem_star_users
+insert into problem_star_users
+(id, problem_id, user_id)
+values
+(1, 1, 3),
+(2, 1, 5),
+(3, 2, 7),
+(4, 2, 9),
+(5, 3, 2),
+(6, 3, 6),
+(7, 4, 8),
+(8, 4, 10),
+(9, 5, 4),
+(10, 5, 11),
+(11, 6, 1),
+(12, 6, 12),
+(13, 7, 13),
+(14, 7, 14),
+(15, 8, 15),
+(16, 8, 2),
+(17, 9, 3),
+(18, 9, 4),
+(19, 10, 5),
+(20, 10, 6);
 
 
 --  插入tag数据
@@ -218,6 +454,56 @@ insert into problem (
  (25, 'Python3', 21),
  (26, 'JavaScript', 21),
  (27, 'Golang', 21);
+
+ -- 插入problem_tags
+insert into problem_tags
+(id, problem_id, tag_id)
+values
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 2, 4),
+(5, 2, 5),
+(6, 2, 6),
+(7, 3, 7),
+(8, 3, 8),
+(9, 3, 9),
+(10, 4, 10),
+(11, 4, 11),
+(12, 4, 12),
+(13, 5, 13),
+(14, 5, 14),
+(15, 5, 15),
+(16, 6, 16),
+(17, 6, 17),
+(18, 6, 18),
+(19, 7, 19),
+(20, 7, 20),
+(21, 7, 21),
+(22, 8, 22),
+(23, 8, 23),
+(24, 8, 24),
+(25, 9, 25),
+(26, 9, 26),
+(27, 9, 27),
+(28, 10, 1),
+(29, 10, 2),
+(30, 10, 3),
+(31, 11, 4),
+(32, 11, 5),
+(33, 11, 6),
+(34, 12, 7),
+(35, 12, 8),
+(36, 12, 9),
+(37, 13, 10),
+(38, 13, 11),
+(39, 13, 12),
+(40, 14, 13),
+(41, 14, 14),
+(42, 14, 15),
+(43, 15, 16),
+(44, 15, 17),
+(45, 15, 18);
 
 
 -- 插入关注数据
@@ -405,7 +691,6 @@ follow_time, follower_id, following_id) values
 ('2024-12-29', 10, 34),
 ('2024-12-29', 28, 8),
 ('2024-12-29', 32, 35),
-('2024-12-29', 7, 7),
 ('2024-12-29', 22, 23),
 ('2024-12-29', 13, 29),
 ('2024-12-29', 31, 8),
@@ -603,8 +888,8 @@ title, content, like_count, comment_count, create_time, last_update_time, is_ann
  False, True, 36);
 
 --  插入题解
--- 插入题解数据
 insert into solution (content, title, like_count, comment_count, create_time, check_status, create_user_id, problem_id) values
+-- 第 1 题
 ('You can solve this problem by reading the input numbers, splitting them, and adding them directly.',
  'Simple Addition',
  0,
@@ -622,6 +907,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  1),
 
+-- 第 2 题
 ('Subtract the second number from the first after splitting the input.',
  'Basic Subtraction',
  0,
@@ -639,6 +925,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  2),
 
+-- 第 3 题
 ('Multiply the two integers after parsing the input.',
  'Simple Multiplication',
  0,
@@ -656,6 +943,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  3),
 
+-- 第 4 题
 ('Divide the first number by the second and ensure you handle division by zero.',
  'Basic Division',
  0,
@@ -673,6 +961,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  4),
 
+-- 第 5 题
 ('Iterate through numbers up to the square root of the input to check divisibility.',
  'Prime Check Using Trial Division',
  0,
@@ -688,7 +977,188 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  now(),
  false,
  2,
- 5);
+ 5),
+
+-- 第 6 题
+('Use dynamic programming to find the optimal solution.',
+ 'Dynamic Programming Approach',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 6),
+('Break the problem into smaller subproblems and solve recursively.',
+ 'Recursive Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 6),
+
+-- 第 7 题
+('Simulate the problem step by step to understand edge cases.',
+ 'Simulation-Based Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 7),
+('Optimize the simulation by precomputing intermediate results.',
+ 'Optimized Simulation',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 7),
+
+-- 第 8 题
+('Use binary search for efficient resolution of the problem.',
+ 'Binary Search Approach',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 8),
+('Combine binary search with a hash table for faster lookups.',
+ 'Hybrid Binary Search',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 8),
+
+-- 第 9 题
+('Apply breadth-first search to explore all possibilities.',
+ 'BFS Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 9),
+('Depth-first search can also be used but may require backtracking.',
+ 'DFS Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 9),
+
+-- 第 10 题
+('Use modular arithmetic to simplify calculations.',
+ 'Modular Arithmetic Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 10),
+('Precompute factorials to handle large inputs efficiently.',
+ 'Precomputation Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 10),
+
+-- 第 11 题
+('Sort the input and apply a two-pointer technique.',
+ 'Sorting and Two-Pointer Method',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 11),
+('Use a priority queue to handle dynamic updates.',
+ 'Priority Queue Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 11),
+
+-- 第 12 题
+('Implement a greedy strategy to achieve the best results.',
+ 'Greedy Algorithm Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 12),
+('Compare the greedy approach with dynamic programming for optimality.',
+ 'Greedy vs DP Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 12),
+
+-- 第 13 题
+('Represent the input as a graph and apply Dijkstra’s algorithm.',
+ 'Graph-Based Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 13),
+('Use Floyd-Warshall algorithm for all-pairs shortest paths.',
+ 'All-Pairs Shortest Path',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 13),
+
+-- 第 14 题
+('Use sliding window technique for efficient computation.',
+ 'Sliding Window Method',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 14),
+('Enhance the sliding window with hash maps for better performance.',
+ 'Advanced Sliding Window',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 14),
+
+-- 第 15 题
+('Apply a divide-and-conquer approach to break the problem into smaller parts.',
+ 'Divide and Conquer',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 15),
+('Compare divide-and-conquer with brute force for understanding trade-offs.',
+ 'Brute Force vs Divide and Conquer',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 15);
+
 
 -- 插入标签关联关系nothing
 insert into solution_tags (solution_id, tag_id) values
@@ -702,3 +1172,374 @@ insert into solution_tags (solution_id, tag_id) values
 (8, 1), (8, 13),
 (9, 3),
 (10, 3);
+
+
+-- 插入题解评论
+insert into solution_comment
+(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id)
+values
+('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null),
+('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1),
+
+('Great explanation, but I think there is an edge case missing.', 3, 2, 0, now(), false, null),
+('Could you clarify how this handles large inputs?', 4, 2, 0, now(), false, 3),
+
+('This is an efficient implementation, well done!', 1, 3, 0, now(), false, null),
+('I recommend adding more comments to improve readability.', 2, 3, 0, now(), false, 1),
+
+('I found this solution helpful for my project.', 3, 4, 0, now(), false, null),
+('What inspired this approach? It seems unique.', 4, 4, 0, now(), false, 3),
+
+('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null),
+('Have you considered optimizing this further?', 2, 5, 0, now(), false, 1);
+
+-- 插入题解评论点赞表
+insert into solution_comment_like_users (solutioncomment_id, user_id)
+values
+(1, 4),
+(2, 7),
+(3, 1),
+(4, 6),
+(5, 3),
+(6, 8),
+(7, 2),
+(8, 10),
+(9, 5),
+(10, 9);
+
+-- 插入题解点赞表
+insert into solution_like_users (solution_id, user_id)
+values
+(1, 5),
+(2, 3),
+(3, 9),
+(4, 1),
+(5, 7),
+(6, 2),
+(7, 8),
+(8, 6),
+(9, 10),
+(10, 4);
+
+-- 插入题单
+insert into problem_list
+(title, create_user_id, star_count, problem_count, summary, is_deleted, is_public)
+values
+('基础算法题单', 1, 0, 0, '包含常见的基础算法题目，如排序、查找等，用于巩固基础知识。', false, true),
+('数据结构题单', 2, 0, 0, '专注于数据结构相关问题，包括链表、树、图等内容，适合中级学习者。', false, true),
+('动态规划题单', 3, 0, 0, '集合了一些经典动态规划问题，帮助理解状态转移与问题分解。', false, true),
+('数学题单', 4, 0, 0, '包含数论与离散数学的练习题目，适合提高数学建模能力。', false, true),
+('高级算法题单', 5, 0, 0, '收录了高级算法问题，包括分治、回溯、贪心算法等，适合挑战。', false, true),
+('编程比赛题单', 6, 0, 0, '精选自往届编程比赛的高质量题目，适合训练比赛能力。', false, true),
+('机器学习题单', 7, 0, 0, '涉及机器学习基础算法实现与优化问题，适合初学者。', false, true),
+('数据库练习题单', 8, 0, 0, '包含SQL查询与数据库设计相关问题，适合数据库入门和提高。', false, true),
+('操作系统题单', 9, 0, 0, '整理了操作系统经典问题，如进程调度、内存管理等，理论与实践兼备。', false, true),
+('网络题单', 10, 0, 0, '涵盖计算机网络问题，从协议到应用层，适合系统学习网络知识。', false, true);
+
+-- 向题单中插入题目数据
+insert into problem_list_problems (id, problemlist_id, problem_id) values
+(1, 1, 3),
+(2, 1, 7),
+(3, 2, 1),
+(4, 2, 8),
+(5, 3, 2),
+(6, 3, 9),
+(7, 4, 4),
+(8, 4, 5),
+(9, 5, 6),
+(10, 6, 10),
+(11, 7, 11),
+(12, 8, 12),
+(13, 9, 13),
+(14, 10, 14),
+(15, 10, 15);
+
+-- 插入problem_list_star_user
+insert into problem_list_star_users
+(id, problemlist_id, user_id)
+values
+(1, 1, 3),
+(2, 1, 5),
+(3, 1, 7),
+(4, 2, 8),
+(5, 2, 10),
+(6, 2, 12),
+(7, 3, 2),
+(8, 3, 6),
+(9, 3, 9),
+(10, 4, 11),
+(11, 4, 13),
+(12, 4, 15),
+(13, 5, 16),
+(14, 5, 18),
+(15, 5, 20),
+(16, 6, 17),
+(17, 6, 19),
+(18, 6, 21),
+(19, 7, 22),
+(20, 7, 23),
+(21, 7, 25),
+(22, 8, 1),
+(23, 8, 14),
+(24, 8, 26),
+(25, 9, 4),
+(26, 9, 5),
+(27, 9, 28),
+(28, 10, 6),
+(29, 10, 8),
+(30, 10, 30);
+
+-- 插入学习计划
+insert into study_plan
+(user_id, problem_id, added_time, problem_status)
+values
+(1, 1, now(), false),
+(1, 2, now(), true),
+(2, 3, now(), false),
+(2, 4, now(), true),
+(3, 5, now(), false),
+(3, 6, now(), false),
+(4, 7, now(), true),
+(4, 8, now(), false),
+(5, 9, now(), true),
+(5, 10, now(), false);
+
+
+-- 插入帖子评论
+insert into post_comment
+(post_id, create_user_id, content, check_status, like_count, reply_to_user_id, under_comment_id_id, create_time)
+values
+(1, 2, 'This is a comment for post 1.', true, 5, null, null, now()),
+(1, 3, 'Another comment on post 1.', true, 3, null, null, now()),
+(1, 4, 'Reply to the first comment.', true, 2, 2, 1, now()), -- 回复用户2的评论，under_comment_id 指向 1
+(2, 5, 'This is a comment for post 2.', true, 8, null, null, now()),
+(2, 6, 'Another comment on post 2.', true, 0, null, null, now()),
+(3, 7, 'Comment on post 3.', true, 4, null, null, now()),
+(3, 8, 'Reply to the comment on post 3.', true, 7, 7, 6, now()), -- 回复用户7的评论，under_comment_id 指向 6
+(4, 9, 'First comment on post 4.', true, 1, null, null, now()),
+(4, 10, 'Another comment on post 4.', true, 3, null, null, now()),
+(5, 11, 'Comment on post 5.', true, 2, null, null, now()),
+(5, 12, 'Reply to post 5 comment.', true, 5, 11, 10, now()), -- 回复用户11的评论，under_comment_id 指向 10
+(6, 13, 'First comment on post 6.', true, 6, null, null, now()),
+(6, 14, 'Another comment for post 6.', true, 0, null, null, now()),
+(7, 15, 'Comment on post 7.', true, 2, null, null, now()),
+(7, 16, 'Reply to post 7 comment.', true, 4, 15, 13, now()), -- 回复用户15的评论，under_comment_id 指向 13
+(8, 17, 'First comment on post 8.', true, 5, null, null, now()),
+(8, 18, 'Another comment for post 8.', true, 1, null, null, now()),
+(9, 19, 'Comment on post 9.', true, 7, null, null, now()),
+(9, 20, 'Reply to post 9 comment.', true, 2, 19, 15, now()), -- 回复用户19的评论，under_comment_id 指向 15
+(10, 21, 'First comment on post 10.', true, 0, null, null, now()),
+(10, 22, 'Another comment for post 10.', true, 3, null, null, now()),
+(11, 23, 'First comment on post 11.', true, 9, null, null, now()),
+(11, 24, 'Reply to post 11 comment.', true, 0, null, null, now()),
+(12, 25, 'Comment on post 12.', true, 4, null, null, now()),
+(12, 26, 'Reply to post 12 comment.', true, 1, 25, 20, now()), -- 回复用户25的评论，under_comment_id 指向 20
+(13, 27, 'First comment on post 13.', true, 5, null, null, now()),
+(13, 28, 'Another comment for post 13.', true, 6, null, null, now()),
+(14, 29, 'Comment on post 14.', true, 2, null, null, now()),
+(14, 30, 'Reply to post 14 comment.', true, 3, 29, 26, now()), -- 回复用户29的评论，under_comment_id 指向 26
+(15, 1, 'First comment on post 15.', true, 8, null, null, now()),
+(15, 2, 'Another comment for post 15.', true, 0, null, null, now()),
+(16, 3, 'Comment on post 16.', true, 4, null, null, now()),
+(16, 4, 'Reply to post 16 comment.', true, 1, null, null, now()),
+(17, 5, 'First comment on post 17.', true, 6, null, null, now()),
+(17, 6, 'Another comment for post 17.', true, 0, 5, 31, now()), -- 回复用户5的评论，under_comment_id 指向 31
+(18, 7, 'Comment on post 18.', true, 2, null, null, now()),
+(18, 8, 'Reply to post 18 comment.', true, 4, 7, 33, now()), -- 回复用户7的评论，under_comment_id 指向 33
+(19, 9, 'First comment on post 19.', true, 5, null, null, now()),
+(19, 10, 'Another comment for post 19.', true, 1, null, null, now()),
+(20, 11, 'Comment on post 20.', true, 7, null, null, now()),
+(20, 12, 'Reply to post 20 comment.', true, 2, null, null, now()),
+(21, 13, 'First comment on post 21.', true, 6, null, null, now()),
+(21, 14, 'Another comment for post 21.', true, 1, 13, 37, now()), -- 回复用户13的评论，under_comment_id 指向 37
+(22, 15, 'Comment on post 22.', true, 4, null, null, now()),
+(22, 16, 'Reply to post 22 comment.', true, 1, null, null, now()),
+(23, 17, 'First comment on post 23.', true, 5, null, null, now()),
+(23, 18, 'Another comment for post 23.', true, 0, null, null, now()),
+(24, 19, 'Comment on post 24.', true, 2, null, null, now()),
+(24, 20, 'Reply to post 24 comment.', true, 3, 19, 40, now()), -- 回复用户19的评论，under_comment_id 指向 40
+(25, 21, 'First comment on post 25.', true, 8, null, null, now()),
+(25, 22, 'Another comment for post 25.', true, 0, null, null, now()),
+(26, 23, 'Comment on post 26.', true, 4, null, null, now()),
+(26, 24, 'Reply to post 26 comment.', true, 1, null, null, now()),
+(27, 25, 'First comment on post 27.', true, 6, null, null, now()),
+(27, 26, 'Another comment for post 27.', true, 0, 25, 43, now()), -- 回复用户25的评论，under_comment_id 指向 43
+(28, 27, 'Comment on post 28.', true, 2, null, null, now()),
+(28, 28, 'Reply to post 28 comment.', true, 4, null, null, now()),
+(29, 29, 'First comment on post 29.', true, 5, null, null, now()),
+(29, 30, 'Another comment for post 29.', true, 1, null, null, now()),
+(30, 1, 'First comment on post 30.', true, 7, null, null, now()),
+(30, 2, 'Another comment for post 30.', true, 2, null, null, now());
+
+
+
+-- 向 post_comment_like_users 表插入数据
+insert into post_comment_like_users
+(postcomment_id, user_id)
+values
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(3, 6),
+(4, 7),
+(5, 8),
+(6, 9),
+(7, 10),
+(8, 11),
+(9, 12),
+(10, 13);
+
+-- 向 post_like_users 表插入数据
+insert into post_like_users
+(post_id, user_id)
+values
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(3, 6),
+(3, 7),
+(4, 8),
+(4, 9),
+(5, 10),
+(6, 11),
+(7, 12),
+(8, 13),
+(9, 14),
+(10, 15);
+
+-- 向 post_tags 表插入数据
+insert into post_tags
+(post_id, tag_id)
+values
+(1, 1),
+(1, 2),
+(2, 3),
+(2, 4),
+(3, 5),
+(3, 6),
+(4, 7),
+(5, 8),
+(6, 9),
+(7, 10),
+(8, 11),
+(9, 12),
+(10, 13),
+(10, 14),
+(11, 15),
+(12, 16),
+(13, 17),
+(14, 18),
+(15, 19),
+(16, 20),
+(17, 21),
+(18, 22),
+(19, 23),
+(20, 24),
+(21, 25),
+(22, 26),
+(23, 27);
+
+-- 插入 submission 表数据
+insert into submission
+(id, problem_id, create_time, user_id, code, result, time_spent, memory_spent, error_info, language)
+values
+(uuid(), 1, now(), 2, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 2, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 2, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 2, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 2, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 2, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 2, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 2, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 2, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 2, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 2, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 2, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 2, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 2, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 2, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
+
+(uuid(), 1, now(), 3, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 3, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 3, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 3, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 3, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 3, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 3, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 3, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 3, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 3, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 3, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 3, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 3, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
+
+(uuid(), 1, now(), 4, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 4, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 4, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 4, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 4, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 4, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 4, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 4, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 4, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 4, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 4, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 4, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 4, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 4, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 4, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
+
+(uuid(), 1, now(), 5, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 5, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 5, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 5, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 5, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 5, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 5, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 5, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 5, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 5, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 5, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 5, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 5, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 5, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 5, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
+
+(uuid(), 1, now(), 6, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 6, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 6, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 6, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 6, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 6, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 6, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 6, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 6, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 6, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 6, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 6, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 6, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 6, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 6, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
+
+(uuid(), 1, now(), 7, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+(uuid(), 2, now(), 7, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+(uuid(), 3, now(), 7, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+(uuid(), 4, now(), 7, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+(uuid(), 5, now(), 7, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+(uuid(), 6, now(), 7, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+(uuid(), 7, now(), 7, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+(uuid(), 8, now(), 7, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+(uuid(), 9, now(), 7, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+(uuid(), 10, now(), 7, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+(uuid(), 11, now(), 7, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+(uuid(), 12, now(), 7, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+(uuid(), 13, now(), 7, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
+(uuid(), 14, now(), 7, 'print("Success!")', 1, 18, 512, null, 'Python'),
+(uuid(), 15, now(), 7, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java');
+
+
+

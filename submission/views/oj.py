@@ -47,15 +47,15 @@ class ProblemSubmitAPI(APIView):
         try:
             problem = Problem.objects.get(id=data["problem_id"])
         except Problem.DoesNotExist:
-            return fail("Problem not exist")
-        # print(data)
+            return fail("题目不存在")
+
         submission = Submission.objects.create(user_id=request.user.id,
                                                language=data["language"],
                                                problem=problem,
-                                               code=data["submit_code"]
+                                               code=data["submitted_code"]
                                                )
         # use this for debug
         # JudgeDispatcher(submission.id, problem.id).judge()
-        judge_task.send(str(submission.id), problem.id)
+        judge_task.send(submission.id, problem.id)
 
         return success("success")

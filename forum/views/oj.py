@@ -3,6 +3,7 @@ from datetime import timezone
 from rest_framework.views import APIView
 from django.db.models import Q
 from forum.models import Post, PostComment
+from forum.serializers import PostCommentSerializer
 from utils.api import *
 from account.models import User
 from problem.models import Tag
@@ -69,28 +70,15 @@ class PostCommentInformationAPI(APIView):
         count = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)).count()
         comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True))
         comments = paginate_data(request, comments)
-        comment_array = []
-        comment_data = {}
 
-        for comment in comments:
-            tmp = {}
-            tmp['comment_id'] = comment.id
-            tmp['user_id'] = comment.create_user.id
-            tmp['user_name'] = comment.create_user.username
-            tmp['avatar'] = ImageCode.image_base64(comment.create_user.avatar)
-            tmp['like_status'] = comment.like_users.filter(id=self_id).exists()
-            tmp['comment_content'] = comment.content
-            tmp['like_count'] = comment.like_count
-            tmp['create_time'] = comment.create_time
-            tmp['reply_to_id'] = comment.reply_to_user.id if comment.reply_to_user else None
-            tmp['reply_to_name'] = comment.reply_to_user.username if comment.reply_to_user else None
-            tmp['under_comment_id'] = comment.under_comment_id if comment.under_comment_id else None
-            comment_array.append(tmp)
-
-        comment_data["count"] = count
-        comment_data["comments"] = comment_array
-
+        serializer = PostCommentSerializer(comments, many=True, context={'request': request})
+        # 返回数据
+        comment_data = {
+            "count": count,
+            "comments": serializer.data
+        }
         return success(comment_data)
+
 
 class PostCommentNewAPI(APIView):
     def post(self, request):
