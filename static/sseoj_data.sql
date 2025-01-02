@@ -1,4 +1,31 @@
 use sseoj;
+-- 需要添加的数据表，有3个tab缩进的表为已完成的表
+
+-- judge_server
+			-- tag
+			-- following
+			-- post
+-- post_comment
+-- post_comment_like_users
+-- post_like_users
+-- post_tags
+			-- problem
+			-- problem_list
+			-- problem_list_problems
+-- problem_list_star_users
+-- problem_pass_users
+-- problem_star_users
+-- problem_tags
+			-- solution
+			-- solution_comment
+-- solution_comment_like_users
+-- solution_like_users
+-- solution_tags
+-- study_plan
+-- submission
+			-- tag
+
+
 
 -- 禁用外键约束
 set foreign_key_checks = 0;
@@ -75,12 +102,6 @@ alter table tag auto_increment = 1;
 
 -- 恢复外键约束
 set foreign_key_checks = 1;
-
-
--- user
--- user_groups
--- user_user_permissions
--- user部分不做处理
 
 -- 插入题目数据
 insert into problem (
@@ -184,7 +205,177 @@ insert into problem (
  0,
  NOW(),
  TRUE,
- 'test_case_5');
+ 'test_case_5'),
+
+ ('Greatest Common Divisor',
+ 'Calculate the greatest common divisor (GCD) of two integers.',
+ 'Two integers separated by a space.',
+ 'An integer representing the GCD.',
+ '1 <= a, b <= 1000',
+ '{"inputs": ["12 18", "100 45"], "outputs": ["6", "5"]}',
+ 2,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'Number theory problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_6'),
+
+('Least Common Multiple',
+ 'Calculate the least common multiple (LCM) of two integers.',
+ 'Two integers separated by a space.',
+ 'An integer representing the LCM.',
+ '1 <= a, b <= 1000',
+ '{"inputs": ["4 6", "10 15"], "outputs": ["12", "30"]}',
+ 2,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'Number theory problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_7'),
+
+('Factorial',
+ 'Calculate the factorial of a given integer.',
+ 'A single integer.',
+ 'An integer representing the factorial.',
+ '1 <= n <= 20',
+ '{"inputs": ["5", "10"], "outputs": ["120", "3628800"]}',
+ 3,
+ 2000,
+ 256,
+ 0,
+ 0,
+ 'Basic recursion problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_8'),
+
+('Fibonacci Sequence',
+ 'Calculate the Nth term of the Fibonacci sequence.',
+ 'A single integer N.',
+ 'An integer representing the Nth term.',
+ '1 <= N <= 50',
+ '{"inputs": ["5", "10"], "outputs": ["5", "55"]}',
+ 3,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'Dynamic programming problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_9'),
+
+('Palindrome Check',
+ 'Check if a given string is a palindrome.',
+ 'A single string.',
+ 'YES if it is a palindrome, NO otherwise.',
+ '1 <= length of string <= 100',
+ '{"inputs": ["racecar", "hello"], "outputs": ["YES", "NO"]}',
+ 1,
+ 1000,
+ 128,
+ 0,
+ 0,
+ 'String processing problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_10'),
+
+('Anagram Check',
+ 'Check if two strings are anagrams of each other.',
+ 'Two strings separated by a space.',
+ 'YES if they are anagrams, NO otherwise.',
+ '1 <= length of each string <= 100',
+ '{"inputs": ["listen silent", "hello world"], "outputs": ["YES", "NO"]}',
+ 2,
+ 1500,
+ 128,
+ 0,
+ 0,
+ 'String processing problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_11'),
+
+('Matrix Multiplication',
+ 'Multiply two matrices of given dimensions.',
+ 'Two matrices represented as space-separated rows and columns.',
+ 'A matrix representing the product.',
+ '1 <= rows, cols <= 10',
+ '{"inputs": ["1 2 3 4|5 6 7 8", "1 0 0 1|0 1 1 0"], "outputs": ["19 22|43 50", "1 1|0 1"]}',
+ 4,
+ 2000,
+ 512,
+ 0,
+ 0,
+ 'Matrix manipulation problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_12'),
+
+('Longest Common Subsequence',
+ 'Find the length of the longest common subsequence of two strings.',
+ 'Two strings separated by a space.',
+ 'An integer representing the LCS length.',
+ '1 <= length of each string <= 1000',
+ '{"inputs": ["abcde ace", "abc xyz"], "outputs": ["3", "0"]}',
+ 4,
+ 3000,
+ 256,
+ 0,
+ 0,
+ 'Dynamic programming problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_13'),
+
+('Binary Search',
+ 'Perform a binary search on a sorted array to find a target value.',
+ 'An array followed by an integer, separated by a space.',
+ 'The index of the target value, or -1 if not found.',
+ '1 <= length of array <= 1000, -10^6 <= elements, target <= 10^6',
+ '{"inputs": ["1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59 61 63 65 67 69 71 73 75 77 79 81 83 85 87 89 91 93 95 97 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 133 135 137 139 141 143 145 147 149 151 153 155 157 159 161 163 165 167 169 171 173 175 177 179 181 183 185 187 189 191 193 195 197 199", "125"], "outputs": ["62"]}',
+ 2,
+ 2000,
+ 128,
+ 0,
+ 0,
+ 'Search algorithm problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_14'),
+
+('Knapsack Problem',
+ 'Solve the 0/1 knapsack problem to maximize value.',
+ 'Number of items, capacity, and weights and values of items.',
+ 'An integer representing the maximum value.',
+ '1 <= number of items <= 100, 1 <= capacity <= 1000',
+ '{"inputs": ["4 7|1 3 4 5|1 4 5 7"], "outputs": ["9"]}',
+ 5,
+ 3000,
+ 256,
+ 0,
+ 0,
+ 'Optimization problem',
+ 0,
+ NOW(),
+ TRUE,
+ 'test_case_15');
 
 
 --  插入tag数据
@@ -602,8 +793,8 @@ title, content, like_count, comment_count, create_time, last_update_time, is_ann
  False, True, 36);
 
 --  插入题解
--- 插入题解数据
 insert into solution (content, title, like_count, comment_count, create_time, check_status, create_user_id, problem_id) values
+-- 第 1 题
 ('You can solve this problem by reading the input numbers, splitting them, and adding them directly.',
  'Simple Addition',
  0,
@@ -621,6 +812,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  1),
 
+-- 第 2 题
 ('Subtract the second number from the first after splitting the input.',
  'Basic Subtraction',
  0,
@@ -638,6 +830,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  2),
 
+-- 第 3 题
 ('Multiply the two integers after parsing the input.',
  'Simple Multiplication',
  0,
@@ -655,6 +848,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  3),
 
+-- 第 4 题
 ('Divide the first number by the second and ensure you handle division by zero.',
  'Basic Division',
  0,
@@ -672,6 +866,7 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  2,
  4),
 
+-- 第 5 题
 ('Iterate through numbers up to the square root of the input to check divisibility.',
  'Prime Check Using Trial Division',
  0,
@@ -687,7 +882,188 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  now(),
  false,
  2,
- 5);
+ 5),
+
+-- 第 6 题
+('Use dynamic programming to find the optimal solution.',
+ 'Dynamic Programming Approach',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 6),
+('Break the problem into smaller subproblems and solve recursively.',
+ 'Recursive Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 6),
+
+-- 第 7 题
+('Simulate the problem step by step to understand edge cases.',
+ 'Simulation-Based Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 7),
+('Optimize the simulation by precomputing intermediate results.',
+ 'Optimized Simulation',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 7),
+
+-- 第 8 题
+('Use binary search for efficient resolution of the problem.',
+ 'Binary Search Approach',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 8),
+('Combine binary search with a hash table for faster lookups.',
+ 'Hybrid Binary Search',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 8),
+
+-- 第 9 题
+('Apply breadth-first search to explore all possibilities.',
+ 'BFS Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 9),
+('Depth-first search can also be used but may require backtracking.',
+ 'DFS Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 9),
+
+-- 第 10 题
+('Use modular arithmetic to simplify calculations.',
+ 'Modular Arithmetic Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 10),
+('Precompute factorials to handle large inputs efficiently.',
+ 'Precomputation Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 10),
+
+-- 第 11 题
+('Sort the input and apply a two-pointer technique.',
+ 'Sorting and Two-Pointer Method',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 11),
+('Use a priority queue to handle dynamic updates.',
+ 'Priority Queue Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 11),
+
+-- 第 12 题
+('Implement a greedy strategy to achieve the best results.',
+ 'Greedy Algorithm Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 12),
+('Compare the greedy approach with dynamic programming for optimality.',
+ 'Greedy vs DP Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 12),
+
+-- 第 13 题
+('Represent the input as a graph and apply Dijkstra’s algorithm.',
+ 'Graph-Based Solution',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 13),
+('Use Floyd-Warshall algorithm for all-pairs shortest paths.',
+ 'All-Pairs Shortest Path',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 13),
+
+-- 第 14 题
+('Use sliding window technique for efficient computation.',
+ 'Sliding Window Method',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 14),
+('Enhance the sliding window with hash maps for better performance.',
+ 'Advanced Sliding Window',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 14),
+
+-- 第 15 题
+('Apply a divide-and-conquer approach to break the problem into smaller parts.',
+ 'Divide and Conquer',
+ 0,
+ 0,
+ now(),
+ false,
+ 1,
+ 15),
+('Compare divide-and-conquer with brute force for understanding trade-offs.',
+ 'Brute Force vs Divide and Conquer',
+ 0,
+ 0,
+ now(),
+ false,
+ 2,
+ 15);
+
 
 -- 插入标签关联关系nothing
 insert into solution_tags (solution_id, tag_id) values
@@ -701,3 +1077,62 @@ insert into solution_tags (solution_id, tag_id) values
 (8, 1), (8, 13),
 (9, 3),
 (10, 3);
+
+
+-- 插入题解评论
+insert into solution_comment
+(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id)
+values
+('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null),
+('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1),
+
+('Great explanation, but I think there is an edge case missing.', 3, 2, 0, now(), false, null),
+('Could you clarify how this handles large inputs?', 4, 2, 0, now(), false, 3),
+
+('This is an efficient implementation, well done!', 1, 3, 0, now(), false, null),
+('I recommend adding more comments to improve readability.', 2, 3, 0, now(), false, 1),
+
+('I found this solution helpful for my project.', 3, 4, 0, now(), false, null),
+('What inspired this approach? It seems unique.', 4, 4, 0, now(), false, 3),
+
+('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null),
+('Have you considered optimizing this further?', 2, 5, 0, now(), false, 1);
+
+
+-- 插入题单
+insert into problem_list
+(title, create_user_id, star_count, problem_count, summary, is_deleted, is_public)
+values
+('基础算法题单', 1, 0, 0, '包含常见的基础算法题目，如排序、查找等，用于巩固基础知识。', false, true),
+('数据结构题单', 2, 0, 0, '专注于数据结构相关问题，包括链表、树、图等内容，适合中级学习者。', false, true),
+('动态规划题单', 3, 0, 0, '集合了一些经典动态规划问题，帮助理解状态转移与问题分解。', false, true),
+('数学题单', 4, 0, 0, '包含数论与离散数学的练习题目，适合提高数学建模能力。', false, true),
+('高级算法题单', 5, 0, 0, '收录了高级算法问题，包括分治、回溯、贪心算法等，适合挑战。', false, true),
+('编程比赛题单', 6, 0, 0, '精选自往届编程比赛的高质量题目，适合训练比赛能力。', false, true),
+('机器学习题单', 7, 0, 0, '涉及机器学习基础算法实现与优化问题，适合初学者。', false, true),
+('数据库练习题单', 8, 0, 0, '包含SQL查询与数据库设计相关问题，适合数据库入门和提高。', false, true),
+('操作系统题单', 9, 0, 0, '整理了操作系统经典问题，如进程调度、内存管理等，理论与实践兼备。', false, true),
+('网络题单', 10, 0, 0, '涵盖计算机网络问题，从协议到应用层，适合系统学习网络知识。', false, true);
+
+-- 向题单中插入题目数据
+insert into problem_list_problems (id, problemlist_id, problem_id) values
+(1, 1, 3),
+(2, 1, 7),
+(3, 2, 1),
+(4, 2, 8),
+(5, 3, 2),
+(6, 3, 9),
+(7, 4, 4),
+(8, 4, 5),
+(9, 5, 6),
+(10, 6, 10),
+(11, 7, 11),
+(12, 8, 12),
+(13, 9, 13),
+(14, 10, 14),
+(15, 10, 15);
+
+
+-- 插入学习计划
+
+-- 插入
