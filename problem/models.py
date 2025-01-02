@@ -39,8 +39,8 @@ class Problem(models.Model):
     time_limit = models.IntegerField()
     # KB
     memory_limit = models.IntegerField()
-    pass_count = models.IntegerField(default=0)
-    attempt_count = models.IntegerField(default=0)
+    pass_cnt = models.IntegerField(default=0)
+    attempt_cnt = models.IntegerField(default=0)
     source = models.TextField(null=True, blank=True)
     star_cnt = models.IntegerField(default=0)
     star_users = models.ManyToManyField(User, related_name='star_problems')
