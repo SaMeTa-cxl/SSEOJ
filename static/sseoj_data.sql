@@ -12,16 +12,16 @@ use sseoj;
 			-- problem
 			-- problem_list
 			-- problem_list_problems
--- problem_list_star_users
--- problem_pass_users
--- problem_star_users
--- problem_tags
+			-- problem_list_star_users
+			-- problem_pass_users
+			-- problem_star_users
+			-- problem_tags
 			-- solution
 			-- solution_comment
 -- solution_comment_like_users
 -- solution_like_users
 -- solution_tags
--- study_plan
+			-- study_plan
 -- submission
 			-- tag
 
@@ -376,6 +376,102 @@ insert into problem (
  NOW(),
  TRUE,
  'test_case_15');
+
+-- 插入problem_tags
+insert into problem_tags
+(id, problem_id, tag_id)
+values
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 2, 4),
+(5, 2, 5),
+(6, 2, 6),
+(7, 3, 7),
+(8, 3, 8),
+(9, 3, 9),
+(10, 4, 10),
+(11, 4, 11),
+(12, 4, 12),
+(13, 5, 13),
+(14, 5, 14),
+(15, 5, 15),
+(16, 6, 16),
+(17, 6, 17),
+(18, 6, 18),
+(19, 7, 19),
+(20, 7, 20),
+(21, 7, 21),
+(22, 8, 22),
+(23, 8, 23),
+(24, 8, 24),
+(25, 9, 25),
+(26, 9, 26),
+(27, 9, 27),
+(28, 10, 1),
+(29, 10, 2),
+(30, 10, 3),
+(31, 11, 4),
+(32, 11, 5),
+(33, 11, 6),
+(34, 12, 7),
+(35, 12, 8),
+(36, 12, 9),
+(37, 13, 10),
+(38, 13, 11),
+(39, 13, 12),
+(40, 14, 13),
+(41, 14, 14),
+(42, 14, 15),
+(43, 15, 16),
+(44, 15, 17),
+(45, 15, 18);
+
+
+ -- 插入problem_pass_users
+ insert into problem_pass_users
+ (id, problem_id, user_id)
+ values
+(1, 1, 2),
+(2, 2, 8),
+(3, 3, 9),
+(4, 4, 6),
+(5, 5, 15),
+(6, 6, 3),
+(7, 7, 4),
+(8, 8, 7),
+(9, 9, 10),
+(10, 10, 11),
+(11, 11, 12),
+(12, 12, 5),
+(13, 13, 14),
+(14, 14, 1),
+(15, 15, 13);
+
+ -- 插入problem_star_users
+insert into problem_star_users
+(id, problem_id, user_id)
+values
+(1, 1, 3),
+(2, 1, 5),
+(3, 2, 7),
+(4, 2, 9),
+(5, 3, 2),
+(6, 3, 6),
+(7, 4, 8),
+(8, 4, 10),
+(9, 5, 4),
+(10, 5, 11),
+(11, 6, 1),
+(12, 6, 12),
+(13, 7, 13),
+(14, 7, 14),
+(15, 8, 15),
+(16, 8, 2),
+(17, 9, 3),
+(18, 9, 4),
+(19, 10, 5),
+(20, 10, 6);
 
 
 --  插入tag数据
@@ -1132,7 +1228,55 @@ insert into problem_list_problems (id, problemlist_id, problem_id) values
 (14, 10, 14),
 (15, 10, 15);
 
+-- 插入problem_list_star_user
+insert into problem_list_star_users
+(id, problemlist_id, user_id)
+values
+(1, 1, 3),
+(2, 1, 5),
+(3, 1, 7),
+(4, 2, 8),
+(5, 2, 10),
+(6, 2, 12),
+(7, 3, 2),
+(8, 3, 6),
+(9, 3, 9),
+(10, 4, 11),
+(11, 4, 13),
+(12, 4, 15),
+(13, 5, 16),
+(14, 5, 18),
+(15, 5, 20),
+(16, 6, 17),
+(17, 6, 19),
+(18, 6, 21),
+(19, 7, 22),
+(20, 7, 23),
+(21, 7, 25),
+(22, 8, 1),
+(23, 8, 14),
+(24, 8, 26),
+(25, 9, 4),
+(26, 9, 5),
+(27, 9, 28),
+(28, 10, 6),
+(29, 10, 8),
+(30, 10, 30);
 
 -- 插入学习计划
+insert into study_plan
+(user_id, problem_id, added_time, problem_status)
+values
+(1, 1, now(), false),
+(1, 2, now(), true),
+(2, 3, now(), false),
+(2, 4, now(), true),
+(3, 5, now(), false),
+(3, 6, now(), false),
+(4, 7, now(), true),
+(4, 8, now(), false),
+(5, 9, now(), true),
+(5, 10, now(), false);
+
 
 -- 插入
