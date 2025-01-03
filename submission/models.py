@@ -28,8 +28,8 @@ class Submission(models.Model):
     user_id = models.IntegerField(db_index=True)
     code = models.TextField()
     result = models.IntegerField(db_index=True, default=JudgeStatus.PENDING)
-    time_spent = models.IntegerField(null = True)
-    memory_spent = models.IntegerField(null = True)
+    time_spent = models.IntegerField(null=True)
+    memory_spent = models.IntegerField(null=True)
     error_info = models.JSONField(null=True)
     language = models.TextField()
 
