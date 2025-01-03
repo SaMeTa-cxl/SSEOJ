@@ -34,7 +34,7 @@ class ProblemSubmissionsAPI(APIView):
         submission_data = []
         for submission in submissions:
             tmp_dict = {}
-            tmp_dict['submit_time'] = submission.created_time
+            tmp_dict['submit_time'] = submission.create_time
             tmp_dict['code'] = submission.code
             tmp_dict['language'] = submission.language
             tmp_dict['result'] = submission.result
