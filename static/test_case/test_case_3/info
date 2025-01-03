@@ -3,10 +3,10 @@
     "test_cases": {
         "0": {
             "input_name": "1.in",
-            "input_size": 5,
+            "input_size": 3,
             "output_name": "1.out",
-            "output_size": 3,
-            "stripped_output_md5": "eccbc87e4b5ce2fe28308fd9f2a7baf3"
+            "output_size": 2,
+            "stripped_output_md5": "9f61408e3afb633e50cdf1b20de6f466"
         }
     }
 }
