@@ -7,5 +7,5 @@
 3. 执行`python manage.py runserver`运行项目本体
 4. 安装并启动redis，windows下建议使用docker运行redis：运行命令为`docker run --name redis -p 6379:6379 -d redis`
 这将会自动拉取redis镜像并运行
-5. 接下来需要启动判题服务器，在JudgeServer项目目录下使用`docker-compose up -d`即可
+5. 接下来需要启动判题服务器，在JudgeServer项目目录下使用`docker-compose up -d`即可。注：**请把docker-compose.yml中的test_case映射目录改为你自己相应的目录；把backend_url改成你自己相应的url**
 6. 最后需要启动**dramatiq worker**， 只需要在本项目目录下执行`python manage.py rundramatiq`即可
