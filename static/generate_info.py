@@ -23,7 +23,7 @@ def generate_info_for_folder(folder_path):
         input_size = os.path.getsize(input_path)
 
         if spj:
-            test_cases[str(case_id+1)] = {
+            test_cases[str(case_id_int)] = {
                 "input_name": in_file,
                 "input_size": input_size
             }
@@ -33,7 +33,7 @@ def generate_info_for_folder(folder_path):
                 output_path = os.path.join(folder_path, out_files[case_id])
                 output_size = os.path.getsize(output_path)
                 stripped_output_md5 = calculate_md5(output_path)
-                test_cases[str(case_id+1)] = {
+                test_cases[str(case_id_int)] = {
                     "input_name": in_file,
                     "input_size": input_size,
                     "output_name": out_files[case_id],
@@ -46,7 +46,7 @@ def generate_info_for_folder(folder_path):
     }
 
 if __name__ == '__main__':
-    base_path = "test_case"  # Root folder containing test_case_i subfolders
+    base_path = "test_case"
     for subfolder in os.listdir(base_path):
         subfolder_path = os.path.join(base_path, subfolder)
         if os.path.isdir(subfolder_path):
