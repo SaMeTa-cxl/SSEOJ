@@ -8,10 +8,3 @@ from judge.dispatcher import JudgeDispatcher
 def judge_task(submission_id, problem_id):
     uid = Submission.objects.get(id=submission_id).user_id
     JudgeDispatcher(submission_id, problem_id).judge()
-
-
-@dramatiq.actor
-def my_task(arg1, arg2):
-    print(f"Processing task with {arg1} and {arg2}")
-    sleep(5)
-    print(f"Task with {arg1} and {arg2} completed")

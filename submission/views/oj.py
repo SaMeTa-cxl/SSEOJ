@@ -1,4 +1,8 @@
+import uuid
+
 from rest_framework.views import APIView
+
+from judge.dispatcher import JudgeDispatcher
 from problem.models import Problem
 from utils.api import *
 from submission.models import Submission, JudgeStatus
@@ -49,13 +53,14 @@ class ProblemSubmitAPI(APIView):
         except Problem.DoesNotExist:
             return fail("Problem not exist")
 
-        submission = Submission.objects.create(user_id=request.user.id,
+        submission = Submission.objects.create(id=uuid.uuid4(),
+                                               user_id=request.user.id,
                                                language=data["language"],
                                                problem=problem,
                                                code=data["submit_code"]
                                                )
         # use this for debug
-        # JudgeDispatcher(submission.id, problem.id).judge()
-        judge_task.send(str(submission.id), problem.id)
+        JudgeDispatcher(submission.id, problem.id).judge()
+        # judge_task.send(str(submission.id), problem.id)
 
         return success("success")
