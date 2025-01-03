@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'forum',
     'judge',
     'conf',
-    'submission'
+    'submission',
+    'django_dramatiq',
 ]
 
 MIDDLEWARE = [
@@ -100,6 +101,22 @@ DATABASES = {
 }
 
 
+# 配置 Dramatiq 的 Redis 连接
+DRAMATIQ_BROKER = {
+    "BROKER": "dramatiq.brokers.redis.RedisBroker",
+    "REDIS_URL": "redis://localhost:6379/0",  # 配置 Redis 连接
+    "MIDDLEWARE": [
+        # "dramatiq.middleware.Prometheus",
+        "dramatiq.middleware.AgeLimit",
+        "dramatiq.middleware.TimeLimit",
+        "dramatiq.middleware.Callbacks",
+        "dramatiq.middleware.Retries",
+        # "django_dramatiq.middleware.AdminMiddleware",
+        "django_dramatiq.middleware.DbConnectionsMiddleware"
+    ]
+}
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -124,11 +141,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us' 
 
-TIME_ZONE = 'Asia/Hong_Kong'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
