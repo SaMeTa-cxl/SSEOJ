@@ -8,7 +8,7 @@ from judge.tasks import judge_task
 class ProblemSubmissionsAPI(APIView):
     def get(self, request, problem_id):
         if not request.user.is_authenticated:
-            return fail("用户未验证")
+            return fail("User not authenticated")
         user_id = request.user.id
         status = request.query_params.get('status')
         language = request.query_params.get('language')
@@ -47,15 +47,15 @@ class ProblemSubmitAPI(APIView):
         try:
             problem = Problem.objects.get(id=data["problem_id"])
         except Problem.DoesNotExist:
-            return fail("题目不存在")
+            return fail("Problem not exist")
 
         submission = Submission.objects.create(user_id=request.user.id,
                                                language=data["language"],
                                                problem=problem,
-                                               code=data["submitted_code"]
+                                               code=data["submit_code"]
                                                )
         # use this for debug
         # JudgeDispatcher(submission.id, problem.id).judge()
-        judge_task.send(submission.id, problem.id)
+        judge_task.send(str(submission.id), problem.id)
 
-        return success("成功")
+        return success("success")
