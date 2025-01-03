@@ -64,15 +64,16 @@ class JudgeDispatcher(DispatcherBase):
     def __init__(self, submission_id, problem_id):
         super().__init__()
         self.submission = Submission.objects.get(id=submission_id)
-        self.last_result = self.submission.result if self.submission.info else None
         self.problem = Problem.objects.get(id=problem_id)
+        self.user = User.objects.get(id=self.submission.user_id)
 
     def _compute_statistic_info(self, resp_data):
         # 用时保存为用时之和，空间保存为最大值
-        self.submission.time_spent = sum([x["cpu_rtime"] for x in resp_data])
-        self.submission.memory_spent = max([x["memory"] for x in resp_data])
+        self.submission.time_spent = sum([x["cpu_time"] for x in resp_data])
+        self.submission.memory_spent = max([x["memory"] for x in resp_data]) / 1024 # Byte -> KB
 
     def judge(self):
+        print("Judge started")
         language = self.submission.language
         sub_config = list(filter(lambda item: language == item["name"], SysConfigs.languages))[0]
 
@@ -99,6 +100,8 @@ class JudgeDispatcher(DispatcherBase):
         if not resp:
             Submission.objects.filter(id=self.submission.id).update(result=JudgeStatus.SYSTEM_ERROR)
             return
+
+        print(resp)
 
         if resp["err"]:
             self.submission.result = JudgeStatus.COMPILE_ERROR
@@ -127,7 +130,7 @@ class JudgeDispatcher(DispatcherBase):
         self.submission.save()
         self.update_problem_status()
         # 判题结束，尝试处理任务队列中剩余的任务
-        process_pending_task()
+        # process_pending_task()
 
     def update_problem_status(self):
         result = str(self.submission.result)
@@ -135,10 +138,8 @@ class JudgeDispatcher(DispatcherBase):
         with transaction.atomic():
             # update problem status
             problem = Problem.objects.select_for_update().get(id=self.problem.id)
-            problem.attempt_cnt += 1
-            if self.submission.result == JudgeStatus.ACCEPTED and self.last_result != JudgeStatus.ACCEPTED:
-                problem.pass_cnt += 1
-                problem.pass_users.add(User.objects.get(id=self.submission.user_id))
-            problem.save(update_fields=["attempt_cnt", "pass_cnt", "pass_users"])
-
-            score = self.submission.statistic_info["score"]
+            problem.attempt_count += 1
+            if self.submission.result == JudgeStatus.ACCEPTED and not self.problem.pass_users.contains(self.user):
+                problem.pass_count += 1
+                problem.pass_users.add(self.user)
+            problem.save()

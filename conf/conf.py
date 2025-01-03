@@ -89,7 +89,8 @@ DEFAULT_SHORT_TTL = 2
 
 def default_token():
     token = os.environ.get("JUDGE_SERVER_TOKEN")
-    return token if token else rand_str()
+    return token if token else "TOKEN"
+    # return token if token else rand_str()
 
 
 class ConfigKeys:
