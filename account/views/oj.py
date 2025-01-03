@@ -315,6 +315,11 @@ class UserAvatarChangeAPI(APIView):
         user = request.user
         avatar = request.data.get("avatar")
 
+        # 查找 'base64,' 的起始位置，并加1以包含逗号本身
+        index = avatar.find('base64,') + len('base64,')
+        # 使用切片获取 'base64,' 后面的部分
+        avatar = avatar[index:]
+
         user.avatar = ImageCode.base64_image(avatar, user.id)
         user.save()
 
