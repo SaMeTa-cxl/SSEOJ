@@ -214,8 +214,7 @@ TRUE,
 
 
  -- 插入problem_pass_users
-insert into problem_pass_users(
-id, problem_id, user_id)
+insert into problem_pass_users(id, problem_id, user_id)
  values
 (1, 1, 2),
 (2, 2, 8),

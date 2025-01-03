@@ -18,22 +18,22 @@ def generate_info_for_folder(folder_path):
 
     for in_file in in_files:
         case_id = os.path.splitext(in_file)[0]
+        case_id_int = int(case_id)
         input_path = os.path.join(folder_path, in_file)
         input_size = os.path.getsize(input_path)
 
         if spj:
-            test_cases[case_id] = {
+            test_cases[str(case_id+1)] = {
                 "input_name": in_file,
                 "input_size": input_size
             }
         else:
             if case_id in out_id:
                 case_id = out_id.index(case_id)
-                print(type(case_id))
                 output_path = os.path.join(folder_path, out_files[case_id])
                 output_size = os.path.getsize(output_path)
                 stripped_output_md5 = calculate_md5(output_path)
-                test_cases[case_id] = {
+                test_cases[str(case_id+1)] = {
                     "input_name": in_file,
                     "input_size": input_size,
                     "output_name": out_files[case_id],
