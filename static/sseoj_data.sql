@@ -188,11 +188,11 @@ insert into problem (
  'test_case_4'),
 
 ('寻找两个正序数组的中位数',
-'给定两个大小分别为m和n的正序（从小到大）数组nums1和nums2。请你找出并返回这两个正序数组的中位数 。\n算法的时间复杂度应该为 O(log (m+n))。',
+'给定两个大小分别为m和n的正序（从小到大）数组nums1和nums2。<br>请你找出并返回这两个正序数组的中位数。<br>算法的时间复杂度应该为 O(log (m+n))。',
 '三行数据，第一行为m n，第二三行为数组',
 '输出中位数',
-'1 <= m + n <= 2000\n-106 <= nums1[i], nums2[i] <= 106',
-'{"inputs": ["2 1\n1,3\n2"], "outputs": ["2"]}',
+'1 <= m + n <= 2000<br>-106 <= nums1[i], nums2[i] <= 106',
+'{"inputs": ["2 1\\n1 3\\n2"], "outputs": ["2"]}',
 3,
 1000,
 65536,
@@ -204,13 +204,124 @@ NOW(),
 TRUE,
 'test_case_5'),
 
-(
+('交易逆序对的总数',
+'在股票交易中，如果前一天的股价高于后一天的股价，则可以认为存在一个「交易逆序对」。请设计一个程序，输入一段时间内的股票交易记录record，返回其中存在的「交易逆序对」总数。',
+'两行数据，第一行为record.length，第二行为record.length',
+'输出总数',
+'0 <= record.length <= 50000<br>0 <= record <= 10000',
+'{"inputs": ["5\\n9 7 5 4 6"], "outputs": ["8"]}',
+4,
+1000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_6'),
 
-)
+('不同的子序列',
+'给你两个字符串s和t，统计并返回在s的子序列中t出现的个数，结果需要对109+7取模。',
+'两行数据均为字符串',
+'输出个数',
+'1 <= s.length, t.length <= 1000<br>s和t由英文字母组成',
+'{"inputs": ["rabbbit\\nrabbit"], "outputs": ["3"]}',
+4,
+2000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_7'),
 
+('数字1的个数',
+'给定一个整数n，计算所有小于等于n的非负整数中数字1出现的个数。',
+'输入一个整数',
+'输出1的个数',
+'0 <= n <= 109',
+'{"inputs": ["13"], "outputs": ["6"]}',
+4,
+2000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_8'),
 
+('分发糖果',
+'n个孩子站成一排。给你一个整数数组ratings表示每个孩子的评分。<br>你需要按照以下要求，给这些孩子分发糖果：<br>每个孩子至少分配到1个糖果。<br>相邻两个孩子评分更高的孩子会获得更多的糖果。<br>请你给每个孩子分发糖果，计算并返回需要准备的最少糖果数目。',
+'输入两行，第一行为数组个数，第二行为数组',
+'输出最少数目',
+'n == ratings.length<br>1 <= n <= 2 * 104<br>0 <= ratings[i] <= 2 * 104',
+'{"inputs": ["3\\n1 0 2"], "outputs": ["5"]}',
+4,
+2000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_9'),
 
+('买卖股票的最佳时期',
+'给你一个整数数组prices，其中prices[i]表示某支股票第i天的价格。<br>在每一天，你可以决定是否购买和/或出售股票。你在任何时候最多只能持有一股股票。你也可以先购买，然后在同一天出售。<br>返回你能获得的最大利润。',
+'输入两行，第一行为数组个数，第二行为数组',
+'输出最大利润',
+'1 <= prices.length <= 3 * 104<br>0 <= prices[i] <= 104',
+'{"inputs": ["6\\n7 1 5 3 6 4"], "outputs": ["7"]}',
+2,
+1000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_10'),
 
+('括号生成',
+'数字n代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且有效的括号组合。',
+'输入一个整数',
+'输出所有组合',
+'1 <= n <= 8',
+'{"inputs": ["3"], "outputs": ["((()))\\n(()())\\n(())()\\n()(())\\n()()()"]}',
+1,
+1000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_11'),
+
+('下一个更大的数值平衡数',
+'如果整数x满足：对于每个数位d，这个数位恰好在x中出现d次。那么整数x就是一个数值平衡数。<br>给你一个整数n，请你返回严格大于n的最小数值平衡数。',
+'输入一个整数',
+'输出一个整数',
+'0 <= n <= 106',
+'{"inputs": ["1000"], "outputs": ["1333"]}',
+2,
+2000,
+65536,
+0,
+0,
+'力扣',
+0,
+NOW(),
+TRUE,
+'test_case_12');
 
 
  -- 插入problem_pass_users
@@ -221,20 +332,20 @@ insert into problem_pass_users(id, problem_id, user_id)
 (3, 3, 9),
 (4, 4, 6),
 (5, 5, 15),
-(6, 6, 3),
-(7, 7, 4),
-(8, 8, 7),
-(9, 9, 10),
-(10, 10, 11),
-(11, 11, 12),
-(12, 12, 5),
-(13, 13, 14),
-(14, 14, 1),
-(15, 15, 13);
+(6, 5, 3),
+(7, 5, 4),
+(8, 5, 7),
+(9, 1, 10),
+(10, 1, 11),
+(11, 1, 12),
+(12, 1, 5),
+(13, 1, 14),
+(14, 1, 1),
+(15, 1, 13);
+
 
  -- 插入problem_star_users
-insert into problem_star_users
-(id, problem_id, user_id)
+insert into problem_star_users(id, problem_id, user_id)
 values
 (1, 1, 3),
 (2, 1, 5),
@@ -245,17 +356,7 @@ values
 (7, 4, 8),
 (8, 4, 10),
 (9, 5, 4),
-(10, 5, 11),
-(11, 6, 1),
-(12, 6, 12),
-(13, 7, 13),
-(14, 7, 14),
-(15, 8, 15),
-(16, 8, 2),
-(17, 9, 3),
-(18, 9, 4),
-(19, 10, 5),
-(20, 10, 6);
+(10, 5, 11);
 
 
 --  插入tag数据
@@ -305,40 +406,7 @@ values
 (9, 3, 9),
 (10, 4, 10),
 (11, 4, 11),
-(12, 4, 12),
-(13, 5, 13),
-(14, 5, 14),
-(15, 5, 15),
-(16, 6, 16),
-(17, 6, 17),
-(18, 6, 18),
-(19, 7, 19),
-(20, 7, 20),
-(21, 7, 21),
-(22, 8, 22),
-(23, 8, 23),
-(24, 8, 24),
-(25, 9, 25),
-(26, 9, 26),
-(27, 9, 27),
-(28, 10, 1),
-(29, 10, 2),
-(30, 10, 3),
-(31, 11, 4),
-(32, 11, 5),
-(33, 11, 6),
-(34, 12, 7),
-(35, 12, 8),
-(36, 12, 9),
-(37, 13, 10),
-(38, 13, 11),
-(39, 13, 12),
-(40, 14, 13),
-(41, 14, 14),
-(42, 14, 15),
-(43, 15, 16),
-(44, 15, 17),
-(45, 15, 18);
+(12, 4, 12);
 
 
 -- 插入关注数据
@@ -723,7 +791,8 @@ title, content, like_count, comment_count, create_time, last_update_time, is_ann
  False, True, 36);
 
 --  插入题解
-insert into solution (content, title, like_count, comment_count, create_time, check_status, create_user_id, problem_id) values
+insert into solution (content, title, like_count, comment_count, create_time, check_status, create_user_id, problem_id)
+values
 -- 第 1 题
 ('You can solve this problem by reading the input numbers, splitting them, and adding them directly.',
  'Simple Addition',
@@ -812,201 +881,17 @@ insert into solution (content, title, like_count, comment_count, create_time, ch
  now(),
  false,
  2,
- 5),
-
--- 第 6 题
-('Use dynamic programming to find the optimal solution.',
- 'Dynamic Programming Approach',
- 0,
- 0,
- now(),
- false,
- 1,
- 6),
-('Break the problem into smaller subproblems and solve recursively.',
- 'Recursive Solution',
- 0,
- 0,
- now(),
- false,
- 2,
- 6),
-
--- 第 7 题
-('Simulate the problem step by step to understand edge cases.',
- 'Simulation-Based Solution',
- 0,
- 0,
- now(),
- false,
- 1,
- 7),
-('Optimize the simulation by precomputing intermediate results.',
- 'Optimized Simulation',
- 0,
- 0,
- now(),
- false,
- 2,
- 7),
-
--- 第 8 题
-('Use binary search for efficient resolution of the problem.',
- 'Binary Search Approach',
- 0,
- 0,
- now(),
- false,
- 1,
- 8),
-('Combine binary search with a hash table for faster lookups.',
- 'Hybrid Binary Search',
- 0,
- 0,
- now(),
- false,
- 2,
- 8),
-
--- 第 9 题
-('Apply breadth-first search to explore all possibilities.',
- 'BFS Solution',
- 0,
- 0,
- now(),
- false,
- 1,
- 9),
-('Depth-first search can also be used but may require backtracking.',
- 'DFS Solution',
- 0,
- 0,
- now(),
- false,
- 2,
- 9),
-
--- 第 10 题
-('Use modular arithmetic to simplify calculations.',
- 'Modular Arithmetic Solution',
- 0,
- 0,
- now(),
- false,
- 1,
- 10),
-('Precompute factorials to handle large inputs efficiently.',
- 'Precomputation Solution',
- 0,
- 0,
- now(),
- false,
- 2,
- 10),
-
--- 第 11 题
-('Sort the input and apply a two-pointer technique.',
- 'Sorting and Two-Pointer Method',
- 0,
- 0,
- now(),
- false,
- 1,
- 11),
-('Use a priority queue to handle dynamic updates.',
- 'Priority Queue Solution',
- 0,
- 0,
- now(),
- false,
- 2,
- 11),
-
--- 第 12 题
-('Implement a greedy strategy to achieve the best results.',
- 'Greedy Algorithm Solution',
- 0,
- 0,
- now(),
- false,
- 1,
- 12),
-('Compare the greedy approach with dynamic programming for optimality.',
- 'Greedy vs DP Solution',
- 0,
- 0,
- now(),
- false,
- 2,
- 12),
-
--- 第 13 题
-('Represent the input as a graph and apply Dijkstra’s algorithm.',
- 'Graph-Based Solution',
- 0,
- 0,
- now(),
- false,
- 1,
- 13),
-('Use Floyd-Warshall algorithm for all-pairs shortest paths.',
- 'All-Pairs Shortest Path',
- 0,
- 0,
- now(),
- false,
- 2,
- 13),
-
--- 第 14 题
-('Use sliding window technique for efficient computation.',
- 'Sliding Window Method',
- 0,
- 0,
- now(),
- false,
- 1,
- 14),
-('Enhance the sliding window with hash maps for better performance.',
- 'Advanced Sliding Window',
- 0,
- 0,
- now(),
- false,
- 2,
- 14),
-
--- 第 15 题
-('Apply a divide-and-conquer approach to break the problem into smaller parts.',
- 'Divide and Conquer',
- 0,
- 0,
- now(),
- false,
- 1,
- 15),
-('Compare divide-and-conquer with brute force for understanding trade-offs.',
- 'Brute Force vs Divide and Conquer',
- 0,
- 0,
- now(),
- false,
- 2,
- 15);
+ 5);
 
 
 -- 插入标签关联关系nothing
-insert into solution_tags (solution_id, tag_id) values
+insert into solution_tags (solution_id, tag_id)
+values
 (1, 1), (1, 13),
 (2, 1), (2, 13),
 (3, 1), (3, 13),
 (4, 1), (4, 13),
-(5, 15),
-(6, 15),
-(7, 1), (7, 13),
-(8, 1), (8, 13),
-(9, 3),
-(10, 3);
+(5, 15);
 
 
 -- 插入题解评论
@@ -1072,7 +957,8 @@ values
 ('网络题单', 10, 0, 0, '涵盖计算机网络问题，从协议到应用层，适合系统学习网络知识。', false, true);
 
 -- 向题单中插入题目数据
-insert into problem_list_problems (id, problemlist_id, problem_id) values
+insert into problem_list_problems (id, problemlist_id, problem_id)
+values
 (1, 1, 3),
 (2, 1, 7),
 (3, 2, 1),
@@ -1084,10 +970,10 @@ insert into problem_list_problems (id, problemlist_id, problem_id) values
 (9, 5, 6),
 (10, 6, 10),
 (11, 7, 11),
-(12, 8, 12),
-(13, 9, 13),
-(14, 10, 14),
-(15, 10, 15);
+(12, 8, 11),
+(13, 9, 11),
+(14, 10, 11),
+(15, 10, 12);
 
 -- 插入problem_list_star_user
 insert into problem_list_star_users
@@ -1292,9 +1178,6 @@ values
 (uuid(), 10, now(), 2, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
 (uuid(), 11, now(), 2, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
 (uuid(), 12, now(), 2, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-(uuid(), 13, now(), 2, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
-(uuid(), 14, now(), 2, 'print("Success!")', 1, 18, 512, null, 'Python'),
-(uuid(), 15, now(), 2, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
 
 (uuid(), 1, now(), 3, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
 (uuid(), 2, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
@@ -1308,9 +1191,6 @@ values
 (uuid(), 10, now(), 3, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
 (uuid(), 11, now(), 3, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
 (uuid(), 12, now(), 3, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-(uuid(), 13, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
-(uuid(), 14, now(), 3, 'print("Success!")', 1, 18, 512, null, 'Python'),
-(uuid(), 15, now(), 3, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
 
 (uuid(), 1, now(), 4, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
 (uuid(), 2, now(), 4, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
@@ -1324,9 +1204,6 @@ values
 (uuid(), 10, now(), 4, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
 (uuid(), 11, now(), 4, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
 (uuid(), 12, now(), 4, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-(uuid(), 13, now(), 4, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
-(uuid(), 14, now(), 4, 'print("Success!")', 1, 18, 512, null, 'Python'),
-(uuid(), 15, now(), 4, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
 
 (uuid(), 1, now(), 5, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
 (uuid(), 2, now(), 5, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
@@ -1340,9 +1217,6 @@ values
 (uuid(), 10, now(), 5, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
 (uuid(), 11, now(), 5, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
 (uuid(), 12, now(), 5, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-(uuid(), 13, now(), 5, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
-(uuid(), 14, now(), 5, 'print("Success!")', 1, 18, 512, null, 'Python'),
-(uuid(), 15, now(), 5, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
 
 (uuid(), 1, now(), 6, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
 (uuid(), 2, now(), 6, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
@@ -1356,9 +1230,6 @@ values
 (uuid(), 10, now(), 6, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
 (uuid(), 11, now(), 6, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
 (uuid(), 12, now(), 6, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-(uuid(), 13, now(), 6, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
-(uuid(), 14, now(), 6, 'print("Success!")', 1, 18, 512, null, 'Python'),
-(uuid(), 15, now(), 6, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java'),
 
 (uuid(), 1, now(), 7, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
 (uuid(), 2, now(), 7, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
@@ -1371,10 +1242,7 @@ values
 (uuid(), 9, now(), 7, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
 (uuid(), 10, now(), 7, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
 (uuid(), 11, now(), 7, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 7, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-(uuid(), 13, now(), 7, '#include<stdio.h>\nint main(){return 0;}', 1, 15, 256, null, 'C'),
-(uuid(), 14, now(), 7, 'print("Success!")', 1, 18, 512, null, 'Python'),
-(uuid(), 15, now(), 7, 'public static void main() { System.out.println("Done"); }', 2, 22, 1024, null, 'Java');
+(uuid(), 12, now(), 7, 'print("Another Test")', 1, 25, 400, null, 'Python');
 
 
 
