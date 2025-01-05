@@ -54,10 +54,11 @@ class ProblemListDetailSerializer(serializers.ModelSerializer):
     creator_info = UserSerializer(source='create_user', read_only=True, needed_fields=['id', 'username'])
     problems = ProblemSerializer(many=True, read_only=True, needed_fields=['id', 'name', 'difficulty',
                                                                            'tags', 'pass_count', 'attempt_count'])
+    name = serializers.CharField(source='title', read_only=True)
 
     class Meta:
         model = ProblemList
-        fields = ['id', 'title', 'summary', 'creator_info', 'problems']
+        fields = ['id', 'name', 'summary', 'creator_info', 'problems', 'problem_count']
 
 
 class SolutionCreateSerializer(serializers.Serializer):

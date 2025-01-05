@@ -141,6 +141,9 @@ class Solution(models.Model):
         db_table = 'solution'
         ordering = ('create_time', )
 
+    def is_like(self, user):
+        return user.is_authenticated and self.like_users.contains(user)
+
 
 class SolutionComment(models.Model):
     content = models.TextField()
