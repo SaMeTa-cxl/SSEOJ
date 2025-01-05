@@ -25,7 +25,7 @@ class PostListAPI(APIView):
         postList = []
 
         for post in postData:
-            print(post.title)
+            # print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
