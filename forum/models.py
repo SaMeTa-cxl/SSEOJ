@@ -21,6 +21,9 @@ class Post(models.Model):
         db_table = 'post'
         ordering = ('-last_update_time', '-create_time', )
 
+    def __str__(self):
+        return self.title
+
 
 class PostComment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
@@ -37,3 +40,6 @@ class PostComment(models.Model):
     class Meta:
         db_table = 'post_comment'
         ordering = ('create_time',)
+
+    def __str__(self):
+        return '#' + str(self.id) + ':' + self.content[:20]

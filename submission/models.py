@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+from account.models import User
 from problem.models import Problem
 
 from utils.shortcuts import rand_str
@@ -38,4 +39,4 @@ class Submission(models.Model):
         ordering = ("-create_time",)
 
     def __str__(self):
-        return self.id
+        return self.id + ":" + str(self.problem) + "-" + str(User.objects.get(id=self.user_id))

@@ -38,3 +38,6 @@ class Following(models.Model):
 
     class Meta:
         db_table = 'following'
+
+    def __str__(self):
+        return self.follower.username + '-' + self.following.username

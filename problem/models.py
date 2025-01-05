@@ -13,6 +13,9 @@ class Tag(models.Model):
     class Meta:
         db_table = 'tag'
 
+    def __str__(self):
+        return self.name
+
 
 class Problem(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -75,6 +78,9 @@ class Problem(models.Model):
             similar_problems[i] = {key: problem[key] for key in needed_fields}
         return similar_problems
 
+    def __str__(self):
+        return self.name
+
 
 class ProblemList(models.Model):
     title = models.CharField(max_length=20)
@@ -124,6 +130,9 @@ class ProblemList(models.Model):
     class Meta:
         db_table = 'problem_list'
 
+    def __str__(self):
+        return self.title
+
 
 class Solution(models.Model):
     content = models.TextField()
@@ -144,6 +153,9 @@ class Solution(models.Model):
     def is_like(self, user):
         return user.is_authenticated and self.like_users.contains(user)
 
+    def __str__(self):
+        return self.title
+
 
 class SolutionComment(models.Model):
     content = models.TextField()
@@ -159,6 +171,9 @@ class SolutionComment(models.Model):
         db_table = 'solution_comment'
         ordering = ('create_time', )
 
+    def __str__(self):
+        return '#' + str(self.id) + ': ' + self.content[:20]
+
 
 class StudyPlan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='study_plan')
@@ -168,6 +183,9 @@ class StudyPlan(models.Model):
 
     class Meta:
         db_table = 'study_plan'
+
+    def __str__(self):
+        return self.user.username + ' - ' + self.problem.name
 
 
 class ProblemIOMode:
