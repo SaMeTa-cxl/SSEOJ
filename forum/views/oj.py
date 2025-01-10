@@ -288,7 +288,6 @@ class PostMyAPI(APIView):
         postList = []
 
         for post in postData:
-            print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
@@ -317,7 +316,6 @@ class PostSubscribeAPI(APIView):
         postList = []
 
         for post in postData:
-            print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
