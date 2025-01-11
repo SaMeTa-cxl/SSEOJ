@@ -413,8 +413,8 @@ class UserProblemListAPI(APIView):
         except User.DoesNotExist:
             return fail('用户不存在！')
         if request.user != user:
-            problem_lists = ProblemList.objects.filter(Q(creator=user) & Q(is_public=True))
+            problem_lists = ProblemList.objects.filter(Q(create_user=user) & Q(is_public=True))
             return success(ProblemListSerializer(problem_lists, many=True).data)
         else:
-            problem_lists = ProblemList.objects.filter(Q(creator=user))
+            problem_lists = ProblemList.objects.filter(Q(create_user=user))
             return success(ProblemListSerializer(problem_lists, many=True).data)
