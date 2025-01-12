@@ -356,7 +356,8 @@ values
 (7, 4, 8),
 (8, 4, 10),
 (9, 5, 4),
-(10, 5, 11);
+(10, 5, 11),
+(11, 5, 2);
 
 
 --  插入tag数据
@@ -406,21 +407,7 @@ values
 (9, 3, 9),
 (10, 4, 10),
 (11, 4, 11),
-(12, 4, 12),
-(13, 5, 1),
-(14, 5, 13),
-(15, 6, 1),
-(16, 6, 11),
-(17, 6, 13),
-(18, 7, 2),
-(19, 7, 6),
-(20, 8, 2),
-(21, 9, 3),
-(22, 10, 2),
-(23, 10, 3),
-(24, 11, 2),
-(25, 11, 4),
-(26, 12, 4);
+(12, 4, 12);
 
 
 -- 插入关注数据
@@ -879,71 +866,23 @@ values
  2,
  4),
 
--- 第 5-12 题
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int getKthElement(const vector&lt;int&gt;&amp; nums1, const vector&lt;int&gt;&amp; nums2, int k) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 主要思路：要找到第 k (k&gt;1) 小的元素，那么就取 pivot1 = nums1[k/2-1] 和 pivot2 = nums2[k/2-1] 进行比较</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* 这里的 "/" 表示整除</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* nums1 中小于等于 pivot1 的元素有 nums1[0 .. k/2-2] 共计 k/2-1 个</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* nums2 中小于等于 pivot2 的元素有 nums2[0 .. k/2-2] 共计 k/2-1 个</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* 取 pivot = min(pivot1, pivot2)，两个数组中小于等于 pivot 的元素共计不会超过 (k/2-1) + (k/2-1) &lt;= k-2 个</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* 这样 pivot 本身最大也只能是第 k-1 小的元素</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* 如果 pivot = pivot1，那么 nums1[0 .. k/2-1] 都不可能是第 k 小的元素。把这些元素全部 "删除"，剩下的作为新的 nums1 数组</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* 如果 pivot = pivot2，那么 nums2[0 .. k/2-1] 都不可能是第 k 小的元素。把这些元素全部 "删除"，剩下的作为新的 nums2 数组</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* 由于我们 "删除" 了一些元素（这些元素都比第 k 小的元素要小），因此需要修改 k 的值，减去删除的数的个数</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int m = nums1.size();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int n = nums2.size();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int index1 = 0, index2 = 0;</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (true) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 边界情况</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (index1 == m) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return nums2[index2 + k - 1];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (index2 == n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return nums1[index1 + k - 1];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (k == 1) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return min(nums1[index1], nums2[index2]);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 正常情况</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int newIndex1 = min(index1 + k / 2 - 1, m - 1);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int newIndex2 = min(index2 + k / 2 - 1, n - 1);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int pivot1 = nums1[newIndex1];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int pivot2 = nums2[newIndex2];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (pivot1 &lt;= pivot2) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k -= newIndex1 - index1 + 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index1 = newIndex1 + 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;k -= newIndex2 - index2 + 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index2 = newIndex2 + 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;double findMedianSortedArrays(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int totalLength = nums1.size() + nums2.size();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (totalLength % 2 == 1) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getKthElement(nums1, nums2, (totalLength + 1) / 2);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return (getKthElement(nums1, nums2, totalLength / 2) + getKthElement(nums1, nums2, totalLength / 2 + 1)) / 2.0;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n, m;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n &gt;&gt; m;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; v1(n),v2(m);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; n; i++) </p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; v1[i];</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; m; i++) </p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; v2[i];</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.findMedianSortedArrays(v1, v2);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>答案来自力扣官方</p>',
- '正确答案',
+-- 第 5 题
+('Iterate through numbers up to the square root of the input to check divisibility.',
+ 'Prime Check Using Trial Division',
  0,
  0,
  now(),
  false,
  1,
  5),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int mergeSort(vector&lt;int&gt;&amp; record, vector&lt;int&gt;&amp; tmp, int l, int r) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (l &gt;= r) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int mid = (l + r) / 2;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int inv_count = mergeSort(record, tmp, l, mid) + mergeSort(record, tmp, mid + 1, r);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i = l, j = mid + 1, pos = l;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (i &lt;= mid &amp;&amp; j &lt;= r) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (record[i] &lt;= record[j]) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp[pos] = record[i];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++i;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inv_count += (j - (mid + 1));</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp[pos] = record[j];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++j;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++pos;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int k = i; k &lt;= mid; ++k) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp[pos++] = record[k];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inv_count += (j - (mid + 1));</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int k = j; k &lt;= r; ++k) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmp[pos++] = record[k];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;copy(tmp.begin() + l, tmp.begin() + r + 1, record.begin() + l);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return inv_count;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;int reversePairs(vector&lt;int&gt;&amp; record) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int n = record.size();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; tmp(n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return mergeSort(record, tmp, 0, n - 1);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n;</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; tp(n);</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; n; i++) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; tp[i];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.reversePairs(tp);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>答案来自力扣官方</p>',
-'正确答案',
+('Use the Sieve of Eratosthenes for precomputing prime numbers.',
+ 'Efficient Prime Check',
  0,
  0,
  now(),
  false,
- 1,
- 6),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int numDistinct(string s, string t) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int m = s.length(), n = t.length();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (m &lt; n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;vector&lt;unsigned long long&gt;&gt; dp(m + 1, vector&lt;unsigned long long&gt;(n + 1));</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt;= m; i++) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][n] = 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = m - 1; i &gt;= 0; i--) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char sChar = s.at(i);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int j = n - 1; j &gt;= 0; j--) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char tChar = t.at(j);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (sChar == tChar) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][j] = dp[i + 1][j + 1] + dp[i + 1][j];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][j] = dp[i + 1][j];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return dp[0][0];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;string a, b;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; a &gt;&gt; b;</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.numDistinct(a, b);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>答案来自力扣官方</p>',
-'正确答案',
- 0,
- 0,
- now(),
- false,
- 1,
- 7),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int countDigitOne(int n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// mulk 表示 10^k</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 在下面的代码中，可以发现 k 并没有被直接使用到（都是使用 10^k）</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 但为了让代码看起来更加直观，这里保留了 k</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long long mulk = 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int ans = 0;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int k = 0; n &gt;= mulk; ++k) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans += (n / (mulk * 10)) * mulk + min(max(n % (mulk * 10) - mulk + 1, 0LL), mulk);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mulk *= 10;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return ans;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n;</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.countDigitOne(n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>题解来源于力扣官方</p>',
-'正确答案',
- 0,
- 0,
- now(),
- false,
- 1,
- 8),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int candy(vector&lt;int&gt;&amp; ratings) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int n = ratings.size();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; left(n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; n; i++) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (i &gt; 0 &amp;&amp; ratings[i] &gt; ratings[i - 1]) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;left[i] = left[i - 1] + 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;left[i] = 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int right = 0, ret = 0;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = n - 1; i &gt;= 0; i--) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (i &lt; n - 1 &amp;&amp; ratings[i] &gt; ratings[i + 1]) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right++;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} else {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right = 1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ret += max(left[i], right);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return ret;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; tp(n);</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; n; i++) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; tp[i];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.candy(tp);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>题解来源力扣官方</p>',
-'正确答案',
- 0,
- 0,
- now(),
- false,
- 1,
- 9),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int maxProfit(vector&lt;int&gt;&amp; prices) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int n = prices.size();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int dp[n][2];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[0][0] = 0, dp[0][1] = -prices[0];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 1; i &lt; n; ++i) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i]);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return dp[n - 1][0];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; tp(n);</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; n; i++) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; tp[i];</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.maxProfit(tp);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>题解来源于力扣官方</p>',
-'正确答案',
- 0,
- 0,
- now(),
- false,
- 1,
- 10),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;void backtrack(vector&lt;string&gt;&amp; ans, string&amp; cur, int open, int close, int n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (cur.size() == n * 2) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans.push_back(cur);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (open &lt; n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cur.push_back(''('');</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(ans, cur, open + 1, close, n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cur.pop_back();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (close &lt; open) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cur.push_back('')'');</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(ans, cur, open, close + 1, n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cur.pop_back();</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;string&gt; generateParenthesis(int n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;string&gt; result;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string current;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(result, current, 0, 0, n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return result;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n;</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;string&gt; ans = helper.generateParenthesis(n);</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i &lt; ans.size(); i++) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; ans[i] &lt;&lt; endl;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>题解来源力扣官方</p>',
-'正确答案',
- 0,
- 0,
- now(),
- false,
- 1,
- 11),
-('<p>#include&lt;iostream&gt;</p><p>#include&lt;vector&gt;</p><p><br></p><p>using namespace std;</p><p><br></p><p>class Solution {</p><p>public:</p><p>&nbsp;&nbsp;&nbsp;&nbsp;bool isBalance(int x) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&lt;int&gt; count(10);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (x &gt; 0) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count[x % 10]++;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x /= 10;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int d = 0; d &lt; 10; ++d) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (count[d] &gt; 0 &amp;&amp; count[d] != d) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return false;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;int nextBeautifulNumber(int n) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int i = n + 1; i &lt;= 1224444; ++i) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (isBalance(i)) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return i;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return -1;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;}</p><p>};</p><p><br></p><p>int main(void) {</p><p>&nbsp;&nbsp;&nbsp;&nbsp;int n;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; n;</p><p><br></p><p>&nbsp;&nbsp;&nbsp;&nbsp;Solution helper;</p><p>&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; helper.nextBeautifulNumber(n);</p><p>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</p><p>}</p><p><br></p><p>题解来源力扣官方</p>',
-'正确答案',
- 0,
- 0,
- now(),
- false,
- 1,
- 12);
+ 2,
+ 5);
 
 
 -- 插入标签关联关系nothing
@@ -958,22 +897,22 @@ values
 
 -- 插入题解评论
 insert into solution_comment
-(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id)
+(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id, under_comment_id_id)
 values
-('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null),
-('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1),
+('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null, null),
+('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1, 1),
 
-('Great explanation, but I think there is an edge case missing.', 3, 2, 0, now(), false, null),
-('Could you clarify how this handles large inputs?', 4, 2, 0, now(), false, 3),
+('Great explanation, but I think there is an edge case missing.', 3, 2, 0, now(), false, null, null),
+('Could you clarify how this handles large inputs?', 4, 2, 0, now(), false, 3, 3),
 
-('This is an efficient implementation, well done!', 1, 3, 0, now(), false, null),
-('I recommend adding more comments to improve readability.', 2, 3, 0, now(), false, 1),
+('This is an efficient implementation, well done!', 1, 3, 0, now(), false, null, null),
+('I recommend adding more comments to improve readability.', 2, 3, 0, now(), false, 1, 5),
 
-('I found this solution helpful for my project.', 3, 4, 0, now(), false, null),
-('What inspired this approach? It seems unique.', 4, 4, 0, now(), false, 3),
+('I found this solution helpful for my project.', 3, 4, 0, now(), false, null, null),
+('What inspired this approach? It seems unique.', 4, 4, 0, now(), false, 3, 7),
 
-('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null),
-('Have you considered optimizing this further?', 2, 5, 0, now(), false, 1);
+('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null, null),
+('Have you considered optimizing this further?', 2, 5, 0, now(), false, 1, 9);
 
 -- 插入题解评论点赞表
 insert into solution_comment_like_users (solutioncomment_id, user_id)
@@ -1000,7 +939,8 @@ values
 (6, 2),
 (7, 8),
 (8, 6),
-(9, 10);
+(9, 10),
+(10, 4);
 
 -- 插入题单
 insert into problem_list
