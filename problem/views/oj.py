@@ -451,3 +451,44 @@ class SolutionCommentsAPI(APIView):
             comment['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
 
         return success({'count': len(comments), 'comments': comments})
+
+class SolotionLvel1CommentAPI(APIView):
+    def get(self, request):
+        try:
+            solution = Solution.objects.get(id=request.data['id'])
+        except Solution.DoesNotExist:
+            return fail('该题解不存在！')
+
+        comments = solution.comments.all()
+        comments = paginate_data(request, comments, SolutionCommentSerializer)
+
+        for comment in comments:
+            comment['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
+
+        return success({'count': len(comments), 'comments': comments})
+
+class SolutionLevel2CommentAPI(APIView):
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return fail('用户未登录！')
+        try:
+            comment = SolutionComment.objects.get(id=request.data['id'])
+        except SolutionComment.DoesNotExist:
+            return fail('该评论不存在！')
+
+        SolutionComment.objects.create(content=request.data['content'], parent=comment, create_user=request.user)
+
+class SolutionCommentNewAPI(APIView):
+    def get(self, request):
+        try:
+            solution = Solution.objects.get(id=request.data['id'])
+        except Solution.DoesNotExist:
+            return fail('该题解不存在！')
+
+        comments = solution.comments.filter(parent=None)
+        comments = paginate_data(request, comments, SolutionCommentSerializer)
+
+        for comment in comments:
+            comment['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
+
+        return success({'count': len(comments), 'comments': comments})
