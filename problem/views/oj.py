@@ -92,7 +92,11 @@ class ProblemSolutionsDetailAPI(APIView):
         except Solution.DoesNotExist:
             return fail('该题解不存在')
 
-        return success(SolutionSerializer(solution).data)
+        # 获取是否点赞
+        rsp = SolutionSerializer(solution).data
+        rsp['is_like'] = solution.is_like(request.user)
+
+        return success(rsp)
 
 
 class ProblemListAPI(APIView):
@@ -175,11 +179,10 @@ class ProblemListDetailAPI(APIView):
             response_data['star_status'] = None
 
         problems = response_data['problems']
+        response_data['pass_count'] = 0
         for problem in problems:
-            if request.user.is_authenticated:
-                problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
-            else:
-                problem['pass_status'] = None
+            problem['pass_status'] = Problem.objects.get(id=problem['id']).get_pass_status(request.user)
+            if problem['pass_status']: response_data['pass_count'] += 1
 
         return success(response_data)
 

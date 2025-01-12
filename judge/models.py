@@ -24,3 +24,6 @@ class JudgeServer(models.Model):
 
     class Meta:
         db_table = "judge_server"
+
+    def __str__(self):
+        return self.hostname + ':' + self.service_url

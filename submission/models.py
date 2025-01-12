@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+from account.models import User
 from problem.models import Problem
 
 from utils.shortcuts import rand_str
@@ -28,8 +29,8 @@ class Submission(models.Model):
     user_id = models.IntegerField(db_index=True)
     code = models.TextField()
     result = models.IntegerField(db_index=True, default=JudgeStatus.PENDING)
-    time_spent = models.IntegerField(null=True)
-    memory_spent = models.IntegerField(null=True)
+    time_spent = models.IntegerField(null=True, blank=True)
+    memory_spent = models.IntegerField(null=True, blank=True)
     error_info = models.JSONField(null=True)
     language = models.TextField()
 
@@ -38,4 +39,4 @@ class Submission(models.Model):
         ordering = ("-create_time",)
 
     def __str__(self):
-        return self.id
+        return self.id + ":" + str(self.problem) + "-" + str(User.objects.get(id=self.user_id))

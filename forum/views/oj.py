@@ -253,12 +253,12 @@ class PostHotAPI(APIView):
     def get(self, request):
         page_num = int(request.GET.get('page_num', 1))
         page_size = int(request.GET.get('page_size', 30))
-        print(page_num, page_size)
+        #print(page_num, page_size)
         postData = Post.objects.order_by('-like_count')[(page_num - 1) * page_size: page_num * page_size]
         postList = []
 
         for post in postData:
-            print(post.title)
+            #print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
@@ -288,7 +288,6 @@ class PostMyAPI(APIView):
         postList = []
 
         for post in postData:
-            print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
@@ -317,7 +316,6 @@ class PostSubscribeAPI(APIView):
         postList = []
 
         for post in postData:
-            print(post.title)
             postRelateData = {}
             creatUser = post.create_user
 
