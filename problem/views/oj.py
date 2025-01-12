@@ -8,7 +8,7 @@ from problem.models import Problem, Solution, ProblemList, Tag, SolutionComment
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
     ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer, ProblemListCreateSerializer, \
     ProblemCreateSerializer, SolutionCommentSerializer
-from utils.api import success, fail, paginate_data, validate_serializer
+from utils.api import success, fail, paginate_data, validate_serializer, ImageCode
 
 sort_dict = {
     'likeDesc': '-like_count',
@@ -460,7 +460,7 @@ class SolutionLevel1CommentAPI(APIView):
         except Solution.DoesNotExist:
             return fail('该题解不存在！')
 
-        comments = solution.comments.filter(reply_to_user__isnull=True)
+        comments = solution.comments.filter(reply_to_user_isnull=True)
         comments = paginate_data(request, comments, SolutionCommentSerializer)
 
         comments_data = []
@@ -471,9 +471,12 @@ class SolutionLevel1CommentAPI(APIView):
             user_info_tmp = {}
             user_info_tmp['id'] = comment['create_user']['id']
             user_info_tmp['username'] = comment['create_user']['username']
-            user_info_tmp['avatar'] = comment['create_user']['avatar']
+            user_info_tmp['avatar'] = ImageCode.image_base64(comment['create_user']['avatar'])
             comment_tmp['user_info'] = user_info_tmp
-            comment_tmp['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
+            if not request.user.is_authenticated:
+                comment_tmp['is_good'] = False
+            else:
+                comment_tmp['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
             comment_tmp['content'] = comment['content']
             comment_tmp['like_count'] = comment['like_count']
             comment_tmp['create_time'] = comment['create_time']
@@ -483,11 +486,9 @@ class SolutionLevel1CommentAPI(APIView):
         return success({'count': len(comments_data), 'comments': comments_data})
 
 class SolutionLevel2CommentAPI(APIView):
-    def get(self, request):
+    def get(self, request, solution_id, comment_id):
         try:
-            solution = Solution.objects.get(id=request.data['solution_id'])
-            comment_id = request.data['comment_id']
-
+            solution = Solution.objects.get(id=solution_id)
         except Solution.DoesNotExist:
             return fail('该题解不存在！')
 
@@ -502,9 +503,12 @@ class SolutionLevel2CommentAPI(APIView):
             user_info_tmp = {}
             user_info_tmp['id'] = comment['create_user']['id']
             user_info_tmp['username'] = comment['create_user']['username']
-            user_info_tmp['avatar'] = comment['create_user']['avatar']
+            user_info_tmp['avatar'] = ImageCode.image_base64(comment['create_user']['avatar'])
             comment_tmp['user_info'] = user_info_tmp
-            comment_tmp['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
+            if not request.user.is_authenticated:
+                comment_tmp['is_good'] = False
+            else:
+                comment_tmp['is_good'] = SolutionComment.objects.get(id=comment['id']).like_users.contains(request.user)
             comment_tmp['content'] = comment['content']
             comment_tmp['like_count'] = comment['like_count']
             comment_tmp['create_time'] = comment['create_time']
