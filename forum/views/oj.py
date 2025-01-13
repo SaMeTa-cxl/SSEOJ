@@ -10,16 +10,28 @@ from problem.models import Tag
 
 class PostListAPI(APIView):
     def get(self, request):
-        print(request)
         sort_type = request.GET.get('sort_type', 'likeDesc')
+        key_word = request.GET.get('keyword', None)
+        print(key_word)
 
-        postData = None
         if sort_type == 'timeAsc':
-            postData = Post.objects.filter(Q(is_announcement=False) & Q(check_status=True)).order_by('create_time')
+            postData = Post.objects.filter(
+                Q(is_announcement=False) &
+                Q(check_status=True) &
+                (Q(title__icontains=key_word) if key_word else Q())
+            ).order_by('create_time')
         elif sort_type == 'timeDesc':
-            postData = Post.objects.filter(Q(is_announcement=False) & Q(check_status=True)).order_by('-create_time')
+            postData = Post.objects.filter(
+                Q(is_announcement=False) &
+                Q(check_status=True) &
+                (Q(title__icontains=key_word) if key_word else Q())
+            ).order_by('-create_time')
         else:
-            postData = Post.objects.filter(Q(is_announcement=False) & Q(check_status=True)).order_by('-like_count')
+            postData = Post.objects.filter(
+                Q(is_announcement=False) &
+                Q(check_status=True) &
+                (Q(title__icontains=key_word) if key_word else Q())
+            ).order_by('-like_count')
 
         count = postData.count()
         postData = paginate_data(request, postData)
