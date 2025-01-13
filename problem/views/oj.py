@@ -461,7 +461,8 @@ class SolutionLevel1CommentAPI(APIView):
         except Solution.DoesNotExist:
             return fail('该题解不存在！')
 
-        comments = solution.comments.filter(reply_to_user=True)
+        comments = solution.comments.filter(under_comment__isnull = True)
+        comments_num = comments.count()
         comments = paginate_data(request, comments, SolutionCommentSerializer)
 
         comments_data = []
@@ -481,19 +482,24 @@ class SolutionLevel1CommentAPI(APIView):
             comment_tmp['content'] = comment['content']
             comment_tmp['like_count'] = comment['like_count']
             comment_tmp['create_time'] = comment['create_time']
-            comment_tmp['comments_count'] = SolutionComment.objects.filter(under_comment_id=comment['id']).count()
+            under_comments = SolutionComment.objects.get(id=comment['id']).under_comment
+            if under_comments is not None:
+                comment_tmp['comments_count'] = under_comments.count()
+            else:
+                comment_tmp['comments_count'] = 0
             comments_data.append(comment_tmp)
 
-        return success({'count': len(comments_data), 'comments': comments_data})
+        return success({'count': comments_num, 'comments': comments_data})
 
 class SolutionLevel2CommentAPI(APIView):
     def get(self, request, solution_id, comment_id):
+        """
         try:
             solution = Solution.objects.get(id=solution_id)
         except Solution.DoesNotExist:
             return fail('该题解不存在！')
 
-        comments = solution.comments.filter(under_comment_id=comment_id)
+        comments = solution.comments.filter(under_comment=comment_id)
         comments = paginate_data(request, comments, SolutionCommentSerializer)
 
         comments_data = []
@@ -516,8 +522,38 @@ class SolutionLevel2CommentAPI(APIView):
             comment_tmp['reply_to_id'] = comment['reply_to_user'].id
             comment_tmp['reply_to_name'] = SolutionComment.objects.get(id=comment['id']).reply_to_user.username
             comments_data.append(comment_tmp)
+        """
 
-        return success({'count': len(comments_data), 'comments': comments_data})
+        try:
+            comment = SolutionComment.objects.get(id=comment_id)
+        except SolutionComment.DoesNotExist:
+            return fail(msg = '一级评论不存在')
+        level2_comments = comment.under_comments.all()
+        level2_comments_num = level2_comments.count()
+        level2_comments = paginate_data(request, level2_comments, SolutionCommentSerializer)
+
+        comments_data = []
+
+        for level2_comment in level2_comments:
+            comment_tmp = {}
+            comment_tmp['id'] = level2_comment['id']
+            user_info_tmp = {}
+            user_info_tmp['id'] = level2_comment['create_user']['id']
+            user_info_tmp['username'] = level2_comment['create_user']['username']
+            user_info_tmp['avatar'] = ImageCode.image_base64(level2_comment['create_user']['avatar'])
+            comment_tmp['user_info'] = user_info_tmp
+            if not request.user.is_authenticated:
+                comment_tmp['is_good'] = False
+            else:
+                comment_tmp['is_good'] = comment.like_users.contains(request.user)
+            comment_tmp['content'] = level2_comment['content']
+            comment_tmp['like_count'] = level2_comment['like_count']
+            comment_tmp['create_time'] = level2_comment['create_time']
+            comment_tmp['reply_to_id'] = level2_comment['reply_to_user_info']['id']
+            comment_tmp['reply_to_name'] = level2_comment['reply_to_user_info']['username']
+            comments_data.append(comment_tmp)
+
+        return success({'count': level2_comments_num, 'comments': comments_data})
 
 class SolutionCommentNewAPI(APIView):
     def post(self, request):
@@ -529,10 +565,28 @@ class SolutionCommentNewAPI(APIView):
             return fail('该题解不存在！')
 
         content = request.data['content']
-        if 'reply_to_id' in request.data:
-            reply_to_user = User.objects.get(id=request.data['reply_to_id'])
-            under_comment_id = SolutionComment.objects.get(id=request.data['under_comment_id'])
-            SolutionComment.objects.create(content=content, create_user=request.user, solution=solution,
-                                           reply_to_user=reply_to_user, under_comment_id=under_comment_id)
+        reply_to_id = request.data.get('reply_to_id', None)
+        under_comment_id = request.data.get('under_comment_id', None)
+        reply_to_user = None
+        comment = None
+        if reply_to_id is not None:
+            try:
+                reply_to_user = User.objects.get(id=reply_to_id)
+            except User.DoesNotExist:
+                return fail(msg = '回复用户不存在')
+        if under_comment_id is not None:
+            try:
+                comment = SolutionComment.objects.get(id=under_comment_id)
+            except SolutionComment.DoesNotExist:
+                return fail(msg = '回复的评论不存在')
+
+        if comment is None:
+            SolutionComment.objects.create(content = content, create_user = request.user, solution = solution)
         else:
-            SolutionComment.objects.create(content=content, create_user=request.user, solution=solution)
+            if reply_to_user is None:
+                SolutionComment.objects.create(content = content, create_user = request.user, solution = solution, under_comment = comment)
+            else:
+                SolutionComment.objects.create(content=content, create_user=request.user, solution=solution,
+                                               reply_to_user=reply_to_user, under_comment=comment)
+
+        return success("评论成功")
