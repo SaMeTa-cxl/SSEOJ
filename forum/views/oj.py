@@ -10,6 +10,7 @@ from problem.models import Tag
 
 class PostListAPI(APIView):
     def get(self, request):
+        print(request)
         sort_type = request.GET.get('sort_type', 'likeDesc')
 
         postData = None
@@ -54,7 +55,9 @@ class PostInformationAPI(APIView):
             "comment_count": post.comment_count,
             "post_content": post.content,
             "create_time": post.create_time,
-            "user_name": post.create_user.username,
+            "name": post.create_user.username,
+            "id": post.create_user.id,
+            "avatar": ImageCode.image_base64(post.create_user.avatar),
         }
 
         return success(post_data)

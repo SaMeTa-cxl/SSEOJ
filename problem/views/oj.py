@@ -74,6 +74,7 @@ class ProblemSolutionsAPI(APIView):
         taglist = set()
         for i in range(len(solutions)):
             solutions[i]['content'] = solutions[i]['content'][:200]
+            solutions[i]['user_info']['avatar'] = ImageCode.image_base64(solutions[i]['user_info']['avatar'])
             taglist = taglist.union(set(solutions[i]['tags']))
         return success({'count': len(solutions), 'solutions': solutions, 'taglist': list(taglist)})
 
