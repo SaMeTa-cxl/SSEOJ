@@ -455,13 +455,13 @@ class SolutionCommentsAPI(APIView):
         return success({'count': len(comments), 'comments': comments})
 
 class SolutionLevel1CommentAPI(APIView):
-    def get(self, request):
+    def get(self, request, solution_id):
         try:
-            solution = Solution.objects.get(id=request.data['solution_id'])
+            solution = Solution.objects.get(id=solution_id)
         except Solution.DoesNotExist:
             return fail('该题解不存在！')
 
-        comments = solution.comments.filter(reply_to_user_isnull=True)
+        comments = solution.comments.filter(reply_to_user=True)
         comments = paginate_data(request, comments, SolutionCommentSerializer)
 
         comments_data = []
@@ -470,9 +470,9 @@ class SolutionLevel1CommentAPI(APIView):
             comment_tmp = {}
             comment_tmp['id'] = comment['id']
             user_info_tmp = {}
-            user_info_tmp['id'] = comment['create_user']['id']
-            user_info_tmp['username'] = comment['create_user']['username']
-            user_info_tmp['avatar'] = ImageCode.image_base64(comment['create_user']['avatar'])
+            user_info_tmp['id'] = comment['user_info']['id']
+            user_info_tmp['username'] = comment['user_info']['username']
+            user_info_tmp['avatar'] = ImageCode.image_base64(comment['user_info']['avatar'])
             comment_tmp['user_info'] = user_info_tmp
             if not request.user.is_authenticated:
                 comment_tmp['is_good'] = False
@@ -481,7 +481,7 @@ class SolutionLevel1CommentAPI(APIView):
             comment_tmp['content'] = comment['content']
             comment_tmp['like_count'] = comment['like_count']
             comment_tmp['create_time'] = comment['create_time']
-            comments_data['comments_count'] = SolutionComment.objects.filter(under_comment_id=comment['id']).count()
+            comment_tmp['comments_count'] = SolutionComment.objects.filter(under_comment_id=comment['id']).count()
             comments_data.append(comment_tmp)
 
         return success({'count': len(comments_data), 'comments': comments_data})

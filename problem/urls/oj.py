@@ -7,7 +7,6 @@ urlpatterns = [
     path("problem/<int:problem_id>/solutions/", ProblemSolutionsAPI.as_view(), name="problem_solutions"),
     path("solution/good/", SolutionGoodAPI.as_view(), name="solutions_good"),
     path("solution/comment/good/", SolutionCommentGoodAPI.as_view(), name="solutions_comment_good"),
-
     # path("problem/solutions/<int:solution_id>/comments", SolutionCommentsAPI.as_view(), name="solutions_comment"),
     path("problem/solutions/<int:solution_id>/comments/", SolutionLevel1CommentAPI.as_view(), name="solution_comments1"),
     path("problem/solutions/<int:solution_id>/comments/<int:comment_id>/", SolutionLevel2CommentAPI.as_view(), name="solution_comments2"),
