@@ -166,7 +166,7 @@ class SolutionComment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     check_status = models.BooleanField(default=False)
     reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='solution_comment_replies', null=True)
-    under_comment_id = models.ForeignKey('self', on_delete=models.CASCADE, related_name='under_comments', null=True, blank=True)
+    under_comment = models.ForeignKey('self', on_delete=models.CASCADE, related_name='under_comments', null=True, blank=True)
 
     class Meta:
         db_table = 'solution_comment'
