@@ -29,5 +29,5 @@ urlpatterns = [
     path("tags/", TagAPI.as_view(), name="tags"),
     path("problemset/problem_num/", ProblemNumWithDifficultyAPI.as_view(), name="problem_num_with_difficulty"),
     path("problem/<int:problem_id>/default_star/", ProblemDefaultStarAPI.as_view(), name="problem_default_star"),
-    path("problem/<int:problem_id>/list_star/", ProblemListStarAPI.as_view(), name="problem_list_star"),
+    path("problem/<int:problem_id>/list_star/", ProblemStarToListAPI.as_view(), name="problem_list_star"),
 ]
