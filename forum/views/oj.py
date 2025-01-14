@@ -286,6 +286,7 @@ class PostHotAPI(APIView):
             postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
             postRelateData['like_count'] = post.like_count
             postRelateData['comment_count'] = post.comment_count
+            postRelateData['create_time'] = post.create_time
 
             postList.append(postRelateData)
         has_next = page_num * page_size < Post.objects.count()
@@ -315,6 +316,7 @@ class PostMyAPI(APIView):
             postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
             postRelateData['like_count'] = post.like_count
             postRelateData['comment_count'] = post.comment_count
+            postRelateData['create_time'] = post.create_time
 
             postList.append(postRelateData)
         return success({'posts': postList, 'has_next':has_next})
@@ -343,6 +345,7 @@ class PostSubscribeAPI(APIView):
             postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
             postRelateData['like_count'] = post.like_count
             postRelateData['comment_count'] = post.comment_count
+            postRelateData['create_time'] = post.create_time
 
             postList.append(postRelateData)
         return success({'posts': postList, 'has_next': has_next})

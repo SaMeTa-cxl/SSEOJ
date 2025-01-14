@@ -144,7 +144,12 @@ class ProblemListCreateAPI(APIView):
         title = request.data['title']
         summary = request.data['summary']
         is_public = request.data['type']
-        ProblemList.objects.create(title=title, summary=summary, is_public=is_public, create_user=request.user)
+        problems = request.data.get('problems', [])
+        problem_list = ProblemList.objects.create(title=title, summary=summary, is_public=is_public, create_user=request.user)
+
+        if len(problems):
+            problem_list.problems.set(Problem.objects.filter(id__in=problems))
+
         return success('创建成功')
 
 
