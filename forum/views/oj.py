@@ -349,9 +349,16 @@ class PostMyAPI(APIView):
         if not request.user.is_authenticated:
             return success({'posts': [], 'has_next': False})
 
+        try:
+            user_id = request.get('user_id')
+            print(user_id)
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return fail('用户不存在')
+
         page_num = request.GET.get('page_num', 1)
         page_size = request.GET.get('page_size', 30)
-        postData = Post.objects.filter(create_user=request.user)
+        postData = Post.objects.filter(create_user=user)
         has_next = page_num * page_size < postData.count()
         postData = postData[(page_num - 1) * page_size: page_num * page_size]
         postList = []
