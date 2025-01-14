@@ -358,6 +358,7 @@ class UserPasswordForgetAPI(APIView):
         data = request.data
         email = data.get('email')
         passNew = DecodePassword.decryption(data.get('password_new'))
+        print(passNew)
         verificationCode = data.get('verification_code')
         if verificationCode != cache.get(email):
             return fail(msg='验证码错误或过期')
