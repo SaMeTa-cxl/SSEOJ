@@ -904,19 +904,19 @@ insert into solution_comment
 (content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id, under_comment_id)
 values
 ('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null, null),
-('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1, 1),
+('I have a question about this part of your solution.', 2, 1, 0, now(), false, null, 1),
 
 ('Great explanation, but I think there is an edge case missing.', 3, 2, 0, now(), false, null, null),
-('Could you clarify how this handles large inputs?', 4, 2, 0, now(), false, 3, 3),
+('Could you clarify how this handles large inputs?', 4, 2, 0, now(), false, null, 3),
 
 ('This is an efficient implementation, well done!', 1, 3, 0, now(), false, null, null),
-('I recommend adding more comments to improve readability.', 2, 3, 0, now(), false, 1, 5),
+('I recommend adding more comments to improve readability.', 2, 3, 0, now(), false, null, 5),
 
 ('I found this solution helpful for my project.', 3, 4, 0, now(), false, null, null),
-('What inspired this approach? It seems unique.', 4, 4, 0, now(), false, 3, 7),
+('What inspired this approach? It seems unique.', 4, 4, 0, now(), false, null, 7),
 
 ('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null, null),
-('Have you considered optimizing this further?', 2, 5, 0, now(), false, 1, 9);
+('Have you considered optimizing this further?', 2, 5, 0, now(), false, null, 9);
 
 -- 插入题解评论点赞表
 insert into solution_comment_like_users (solutioncomment_id, user_id)
