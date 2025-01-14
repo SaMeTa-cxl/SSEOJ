@@ -236,6 +236,8 @@ class ProblemListDetailAPI(APIView):
             problem_list.summary = summary
         problem_list.save()
 
+        return success('修改成功')
+
     def delete(self, request, problemlist_id):
         """
         删除一个题单，如果题单收藏数为0，直接删除记录，否则软删除，只是将is_deleted字段设为true，使其不会被get出来，当收藏数为0时再硬删除
@@ -263,6 +265,7 @@ class ProblemListStarAPI(APIView):
         用户未登录或题单不存在时返回相应错误
         当被取消收藏的题单收藏数为0且已经被发布者删除时硬删除此题单
         """
+        print(request.data)
         if not request.user.is_authenticated:
             return fail('用户未登录！')
         try:
@@ -640,7 +643,7 @@ class ProblemDefaultStarAPI(APIView):
         return success(data)
 
 
-class ProblemListStarAPI(APIView):
+class ProblemStarToListAPI(APIView):
     def get(self, request, problem_id):
         try:
             problem = Problem.objects.get(id=problem_id)

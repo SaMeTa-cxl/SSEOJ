@@ -344,6 +344,7 @@ class UserPasswordChangeAPI(APIView):
             return fail(msg = '旧密码错误')
 
         user.set_password(passNew)
+        user.save()
 
         return success('修改成功')
 
