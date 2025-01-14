@@ -22,7 +22,9 @@ use sseoj;
 -- submission
 -- tag
 
-
+ALTER DATABASE sseoj CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+ALTER TABLE post_comment CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE post_comment CHANGE content content longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 
 -- 禁用外键约束
 set foreign_key_checks = 0;
@@ -1247,11 +1249,5 @@ values
 (uuid(), 11, now(), 7, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
 (uuid(), 12, now(), 7, 'print("Another Test")', 1, 25, 400, null, 'Python');
 
-
-
-
-update post set like_count = (select count(*) from post_like_users where post_id = post.id);
-update post set comment_count = (select count(*) from post_comment where post_id = post.id);
-update post_comment set like_count = (select count(*) from post_comment_like_users where postcomment_id = post_comment.id);
 
 
