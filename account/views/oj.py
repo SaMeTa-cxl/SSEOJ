@@ -16,7 +16,7 @@ from django.contrib.sessions.models import Session
 
 
 class EmailCodeAPI(APIView):
-    def get(self, request):
+    def post(self, request):
         data = request.data
         try:
             requestType = int(data.get('type'))
