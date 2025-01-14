@@ -294,7 +294,7 @@ class PostCommentGoodAPI(APIView):
         user = request.user
         try:
             userId = int(data.get('id', 'error'))
-            isGood = bool(data.get('isGood', 'error'))
+            isGood = bool(data.get('is_good', 'error'))
         except ValueError:
             return fail(msg = '未知的数据类型')
 
@@ -307,6 +307,7 @@ class PostCommentGoodAPI(APIView):
             comment.like_users.add(user)
             comment.like_count = F('like_count') + 1
         else:
+
             comment.like_users.remove(user)
             comment.like_count = F('like_count') - 1
         comment.save()
