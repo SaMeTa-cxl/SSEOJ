@@ -1,8 +1,12 @@
 import hashlib
+import os
 
+from django.contrib.messages.storage import default_storage
+from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework.views import APIView
+from werkzeug.utils import secure_filename
 
 from conf.conf import SysConfigs
 from conf.serializers import JudgeServerHeartbeatSerializer
@@ -41,3 +45,31 @@ class JudgeServerHeartbeatAPI(APIView):
         # process_pending_task()
 
         return JsonResponse({"error": None, "data": 'success'})
+
+
+class UploadImageAPI(APIView):
+    def post(self, request):
+        UPLOAD_FOLDER = 'static/image'
+            # 检查请求是否包含文件
+        if 'image' not in request.FILES:
+            return JsonResponse({'status': 400, 'error': 'No file part'}, status=400)
+
+        file = request.FILES['image']
+        print(file)
+
+        if file.name == '':
+            return JsonResponse({'status': 400, 'error': 'No selected file'}, status=400)
+
+        if file and file.name.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}:
+            # 使用安全文件名并保存文件
+            filename = secure_filename(file.name)
+            filepath = "{}/{}".format(UPLOAD_FOLDER, filename)
+            with open(filepath, 'wb+') as destination:
+                for chunk in file.chunks():  # 分块写入，处理大文件
+                    destination.write(chunk)
+            # 构建文件的访问 URL
+            file_url = f"http://localhost:8000/{UPLOAD_FOLDER}/{filename}"
+            return JsonResponse({'status': 200, 'success': 'Upload success!', 'data': {'link': file_url}})
+
+        return JsonResponse({'status': 400, 'error': 'File type not allowed'}, status=400)
+

@@ -410,7 +410,8 @@ class StudyPlanAddAPI(APIView):
         id = request.data['id']
         if not id:
             return fail('请传入题目id')
-        StudyPlan.objects.create(user=request.user, problem_id=id)
+        if not StudyPlan.objects.filter(user=request.user, problem_id=id).exists():
+            StudyPlan.objects.create(user=request.user, problem_id=id)
         return success('success')
 
 
