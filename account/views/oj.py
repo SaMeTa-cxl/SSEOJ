@@ -52,7 +52,7 @@ class EmailCodeAPI(APIView):
             if code is None:
                 return fail(msg = "发送失败")
 
-            cache.set(toEmail, code, timeout=10)
+            cache.set(toEmail, code, timeout=300)
             return success('发送成功')
 
         else:
