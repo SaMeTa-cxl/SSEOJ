@@ -97,6 +97,9 @@ DATABASES = {
         'PORT': 3306, # 端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': os.environ.get('MYSQL_PSWD'), # 数据库密码
+        'OPTIONS': {
+            'charset': 'utf8mb4',  # 设置字符集为 utf8mb4
+        },
     }
 }
 
