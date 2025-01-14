@@ -350,7 +350,7 @@ class PostMyAPI(APIView):
             return success({'posts': [], 'has_next': False})
 
         try:
-            user_id = request.get('user_id')
+            user_id = request.GET.get('user_id')
             print(user_id)
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
