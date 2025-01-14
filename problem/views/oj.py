@@ -449,6 +449,8 @@ class SolutionCommentGoodAPI(APIView):
             comment.like_count = F('like_count') - 1
             comment.save()
 
+        return success('操作成功')
+
 
 class SolutionCommentsAPI(APIView):
     def get(self, request):
