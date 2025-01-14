@@ -470,7 +470,7 @@ class SolutionLevel1CommentAPI(APIView):
         except Solution.DoesNotExist:
             return fail('该题解不存在！')
 
-        comments = solution.comments.filter(under_comment__isnull = True)
+        comments = SolutionComment.objects.filter(Q(solution_id=solution_id) & Q(under_comment_id__isnull = True))
         comments_num = comments.count()
         comments = paginate_data(request, comments, SolutionCommentSerializer)
 
@@ -534,7 +534,7 @@ class SolutionLevel2CommentAPI(APIView):
         """
 
         try:
-            comment = SolutionComment.objects.get(id=comment_id)
+            comment = SolutionComment.objects.filter(Q(solution_id=solution_id) & Q(under_comment_id=comment_id))
         except SolutionComment.DoesNotExist:
             return fail(msg = '一级评论不存在')
         level2_comments = comment.under_comments.all()
