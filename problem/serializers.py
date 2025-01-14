@@ -58,7 +58,7 @@ class ProblemListDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProblemList
-        fields = ['id', 'name', 'summary', 'creator_info', 'problems', 'problem_count']
+        fields = ['id', 'name', 'summary', 'creator_info', 'problems', 'problem_count', 'is_public']
 
 
 class SolutionCreateSerializer(serializers.Serializer):
