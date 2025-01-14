@@ -381,15 +381,18 @@ class ProblemStarAPI(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return fail('用户未登录！')
+
         try:
             problem = Problem.objects.get(id=request.data['id'])
         except Problem.DoesNotExist:
             return fail('题目不存在！')
 
-        if request.data['relationship']:
-            problem.star_users.add(request.user)
-        else:
+        if problem.star_users.contains(request.user):
             problem.star_users.remove(request.user)
+        else:
+            problem.star_users.add(request.user)
+
+        return success('success')
 
 
 class StudyPlanAddAPI(APIView):
@@ -613,3 +616,29 @@ class ProblemNumWithDifficultyAPI(APIView):
         for i in range(1, 7):
             rsp.append(Problem.objects.filter(difficulty=i).count())
         return success(rsp)
+
+
+class ProblemDefaultStarAPI(APIView):
+    def get(self, request, problem_id):
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist as e:
+            return fail('题目不存在！')
+
+        data = request.user.is_authenticated and problem.star_users.contains(request.user)
+
+        return success(data)
+
+
+class ProblemListStarAPI(APIView):
+    def get(self, request, problem_id):
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist as e:
+            return fail('题目不存在！')
+
+        data = []
+        for problem_list in ProblemList.objects.filter(create_user=request.user).all():
+            data.append(problem_list.problems.contains(problem))
+
+        return success(data)

@@ -325,8 +325,6 @@ NOW(),
 TRUE,
 'test_case_12');
 
-update problem set attempt_count = 1;
-
 
  -- 插入problem_pass_users
 # insert into problem_pass_users(id, problem_id, user_id)
@@ -954,18 +952,18 @@ values
 
 -- 插入学习计划
 insert into study_plan
-(user_id, problem_id, added_time, problem_status)
+(user_id, problem_id, added_time)
 values
-(7, 1, now(), false),
-(7, 2, now(), true),
-(8, 3, now(), false),
-(8, 4, now(), true),
-(9, 5, now(), false),
-(9, 6, now(), false),
-(10, 7, now(), true),
-(10, 8, now(), false),
-(11, 9, now(), true),
-(11, 10, now(), false);
+(7, 1, now()),
+(7, 2, now()),
+(8, 3, now()),
+(8, 4, now()),
+(9, 5, now()),
+(9, 6, now()),
+(10, 7, now()),
+(10, 8, now()),
+(11, 9, now()),
+(11, 10, now());
 
 
 -- 插入帖子评论
