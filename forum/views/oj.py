@@ -69,7 +69,7 @@ class PostInformationAPI(APIView):
             "post_content": post.content,
             "create_time": post.create_time,
             "name": post.create_user.username,
-            "id": post.create_user.id,
+            "id": post.id,
             "avatar": ImageCode.image_base64(post.create_user.avatar),
         }
 
@@ -236,7 +236,7 @@ class PostNewAPI(APIView):
         return success(output_data)
 
 class PostGoodAPI(APIView):
-    def put(self, request):
+    def post(self, request):
         if not request.user.is_authenticated:
             return fail("未登录！")
         user_id = request.user.id
@@ -244,11 +244,13 @@ class PostGoodAPI(APIView):
         is_good = request.data.get('is_good')
         print("userid", user_id)
         print("postid", post_id)
+        print(is_good)
 
         try:
             post = Post.objects.get(id=post_id)
             user = User.objects.get(id=user_id)
         except (Post.DoesNotExist, User.DoesNotExist):
+            print("exception")
             return Response({"error": "帖子不存在或用户登录过期！"}, status=404)
 
         if is_good:
