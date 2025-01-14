@@ -93,7 +93,6 @@ class PostCommentInformationAPI(APIView):
             "count": count,
             "comments": serializer.data
         }
-        print(comment_data['comments'][0])
         return success(comment_data)
 
 
