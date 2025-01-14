@@ -329,23 +329,23 @@ update problem set attempt_count = 1;
 
 
  -- 插入problem_pass_users
-insert into problem_pass_users(id, problem_id, user_id)
- values
-(1, 1, 2),
-(2, 2, 8),
-(3, 3, 9),
-(4, 4, 6),
-(5, 5, 15),
-(6, 5, 3),
-(7, 5, 4),
-(8, 5, 7),
-(9, 1, 10),
-(10, 1, 11),
-(11, 1, 12),
-(12, 1, 5),
-(13, 1, 14),
-(14, 1, 1),
-(15, 1, 13);
+# insert into problem_pass_users(id, problem_id, user_id)
+#  values
+# (1, 1, 2),
+# (2, 2, 8),
+# (3, 3, 9),
+# (4, 4, 6),
+# (5, 5, 15),
+# (6, 5, 3),
+# (7, 5, 4),
+# (8, 5, 7),
+# (9, 1, 10),
+# (10, 1, 11),
+# (11, 1, 12),
+# (12, 1, 5),
+# (13, 1, 14),
+# (14, 1, 1),
+# (15, 1, 13);
 
 
  -- 插入problem_star_users
@@ -918,34 +918,6 @@ values
 ('This comment provides a good alternate perspective.', 1, 5, 0, now(), false, null, null),
 ('Have you considered optimizing this further?', 2, 5, 0, now(), false, null, 9);
 
--- 插入题解评论点赞表
-insert into solution_comment_like_users (solutioncomment_id, user_id)
-values
-(1, 4),
-(2, 7),
-(3, 1),
-(4, 6),
-(5, 3),
-(6, 8),
-(7, 2),
-(8, 10),
-(9, 5),
-(10, 9);
-
--- 插入题解点赞表
-insert into solution_like_users (solution_id, user_id)
-values
-(1, 5),
-(2, 3),
-(3, 9),
-(4, 1),
-(5, 7),
-(6, 2),
-(7, 8),
-(8, 6),
-(9, 10),
-(10, 4);
-
 -- 插入题单
 insert into problem_list
 (title, create_user_id, star_count, problem_count, summary, is_deleted, is_public)
@@ -979,41 +951,6 @@ values
 (13, 9, 11),
 (14, 10, 11),
 (15, 10, 12);
-
--- 插入problem_list_star_user
-insert into problem_list_star_users
-(id, problemlist_id, user_id)
-values
-(1, 1, 3),
-(2, 1, 5),
-(3, 1, 7),
-(4, 2, 8),
-(5, 2, 10),
-(6, 2, 12),
-(7, 3, 2),
-(8, 3, 6),
-(9, 3, 9),
-(10, 4, 11),
-(11, 4, 13),
-(12, 4, 15),
-(13, 5, 16),
-(14, 5, 18),
-(15, 5, 20),
-(16, 6, 17),
-(17, 6, 19),
-(18, 6, 21),
-(19, 7, 22),
-(20, 7, 23),
-(21, 7, 25),
-(22, 8, 1),
-(23, 8, 14),
-(24, 8, 26),
-(25, 9, 4),
-(26, 9, 5),
-(27, 9, 28),
-(28, 10, 6),
-(29, 10, 8),
-(30, 10, 30);
 
 -- 插入学习计划
 insert into study_plan
@@ -1097,44 +1034,6 @@ values
 (30, 1, 'First comment on post 30.', true, 7, null, null, now()),
 (30, 2, 'Another comment for post 30.', true, 2, null, null, now());
 
-
-
--- 向 post_comment_like_users 表插入数据
-insert into post_comment_like_users
-(postcomment_id, user_id)
-values
-(1, 2),
-(1, 3),
-(2, 4),
-(2, 5),
-(3, 6),
-(4, 7),
-(5, 8),
-(6, 9),
-(7, 10),
-(8, 11),
-(9, 12),
-(10, 13);
-
--- 向 post_like_users 表插入数据
-insert into post_like_users
-(post_id, user_id)
-values
-(1, 2),
-(1, 3),
-(2, 4),
-(2, 5),
-(3, 6),
-(3, 7),
-(4, 8),
-(4, 9),
-(5, 10),
-(6, 11),
-(7, 12),
-(8, 13),
-(9, 14),
-(10, 15);
-
 -- 向 post_tags 表插入数据
 insert into post_tags
 (post_id, tag_id)
@@ -1168,88 +1067,93 @@ values
 (23, 27);
 
 -- 插入 submission 表数据
-insert into submission
-(id, problem_id, create_time, user_id, code, result, time_spent, memory_spent, error_info, language)
-values
-(uuid(), 1, now(), 2, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
-(uuid(), 2, now(), 2, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
-(uuid(), 3, now(), 2, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
-(uuid(), 4, now(), 2, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
-(uuid(), 5, now(), 2, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
-(uuid(), 6, now(), 2, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
-(uuid(), 7, now(), 2, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
-(uuid(), 8, now(), 2, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
-(uuid(), 9, now(), 2, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
-(uuid(), 10, now(), 2, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
-(uuid(), 11, now(), 2, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 2, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-
-(uuid(), 1, now(), 3, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
-(uuid(), 2, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
-(uuid(), 3, now(), 3, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
-(uuid(), 4, now(), 3, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
-(uuid(), 5, now(), 3, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
-(uuid(), 6, now(), 3, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
-(uuid(), 7, now(), 3, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
-(uuid(), 8, now(), 3, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
-(uuid(), 9, now(), 3, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
-(uuid(), 10, now(), 3, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
-(uuid(), 11, now(), 3, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 3, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-
-(uuid(), 1, now(), 4, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
-(uuid(), 2, now(), 4, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
-(uuid(), 3, now(), 4, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
-(uuid(), 4, now(), 4, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
-(uuid(), 5, now(), 4, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
-(uuid(), 6, now(), 4, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
-(uuid(), 7, now(), 4, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
-(uuid(), 8, now(), 4, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
-(uuid(), 9, now(), 4, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
-(uuid(), 10, now(), 4, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
-(uuid(), 11, now(), 4, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 4, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-
-(uuid(), 1, now(), 5, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
-(uuid(), 2, now(), 5, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
-(uuid(), 3, now(), 5, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
-(uuid(), 4, now(), 5, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
-(uuid(), 5, now(), 5, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
-(uuid(), 6, now(), 5, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
-(uuid(), 7, now(), 5, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
-(uuid(), 8, now(), 5, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
-(uuid(), 9, now(), 5, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
-(uuid(), 10, now(), 5, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
-(uuid(), 11, now(), 5, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 5, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-
-(uuid(), 1, now(), 6, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
-(uuid(), 2, now(), 6, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
-(uuid(), 3, now(), 6, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
-(uuid(), 4, now(), 6, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
-(uuid(), 5, now(), 6, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
-(uuid(), 6, now(), 6, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
-(uuid(), 7, now(), 6, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
-(uuid(), 8, now(), 6, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
-(uuid(), 9, now(), 6, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
-(uuid(), 10, now(), 6, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
-(uuid(), 11, now(), 6, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 6, 'print("Another Test")', 1, 25, 400, null, 'Python'),
-
-(uuid(), 1, now(), 7, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
-(uuid(), 2, now(), 7, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
-(uuid(), 3, now(), 7, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
-(uuid(), 4, now(), 7, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
-(uuid(), 5, now(), 7, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
-(uuid(), 6, now(), 7, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
-(uuid(), 7, now(), 7, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
-(uuid(), 8, now(), 7, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
-(uuid(), 9, now(), 7, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
-(uuid(), 10, now(), 7, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
-(uuid(), 11, now(), 7, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
-(uuid(), 12, now(), 7, 'print("Another Test")', 1, 25, 400, null, 'Python');
+# insert into submission
+# (id, problem_id, create_time, user_id, code, result, time_spent, memory_spent, error_info, language)
+# values
+# (uuid(), 1, now(), 2, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+# (uuid(), 2, now(), 2, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+# (uuid(), 3, now(), 2, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+# (uuid(), 4, now(), 2, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+# (uuid(), 5, now(), 2, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+# (uuid(), 6, now(), 2, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+# (uuid(), 7, now(), 2, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+# (uuid(), 8, now(), 2, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+# (uuid(), 9, now(), 2, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+# (uuid(), 10, now(), 2, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+# (uuid(), 11, now(), 2, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+# (uuid(), 12, now(), 2, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+#
+# (uuid(), 1, now(), 3, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+# (uuid(), 2, now(), 3, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+# (uuid(), 3, now(), 3, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+# (uuid(), 4, now(), 3, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+# (uuid(), 5, now(), 3, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+# (uuid(), 6, now(), 3, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+# (uuid(), 7, now(), 3, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+# (uuid(), 8, now(), 3, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+# (uuid(), 9, now(), 3, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+# (uuid(), 10, now(), 3, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+# (uuid(), 11, now(), 3, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+# (uuid(), 12, now(), 3, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+#
+# (uuid(), 1, now(), 4, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+# (uuid(), 2, now(), 4, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+# (uuid(), 3, now(), 4, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+# (uuid(), 4, now(), 4, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+# (uuid(), 5, now(), 4, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+# (uuid(), 6, now(), 4, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+# (uuid(), 7, now(), 4, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+# (uuid(), 8, now(), 4, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+# (uuid(), 9, now(), 4, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+# (uuid(), 10, now(), 4, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+# (uuid(), 11, now(), 4, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+# (uuid(), 12, now(), 4, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+#
+# (uuid(), 1, now(), 5, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+# (uuid(), 2, now(), 5, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+# (uuid(), 3, now(), 5, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+# (uuid(), 4, now(), 5, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+# (uuid(), 5, now(), 5, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+# (uuid(), 6, now(), 5, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+# (uuid(), 7, now(), 5, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+# (uuid(), 8, now(), 5, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+# (uuid(), 9, now(), 5, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+# (uuid(), 10, now(), 5, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+# (uuid(), 11, now(), 5, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+# (uuid(), 12, now(), 5, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+#
+# (uuid(), 1, now(), 6, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+# (uuid(), 2, now(), 6, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+# (uuid(), 3, now(), 6, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+# (uuid(), 4, now(), 6, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+# (uuid(), 5, now(), 6, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+# (uuid(), 6, now(), 6, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+# (uuid(), 7, now(), 6, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+# (uuid(), 8, now(), 6, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+# (uuid(), 9, now(), 6, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+# (uuid(), 10, now(), 6, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+# (uuid(), 11, now(), 6, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+# (uuid(), 12, now(), 6, 'print("Another Test")', 1, 25, 400, null, 'Python'),
+#
+# (uuid(), 1, now(), 7, 'print("Hello, world!")', 1, 20, 512, null, 'Python'),
+# (uuid(), 2, now(), 7, '#include<stdio.h>\nint main(){return 0;}', 2, 15, 256, null, 'C'),
+# (uuid(), 3, now(), 7, 'public class Main { public static void main(String[] args) { System.out.println("Hello"); } }', 3, 25, 1024, null, 'Java'),
+# (uuid(), 4, now(), 7, 'def add(a, b): return a + b', 1, 10, 128, null, 'Python'),
+# (uuid(), 5, now(), 7, 'int add(int a, int b) { return a + b; }', 1, 30, 256, null, 'C'),
+# (uuid(), 6, now(), 7, 'print("Judge System Test")', 4, 18, 320, '{"error": "Runtime error"}', 'Python'),
+# (uuid(), 7, now(), 7, 'using System; class Program { static void Main() { Console.WriteLine("Hi"); } }', 1, 12, 512, null, 'C#'),
+# (uuid(), 8, now(), 7, '<html><body><h1>Hello!</h1></body></html>', 5, 5, 64, null, 'HTML'),
+# (uuid(), 9, now(), 7, 'print("Test")', 3, 28, 800, '{"error": "Memory Limit Exceeded"}', 'Python'),
+# (uuid(), 10, now(), 7, 'function hello() { console.log("Hi"); }', 1, 20, 200, null, 'JavaScript'),
+# (uuid(), 11, now(), 7, 'console.log("Debugging");', 4, 22, 300, '{"error": "Syntax error"}', 'JavaScript'),
+# (uuid(), 12, now(), 7, 'print("Another Test")', 1, 25, 400, null, 'Python');
 
 update post set like_count = (select count(*) from post_like_users where post_id = post.id);
 update post set comment_count = (select count(*) from post_comment where post_id = post.id);
 update post_comment set like_count = (select count(*) from post_comment_like_users where postcomment_id = post_comment.id);
-
+update solution set like_count = (select count(*) from solution_like_users where solution_id = solution.id);
+update solution set comment_count = (select count(*) from solution_comment where solution_id = solution.id);
+update solution_comment set like_count = (select count(*) from solution_comment_like_users where solutioncomment_id = solution_comment.id);
+update problem set star_cnt = (select count(*) from problem_star_users where problem_id = problem.id);
+update problem_list set problem_count = (select count(*) from problem_list_problems where problemlist_id = problem_list.id);
+update problem_list set star_count = (select count(*) from problem_list_star_users where problemlist_id = problem_list.id);

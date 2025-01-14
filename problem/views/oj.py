@@ -557,7 +557,7 @@ class SolutionLevel2CommentAPI(APIView):
             if not request.user.is_authenticated:
                 comment_tmp['is_good'] = False
             else:
-                comment_tmp['is_good'] = comment.like_users.contains(request.user)
+                comment_tmp['is_good'] = SolutionComment.objects.get(id=level2_comment['id']).like_users.contains(request.user)
             comment_tmp['content'] = level2_comment['content']
             comment_tmp['like_count'] = level2_comment['like_count']
             comment_tmp['create_time'] = level2_comment['create_time']
