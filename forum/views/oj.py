@@ -1,7 +1,7 @@
 from datetime import timezone
 
 from rest_framework.views import APIView
-from django.db.models import Q
+from django.db.models import Q, F
 from forum.models import Post, PostComment
 from forum.serializers import PostCommentSerializer
 from utils.api import *
@@ -305,8 +305,11 @@ class PostCommentGoodAPI(APIView):
 
         if isGood:
             comment.like_users.add(user)
+            comment.like_count = F('like_count') + 1
         else:
             comment.like_users.remove(user)
+            comment.like_count = F('like_count') - 1
+        comment.save()
 
         return success('操作成功')
 

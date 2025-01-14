@@ -548,9 +548,9 @@ class SolutionLevel2CommentAPI(APIView):
             comment_tmp = {}
             comment_tmp['id'] = level2_comment['id']
             user_info_tmp = {}
-            user_info_tmp['id'] = level2_comment['create_user']['id']
-            user_info_tmp['username'] = level2_comment['create_user']['username']
-            user_info_tmp['avatar'] = ImageCode.image_base64(level2_comment['create_user']['avatar'])
+            user_info_tmp['id'] = level2_comment['user_info']['id']
+            user_info_tmp['username'] = level2_comment['user_info']['username']
+            user_info_tmp['avatar'] = ImageCode.image_base64(level2_comment['user_info']['avatar'])
             comment_tmp['user_info'] = user_info_tmp
             if not request.user.is_authenticated:
                 comment_tmp['is_good'] = False
@@ -559,8 +559,9 @@ class SolutionLevel2CommentAPI(APIView):
             comment_tmp['content'] = level2_comment['content']
             comment_tmp['like_count'] = level2_comment['like_count']
             comment_tmp['create_time'] = level2_comment['create_time']
-            comment_tmp['reply_to_id'] = level2_comment['reply_to_user_info']['id']
-            comment_tmp['reply_to_name'] = level2_comment['reply_to_user_info']['username']
+            if level2_comment['reply_to_user_info'] is not None:
+                comment_tmp['reply_to_id'] = level2_comment['reply_to_user_info']['id']
+                comment_tmp['reply_to_name'] = level2_comment['reply_to_user_info']['username']
             comments_data.append(comment_tmp)
 
         return success({'count': level2_comments_num, 'comments': comments_data})
