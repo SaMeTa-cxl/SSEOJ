@@ -362,7 +362,12 @@ class ProblemCreateAPI(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return fail('用户未登录！')
-        Problem.objects.create(**request.data)
+        tags = request.data.pop('tags')
+        samples = request.data.pop('samples')
+        request.data['sample'] = samples
+        problem = Problem.objects.create(**request.data)
+        if tags:
+            problem.tags.set(Tag.objects.filter(id__in=tags))
         return success('创建成功')
 
 
@@ -590,3 +595,11 @@ class SolutionCommentNewAPI(APIView):
                                                reply_to_user=reply_to_user, under_comment=comment)
 
         return success("评论成功")
+
+
+class ProblemNumWithDifficultyAPI(APIView):
+    def get(self, request):
+        rsp = []
+        for i in range(1, 7):
+            rsp.append(Problem.objects.filter(difficulty=i).count())
+        return success(rsp)

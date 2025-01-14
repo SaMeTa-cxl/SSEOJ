@@ -323,6 +323,8 @@ NOW(),
 TRUE,
 'test_case_12');
 
+update problem set attempt_count = 1;
+
 
  -- 插入problem_pass_users
 insert into problem_pass_users(id, problem_id, user_id)
@@ -897,7 +899,7 @@ values
 
 -- 插入题解评论
 insert into solution_comment
-(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id, under_comment_id)
+(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id, under_comment_id_id)
 values
 ('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null, null),
 ('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1, 1),
@@ -1015,16 +1017,16 @@ values
 insert into study_plan
 (user_id, problem_id, added_time, problem_status)
 values
-(1, 1, now(), false),
-(1, 2, now(), true),
-(2, 3, now(), false),
-(2, 4, now(), true),
-(3, 5, now(), false),
-(3, 6, now(), false),
-(4, 7, now(), true),
-(4, 8, now(), false),
-(5, 9, now(), true),
-(5, 10, now(), false);
+(7, 1, now(), false),
+(7, 2, now(), true),
+(8, 3, now(), false),
+(8, 4, now(), true),
+(9, 5, now(), false),
+(9, 6, now(), false),
+(10, 7, now(), true),
+(10, 8, now(), false),
+(11, 9, now(), true),
+(11, 10, now(), false);
 
 
 -- 插入帖子评论

@@ -146,9 +146,9 @@ class ImageCode:
 
 class VerificationCode:
     smtpServer = 'smtp.qq.com' #SMTP服务器配置
-    smtpPort = 465 #SMTP服务器端口
-    emailUser = 'xx@qq.com'  #邮箱地址
-    emailAuthCode = 'xx'  #邮箱密码
+    smtpPort = 587 #SMTP服务器端口
+    emailUser = '3485087312@qq.com'  #邮箱地址
+    emailAuthCode = 'twvzodqqkelydbie'  #邮箱密码
     title = 'SSEOJ验证码'
     messageStr = ['您的注册账号验证码为\n\n', '您的找回密码验证码为\n\n']
     endStr = '\n\n该验证码在3分钟内有效，请及时使用\n如并非您的操作请直接忽略此信息并防止验证码泄露'
@@ -173,11 +173,12 @@ class VerificationCode:
         code = VerificationCode.randomCode()
         body = f"Hello, {VerificationCode.messageStr[type_code]}{code}{VerificationCode.endStr}"
         sendState = True
+        server = None
 
         try:
             # 使用SMTP_SSL连接到邮箱的SMTP服务器
             server = smtplib.SMTP(VerificationCode.smtpServer, VerificationCode.smtpPort)
-            # server.starttls()  # 启动TLS加密
+            server.starttls()  # 启动TLS加密
             server.login(VerificationCode.emailUser, VerificationCode.emailAuthCode)
 
             # 创建并发送邮件
