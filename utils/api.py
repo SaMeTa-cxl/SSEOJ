@@ -147,8 +147,8 @@ class ImageCode:
 class VerificationCode:
     smtpServer = 'smtp.qq.com' #SMTP服务器配置
     smtpPort = 587 #SMTP服务器端口
-    emailUser = '3485087312@qq.com'  #邮箱地址
-    emailAuthCode = 'twvzodqqkelydbie'  #邮箱密码
+    emailUser = '2434519917@qq.com'  #邮箱地址
+    emailAuthCode = 'xklnnyqgbsqqdjbg'  #邮箱密码
     title = 'SSEOJ验证码'
     messageStr = ['您的注册账号验证码为\n\n', '您的找回密码验证码为\n\n']
     endStr = '\n\n该验证码在3分钟内有效，请及时使用\n如并非您的操作请直接忽略此信息并防止验证码泄露'
