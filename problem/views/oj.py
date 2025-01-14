@@ -4,7 +4,7 @@ from django.db.models import Q, F, ExpressionWrapper, FloatField
 from rest_framework.views import APIView
 
 from account.models import User
-from problem.models import Problem, Solution, ProblemList, Tag, SolutionComment
+from problem.models import Problem, Solution, ProblemList, Tag, SolutionComment, StudyPlan
 from problem.serializers import ProblemSerializer, SolutionSerializer, ProblemListSerializer, \
     ProblemListDetailSerializer, SolutionCreateSerializer, TagSerializer, ProblemListCreateSerializer, \
     ProblemCreateSerializer, SolutionCommentSerializer
@@ -150,6 +150,9 @@ class ProblemListCreateAPI(APIView):
         if len(problems):
             problem_list.problems.set(Problem.objects.filter(id__in=problems))
 
+        problem_list.problem_count = len(problems)
+        problem_list.save()
+
         return success('创建成功')
 
 
@@ -207,7 +210,6 @@ class ProblemListDetailAPI(APIView):
         name = request.data['name']
         summary = request.data['summary']
         add_problems = Problem.objects.filter(id__in=add)
-        del_problems = Problem.objects.filter(id__in=delete)
         try:
             problem_list = ProblemList.objects.get(id=problemlist_id)
         except ProblemList.DoesNotExist:
@@ -221,11 +223,12 @@ class ProblemListDetailAPI(APIView):
             problems_in_list = problem_list.problems.filter(id__in=add)
             problem_list.add_problem(add_problems.difference(problems_in_list))
 
-        if problem_list.problems.filter(id__in=delete).count() != 0:
-            problems_in_list = problem_list.problems.filter(id__in=delete)
-            problem_list.remove_problem(problems_in_list)
-        else:
-            return fail('删除的题目不在题单之中')
+        if delete:
+            if problem_list.problems.filter(id__in=delete).count() != 0:
+                problems_in_list = problem_list.problems.filter(id__in=delete)
+                problem_list.remove_problem(problems_in_list)
+            else:
+                return fail('删除的题目不在题单之中')
 
         if name:
             problem_list.title = name
@@ -294,7 +297,12 @@ class ProblemListAddProblemAPI(APIView):
         except Problem.DoesNotExist:
             return fail('题目不存在')
 
-        problem_list.add_problem(problem)
+        if request.data['relationship'] and not problem_list.problems.contains(problem):
+            problem_list.add_problem([problem])
+        elif not request.data['relationship'] and problem_list.problems.contains(problem):
+            problem_list.remove_problem([problem])
+
+        return success('success')
 
 
 class ProblemSolutionCreateAPI(APIView):
@@ -387,10 +395,10 @@ class ProblemStarAPI(APIView):
         except Problem.DoesNotExist:
             return fail('题目不存在！')
 
-        if problem.star_users.contains(request.user):
-            problem.star_users.remove(request.user)
-        else:
+        if request.data['relationship'] and not problem.star_users.contains(request.user):
             problem.star_users.add(request.user)
+        elif not request.data['relationship'] and problem.star_users.contains(request.user):
+            problem.star_users.remove(request.user)
 
         return success('success')
 
@@ -399,10 +407,11 @@ class StudyPlanAddAPI(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return fail('用户未登录！')
-        id = request.GET.get['id']
+        id = request.data['id']
         if not id:
             return fail('请传入题目id')
-        request.user.study_plan.add(Problem.objects.get(id=request.data['id']))
+        StudyPlan.objects.create(user=request.user, problem_id=id)
+        return success('success')
 
 
 class StudyPlanDelAPI(APIView):
@@ -639,6 +648,7 @@ class ProblemListStarAPI(APIView):
 
         data = []
         for problem_list in ProblemList.objects.filter(create_user=request.user).all():
-            data.append(problem_list.problems.contains(problem))
+            if problem_list.problems.contains(problem):
+                data.append(problem_list.id)
 
         return success(data)
