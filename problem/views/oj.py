@@ -334,7 +334,9 @@ class ProblemsetAPI(APIView):
         tags = request.GET.getlist('tags[]')
         sort_type = request.GET.get('sort_type', 'idAsc')
 
-        problems = Problem.objects.filter(Q(name__icontains=keyword) | Q(description__icontains=keyword))
+
+        problems = Problem.objects.filter(Q(name__icontains=keyword) | Q(id__icontains=keyword))
+
         if min_difficulty:
             problems = problems.filter(difficulty__gte=min_difficulty)
         if max_difficulty:
