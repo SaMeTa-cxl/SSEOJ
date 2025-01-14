@@ -344,6 +344,7 @@ class PostHotAPI(APIView):
 
 
 class PostMyAPI(APIView):
+    #nothing
     def get(self, request):
         if not request.user.is_authenticated:
             return success({'posts': [], 'has_next': False})
