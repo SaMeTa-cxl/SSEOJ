@@ -1249,3 +1249,9 @@ values
 
 
 
+
+update post set like_count = (select count(*) from post_like_users where post_id = post.id);
+update post set comment_count = (select count(*) from post_comment where post_id = post.id);
+update post_comment set like_count = (select count(*) from post_comment_like_users where post_id = post_comment.id);
+
+
