@@ -27,4 +27,5 @@ urlpatterns = [
     path("study_plan/add/", StudyPlanAddAPI.as_view(), name="study_plan_add_problem"),
     path("study_plan/delete/", StudyPlanDelAPI.as_view(), name="study_plan_del_problem"),
     path("tags/", TagAPI.as_view(), name="tags"),
+    path("problemset/problem_num/", ProblemNumWithDifficultyAPI.as_view(), name="tags"),
 ]
