@@ -428,6 +428,8 @@ class SolutionGoodAPI(APIView):
             solution.like_count = F('like_count') - 1
             solution.save()
 
+        return success('成功')
+
 
 class SolutionCommentGoodAPI(APIView):
     def post(self, request):
@@ -491,7 +493,7 @@ class SolutionLevel1CommentAPI(APIView):
             comment_tmp['content'] = comment['content']
             comment_tmp['like_count'] = comment['like_count']
             comment_tmp['create_time'] = comment['create_time']
-            under_comments = SolutionComment.objects.get(id=comment['id']).under_comment
+            under_comments = SolutionComment.objects.get(id=comment['id']).under_comments.all()
             if under_comments is not None:
                 comment_tmp['comments_count'] = under_comments.count()
             else:
@@ -534,16 +536,15 @@ class SolutionLevel2CommentAPI(APIView):
         """
 
         try:
-            comment = SolutionComment.objects.filter(Q(solution_id=solution_id) & Q(under_comment_id=comment_id))
+            comment = SolutionComment.objects.get(id=comment_id)
         except SolutionComment.DoesNotExist:
             return fail(msg = '一级评论不存在')
         level2_comments = comment.under_comments.all()
         level2_comments_num = level2_comments.count()
-        level2_comments = paginate_data(request, level2_comments, SolutionCommentSerializer)
+        comments = paginate_data(request, level2_comments, SolutionCommentSerializer)
 
         comments_data = []
-
-        for level2_comment in level2_comments:
+        for level2_comment in comments:
             comment_tmp = {}
             comment_tmp['id'] = level2_comment['id']
             user_info_tmp = {}
