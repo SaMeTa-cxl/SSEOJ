@@ -105,10 +105,10 @@ class GetStudyPlanSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudyPlan
-        fields = ['problem_status']
+        fields = ['id', 'name', 'difficulty', 'problem_status']
 
     def get_id(self, obj):
-        return obj.problem.idw
+        return obj.problem.id
 
     def get_name(self, obj):
         return obj.problem.name
