@@ -83,7 +83,7 @@ class PostCommentInformationAPI(APIView):
             return fail("要找的帖子走丢啦！")
 
         self_id = request.user.id
-        comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)& Q(reply_to_user__isnull=True))
+        comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)& Q(under_comment_id__isnull=True))
         count = comments.count()
         comments = paginate_data(request, comments)
 
@@ -116,7 +116,6 @@ class PostSecondaryCommentInformationAPI(APIView):
             "count": count,
             "comments": serializer.data
         }
-        print(comment_data['comments'][0])
         return success(comment_data)
 
 
