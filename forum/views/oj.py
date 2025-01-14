@@ -120,6 +120,7 @@ class PostSecondaryCommentInformationAPI(APIView):
 
 class PostCommentNewAPI(APIView):
     def post(self, request):
+        """
         if not request.user.is_authenticated:
             return fail('未登录！')
         post_id = request.data.get('post_id')
@@ -173,6 +174,27 @@ class PostCommentNewAPI(APIView):
 
         output_data = {"comment_id": comment.id}
         return success(output_data)
+        """
+        if not request.user.is_authenticated:
+            return fail(msg = '未登录')
+
+        post_id = request.data.get('id', None)
+        reply_to_id = request.data.get('reply_to_id', None)
+        under_comment_id = request.data.get('under_comment_id', None)
+        if post_id is None:
+            return fail('帖子不存在')
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return fail('帖子不存在')
+
+        comment = PostComment.objects.create(post = post, create_user = request.user, content = request.data.get('content'),
+    reply_to_user_id = reply_to_id,
+    under_comment_id_id = under_comment_id)
+        comment.save()
+
+        return success('评论成功')
+
 
 class PostNewAPI(APIView):
     def post(self, request):
@@ -269,8 +291,8 @@ class PostCommentGoodAPI(APIView):
         data = request.data
         user = request.user
         try:
-            userId = int(data.get('id'))
-            isGood = bool(data.get('isGood'))
+            userId = int(data.get('id', 'error'))
+            isGood = bool(data.get('isGood', 'error'))
         except ValueError:
             return fail(msg = '未知的数据类型')
 
