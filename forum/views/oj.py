@@ -49,6 +49,7 @@ class PostListAPI(APIView):
             postRelateData['avatar'] = ImageCode.image_base64(creatUser.avatar)
             postRelateData['like_count'] = post.like_count
             postRelateData['comment_count'] = post.comment_count
+            postRelateData['create_time'] = post.create_time
 
             postList.append(postRelateData)
 
@@ -92,6 +93,7 @@ class PostCommentInformationAPI(APIView):
             "count": count,
             "comments": serializer.data
         }
+        print(comment_data['comments'][0])
         return success(comment_data)
 
 
