@@ -371,6 +371,7 @@ class UserPasswordForgetAPI(APIView):
             return fail(msg = '用户不存在')
 
         user.set_password(passNew)
+        user.save()
 
         return success('修改成功')
 
