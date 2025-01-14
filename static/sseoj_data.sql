@@ -323,6 +323,8 @@ NOW(),
 TRUE,
 'test_case_12');
 
+update problem set attempt_count = 1;
+
 
  -- 插入problem_pass_users
 insert into problem_pass_users(id, problem_id, user_id)
@@ -897,7 +899,7 @@ values
 
 -- 插入题解评论
 insert into solution_comment
-(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id, under_comment_id)
+(content, create_user_id, solution_id, like_count, create_time, check_status, reply_to_user_id, under_comment_id_id)
 values
 ('This solution is very helpful, thank you!', 1, 1, 0, now(), false, null, null),
 ('I have a question about this part of your solution.', 2, 1, 0, now(), false, 1, 1),
