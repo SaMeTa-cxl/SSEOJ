@@ -5,6 +5,8 @@ from account.models import User, Following
 from problem.models import Problem, ProblemList, StudyPlan
 from django.db.models import Q
 
+from utils.api import ImageCode
+
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -12,16 +14,21 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    avatar = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         needed_fields = kwargs.pop('needed_fields', None)
+        self.avatar_base64 = kwargs.pop('avatar_base64', None)
         super(UserSerializer, self).__init__(*args, **kwargs)
         if needed_fields:
             for field in set(self.fields.keys()) - set(needed_fields):
                 self.fields.pop(field)
+
+    def get_avatar(self, obj):
+        return ImageCode.image_base64(obj.avatar) if self.avatar_base64 else (obj.avatar)
 
 
 class UserInfoSerializer(serializers.ModelSerializer):

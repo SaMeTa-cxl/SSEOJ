@@ -1,29 +1,26 @@
 from rest_framework import serializers
 
+from account.serializers import UserSerializer
 from forum.models import PostComment
 from utils.api import ImageCode
 
 
 class PostCommentSerializer(serializers.ModelSerializer):
-    comment_id = serializers.IntegerField(source='id')
-    user_id = serializers.IntegerField(source='create_user.id')
-    user_name = serializers.CharField(source='create_user.username')
-    comment_content = serializers.CharField(source='content')
-    avatar = serializers.SerializerMethodField()
+    user_info = UserSerializer(source='create_user', read_only=True, needed_fields=['username', 'id', 'avatar'], avatar_base64=True)
     like_status = serializers.SerializerMethodField()
     reply_to_id = serializers.SerializerMethodField()
     reply_to_name = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = PostComment
         fields = [
-            'comment_id', 'user_id', 'user_name', 'avatar', 'like_status',
-            'comment_content', 'like_count', 'create_time',
-            'reply_to_id', 'reply_to_name', 'under_comment_id'
+            'id', 'user_info', 'like_status',
+            'content', 'like_count', 'create_time',
+            'reply_to_id', 'reply_to_name', 'under_comment_id',
+            'comments_count',
+            'create_time'
         ]
-
-    def get_avatar(self, obj):
-        return str(ImageCode.image_base64(obj.create_user.avatar))
 
     def get_like_status(self, obj):
         request = self.context.get('request')
@@ -36,3 +33,6 @@ class PostCommentSerializer(serializers.ModelSerializer):
 
     def get_reply_to_name(self, obj):
         return obj.reply_to_user.username if obj.reply_to_user else None
+
+    def get_comments_count(self, obj):
+        return obj.secondary_comments.count()

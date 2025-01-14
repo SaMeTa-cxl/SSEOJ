@@ -35,7 +35,7 @@ class PostComment(models.Model):
     check_status = models.BooleanField(default=True)
     like_count = models.IntegerField(default=0)
     reply_to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reply_to_users', null=True, blank=True)
-    under_comment_id = models.ForeignKey('self', on_delete=models.CASCADE, related_name='under_comments', null=True, blank=True)
+    under_comment_id = models.ForeignKey('self', on_delete=models.CASCADE, related_name='secondary_comments', null=True, blank=True)
 
     class Meta:
         db_table = 'post_comment'

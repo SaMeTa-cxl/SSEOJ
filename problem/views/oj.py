@@ -120,7 +120,6 @@ class ProblemListAPI(APIView):
             for problem_list in response_data:
                 problem_list['pass_count'] = None
                 problem_list['is_star'] = False
-                problem_list['user_info']['avatar'] = ImageCode.image_base64(problem_list['user_info']['avatar'])
             return success({'count': problem_lists.count(), 'problemlists': response_data})
 
         response_data = paginate_data(request, problem_lists, ProblemListSerializer)
@@ -129,7 +128,6 @@ class ProblemListAPI(APIView):
             problem_list_entity = ProblemList.objects.get(id=problem_list['id'])
             problem_list['is_star'] = problem_list_entity.star_users.contains(request.user)
             problem_list['pass_count'] = 0
-            problem_list['user_info']['avatar'] = ImageCode.image_base64(problem_list['user_info']['avatar'])
             # problem_list['id']取自于数据库，可保证存在，不需要处理异常
             for problem in problem_list_entity.problems.all():
                 if problem.get_pass_status(request.user):
@@ -146,7 +144,12 @@ class ProblemListCreateAPI(APIView):
         title = request.data['title']
         summary = request.data['summary']
         is_public = request.data['type']
-        ProblemList.objects.create(title=title, summary=summary, is_public=is_public, create_user=request.user)
+        problems = request.data.get('problems', [])
+        problem_list = ProblemList.objects.create(title=title, summary=summary, is_public=is_public, create_user=request.user)
+
+        if len(problems):
+            problem_list.problems.set(Problem.objects.filter(id__in=problems))
+
         return success('创建成功')
 
 
