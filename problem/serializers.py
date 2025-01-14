@@ -19,7 +19,7 @@ class ProblemSerializer(serializers.ModelSerializer):
                 self.fields.pop(field)
 
 
-class ProblemCreateSerializer(serializers.ModelSerializer):
+class ProblemCreateSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     description = serializers.CharField(required=True)
     input_style = serializers.CharField()

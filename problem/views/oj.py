@@ -362,7 +362,12 @@ class ProblemCreateAPI(APIView):
     def post(self, request):
         if not request.user.is_authenticated:
             return fail('用户未登录！')
-        Problem.objects.create(**request.data)
+        tags = request.data.pop('tags')
+        samples = request.data.pop('samples')
+        request.data['sample'] = samples
+        problem = Problem.objects.create(**request.data)
+        if tags:
+            problem.tags.set(Tag.objects.filter(id__in=tags))
         return success('创建成功')
 
 
