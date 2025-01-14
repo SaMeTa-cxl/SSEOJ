@@ -24,13 +24,13 @@ class ProblemCreateSerializer(serializers.Serializer):
     description = serializers.CharField(required=True)
     input_style = serializers.CharField()
     output_style = serializers.CharField()
-    data_range = serializers.CharField(required=False)
+    data_range = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     difficulty = serializers.IntegerField
     time_limit = serializers.IntegerField()
     memory_limit = serializers.IntegerField()
     samples = serializers.JSONField()
     tags = serializers.JSONField()
-    source = serializers.CharField(required=False)
+    source = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
 
