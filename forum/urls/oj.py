@@ -14,4 +14,5 @@ urlpatterns = [
     path('post/hot_post/', PostHotAPI.as_view(), name='post_hot_post'),
     path('post/my_post/', PostMyAPI.as_view(), name='post_my_post'),
     path('post/subscribe_post/', PostSubscribeAPI.as_view(), name='post_subscribe_post'),
+    path('post/<int:post_id>/comments/<int:comment_id>/', PostSecondaryCommentInformationAPI.as_view(), name='post_subscribe_post'),
 ]
