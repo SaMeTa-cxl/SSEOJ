@@ -1035,59 +1035,59 @@ insert into post_comment
 values
 (1, 2, 'This is a comment for post 1.', true, 5, null, null, now()),
 (1, 3, 'Another comment on post 1.', true, 3, null, null, now()),
-(1, 4, 'Reply to the first comment.', true, 2, 2, 1, now()), -- 回复用户2的评论，under_comment_id 指向 1
+(1, 4, 'Reply to the first comment.', true, 2, null, 1, now()), -- 回复用户2的评论，under_comment_id 指向 1
 (2, 5, 'This is a comment for post 2.', true, 8, null, null, now()),
 (2, 6, 'Another comment on post 2.', true, 0, null, null, now()),
 (3, 7, 'Comment on post 3.', true, 4, null, null, now()),
-(3, 8, 'Reply to the comment on post 3.', true, 7, 7, 6, now()), -- 回复用户7的评论，under_comment_id 指向 6
+(3, 8, 'Reply to the comment on post 3.', true, 7, null, 6, now()), -- 回复用户7的评论，under_comment_id 指向 6
 (4, 9, 'First comment on post 4.', true, 1, null, null, now()),
 (4, 10, 'Another comment on post 4.', true, 3, null, null, now()),
 (5, 11, 'Comment on post 5.', true, 2, null, null, now()),
-(5, 12, 'Reply to post 5 comment.', true, 5, 11, 10, now()), -- 回复用户11的评论，under_comment_id 指向 10
+(5, 12, 'Reply to post 5 comment.', true, 5, null, 10, now()), -- 回复用户11的评论，under_comment_id 指向 10
 (6, 13, 'First comment on post 6.', true, 6, null, null, now()),
 (6, 14, 'Another comment for post 6.', true, 0, null, null, now()),
 (7, 15, 'Comment on post 7.', true, 2, null, null, now()),
-(7, 16, 'Reply to post 7 comment.', true, 4, 15, 13, now()), -- 回复用户15的评论，under_comment_id 指向 13
+(7, 16, 'Reply to post 7 comment.', true, 4, null, 13, now()), -- 回复用户15的评论，under_comment_id 指向 13
 (8, 17, 'First comment on post 8.', true, 5, null, null, now()),
 (8, 18, 'Another comment for post 8.', true, 1, null, null, now()),
 (9, 19, 'Comment on post 9.', true, 7, null, null, now()),
-(9, 20, 'Reply to post 9 comment.', true, 2, 19, 15, now()), -- 回复用户19的评论，under_comment_id 指向 15
+(9, 20, 'Reply to post 9 comment.', true, 2, null, 15, now()), -- 回复用户19的评论，under_comment_id 指向 15
 (10, 21, 'First comment on post 10.', true, 0, null, null, now()),
 (10, 22, 'Another comment for post 10.', true, 3, null, null, now()),
 (11, 23, 'First comment on post 11.', true, 9, null, null, now()),
 (11, 24, 'Reply to post 11 comment.', true, 0, null, null, now()),
 (12, 25, 'Comment on post 12.', true, 4, null, null, now()),
-(12, 26, 'Reply to post 12 comment.', true, 1, 25, 20, now()), -- 回复用户25的评论，under_comment_id 指向 20
+(12, 26, 'Reply to post 12 comment.', true, 1, null, 20, now()), -- 回复用户25的评论，under_comment_id 指向 20
 (13, 27, 'First comment on post 13.', true, 5, null, null, now()),
 (13, 28, 'Another comment for post 13.', true, 6, null, null, now()),
 (14, 29, 'Comment on post 14.', true, 2, null, null, now()),
-(14, 30, 'Reply to post 14 comment.', true, 3, 29, 26, now()), -- 回复用户29的评论，under_comment_id 指向 26
+(14, 30, 'Reply to post 14 comment.', true, 3, null, 26, now()), -- 回复用户29的评论，under_comment_id 指向 26
 (15, 1, 'First comment on post 15.', true, 8, null, null, now()),
 (15, 2, 'Another comment for post 15.', true, 0, null, null, now()),
 (16, 3, 'Comment on post 16.', true, 4, null, null, now()),
 (16, 4, 'Reply to post 16 comment.', true, 1, null, null, now()),
 (17, 5, 'First comment on post 17.', true, 6, null, null, now()),
-(17, 6, 'Another comment for post 17.', true, 0, 5, 31, now()), -- 回复用户5的评论，under_comment_id 指向 31
+(17, 6, 'Another comment for post 17.', true, 0, null, 31, now()), -- 回复用户5的评论，under_comment_id 指向 31
 (18, 7, 'Comment on post 18.', true, 2, null, null, now()),
-(18, 8, 'Reply to post 18 comment.', true, 4, 7, 33, now()), -- 回复用户7的评论，under_comment_id 指向 33
+(18, 8, 'Reply to post 18 comment.', true, 4, null, 33, now()), -- 回复用户7的评论，under_comment_id 指向 33
 (19, 9, 'First comment on post 19.', true, 5, null, null, now()),
 (19, 10, 'Another comment for post 19.', true, 1, null, null, now()),
 (20, 11, 'Comment on post 20.', true, 7, null, null, now()),
 (20, 12, 'Reply to post 20 comment.', true, 2, null, null, now()),
 (21, 13, 'First comment on post 21.', true, 6, null, null, now()),
-(21, 14, 'Another comment for post 21.', true, 1, 13, 37, now()), -- 回复用户13的评论，under_comment_id 指向 37
+(21, 14, 'Another comment for post 21.', true, 1, null, 37, now()), -- 回复用户13的评论，under_comment_id 指向 37
 (22, 15, 'Comment on post 22.', true, 4, null, null, now()),
 (22, 16, 'Reply to post 22 comment.', true, 1, null, null, now()),
 (23, 17, 'First comment on post 23.', true, 5, null, null, now()),
 (23, 18, 'Another comment for post 23.', true, 0, null, null, now()),
 (24, 19, 'Comment on post 24.', true, 2, null, null, now()),
-(24, 20, 'Reply to post 24 comment.', true, 3, 19, 40, now()), -- 回复用户19的评论，under_comment_id 指向 40
+(24, 20, 'Reply to post 24 comment.', true, 3, null, 40, now()), -- 回复用户19的评论，under_comment_id 指向 40
 (25, 21, 'First comment on post 25.', true, 8, null, null, now()),
 (25, 22, 'Another comment for post 25.', true, 0, null, null, now()),
 (26, 23, 'Comment on post 26.', true, 4, null, null, now()),
 (26, 24, 'Reply to post 26 comment.', true, 1, null, null, now()),
 (27, 25, 'First comment on post 27.', true, 6, null, null, now()),
-(27, 26, 'Another comment for post 27.', true, 0, 25, 43, now()), -- 回复用户25的评论，under_comment_id 指向 43
+(27, 26, 'Another comment for post 27.', true, 0, null, 43, now()), -- 回复用户25的评论，under_comment_id 指向 43
 (28, 27, 'Comment on post 28.', true, 2, null, null, now()),
 (28, 28, 'Reply to post 28 comment.', true, 4, null, null, now()),
 (29, 29, 'First comment on post 29.', true, 5, null, null, now()),
