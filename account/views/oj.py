@@ -16,7 +16,7 @@ from django.contrib.sessions.models import Session
 
 
 class EmailCodeAPI(APIView):
-    def get(self, request):
+    def post(self, request):
         data = request.data
         try:
             requestType = int(data.get('type'))
@@ -66,6 +66,7 @@ class UserRegisterAPI(APIView):
         username = data.get('username')
         password = DecodePassword.decryption(data.get('password'))
         verificationCode = data.get('verification_code')
+        print(data)
 
         if not email or not username or not password:
             return fail(msg = "所有字段均为必填项")
