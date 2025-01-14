@@ -83,8 +83,31 @@ class PostCommentInformationAPI(APIView):
             return fail("要找的帖子走丢啦！")
 
         self_id = request.user.id
-        count = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)).count()
-        comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True))
+        comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)& Q(reply_to_user__isnull=True))
+        count = comments.count()
+        comments = paginate_data(request, comments)
+
+        serializer = PostCommentSerializer(comments, many=True, context={'request': request})
+        # 返回数据
+        comment_data = {
+            "count": count,
+            "comments": serializer.data
+        }
+        print(comment_data['comments'][0])
+        return success(comment_data)
+
+
+class PostSecondaryCommentInformationAPI(APIView):
+    def get(self, request, post_id, comment_id):
+        if not Post.objects.filter(id=post_id).exists():
+            return fail("要找的帖子走丢啦！")
+        if not PostComment.objects.filter(id=comment_id).exists():
+            return fail("这条评论走丢啦！")
+
+        print(request.data)
+
+        comments = PostComment.objects.filter(Q(post_id=post_id) & Q(check_status=True)& Q(under_comment_id=comment_id))
+        count = comments.count()
         comments = paginate_data(request, comments)
 
         serializer = PostCommentSerializer(comments, many=True, context={'request': request})
