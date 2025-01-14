@@ -67,10 +67,14 @@ class UserFollowingSerializer(serializers.ModelSerializer):
     is_following_me = serializers.SerializerMethodField()
     is_followed_by_me = serializers.SerializerMethodField()
     is_mutual_following = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'profile', 'is_following_me', 'is_followed_by_me', 'is_mutual_following']
+        fields = ['id', 'username', 'profile', 'is_following_me', 'is_followed_by_me', 'is_mutual_following', 'avatar']
+
+    def get_avatar(self, obj):
+        return ImageCode.image_base64(obj.avatar)
 
     def get_is_following_me(self, obj):
         follower_user = obj
@@ -112,7 +116,7 @@ class GetStudyPlanSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudyPlan
-        fields = ['id', 'name', 'difficulty', 'problem_status']
+        fields = ['id', 'name', 'difficulty', ]
 
     def get_id(self, obj):
         return obj.problem.id

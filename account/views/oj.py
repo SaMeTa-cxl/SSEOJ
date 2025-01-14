@@ -223,8 +223,8 @@ class UserFollowerAPI(APIView):
         if request.user.is_authenticated:
             myself = request.user
 
-        following_records = Following.objects.filter(following=user)
-        Rserializer = UserFollowingSerializer(following_records, many=True, context={'myself': myself})
+        # print(user.followers.all())
+        Rserializer = UserFollowingSerializer(user.followers.all(), many=True, context={'myself': myself})
         """
         res = []
         for record in following_records:
@@ -253,12 +253,13 @@ class UserFollowerAPI(APIView):
                 }
             )
         """
-
+        print(Rserializer.data)
         return success(Rserializer.data)
 
 
 class StudyPlanAPI(APIView):
     def get(self, request, id):
+        print("studyplan")
         if not request.user.is_authenticated:
             return fail(msg = "未登录")
 
@@ -267,17 +268,11 @@ class StudyPlanAPI(APIView):
             return fail(msg = '无权查看')
 
         plans = StudyPlan.objects.filter(Q(user = myself))
-        for plan in plans:
-            if not plan.problem_status:
-                problem = plan.problem
-                submissions = Submission.objects.filter(Q(problem = problem) & Q(user_id = myself.id))
-                for sub in submissions:
-                    if sub.result == JudgeStatus.ACCEPTED:
-                        plan.problem_status = True
-                        plan.save()
-                        break
 
         data = GetStudyPlanSerializer(plans, many = True).data
+        for item in data:
+            item['problem_status'] = Problem.objects.get(id = item['id']).pass_users.contains(myself)
+        print(data)
         return success(data)
 
 

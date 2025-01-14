@@ -339,6 +339,7 @@ class PostHotAPI(APIView):
 
             postList.append(postRelateData)
         has_next = page_num * page_size < Post.objects.count()
+        print(postList)
         return success({'posts': postList, 'has_next': has_next})
 
 
