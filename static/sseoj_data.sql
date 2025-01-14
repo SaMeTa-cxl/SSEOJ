@@ -1033,7 +1033,7 @@ values
 
 -- 插入帖子评论
 insert into post_comment
-(post_id, create_user_id, content, check_status, like_count, reply_to_user_id, under_comment_id, create_time)
+(post_id, create_user_id, content, check_status, like_count, reply_to_user_id, under_comment_id_id, create_time)
 values
 (1, 2, 'This is a comment for post 1.', true, 5, null, null, now()),
 (1, 3, 'Another comment on post 1.', true, 3, null, null, now()),
